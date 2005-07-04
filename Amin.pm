@@ -3,7 +3,7 @@ test2
 test
 
 adding crud here to test 
-Bryan iz kewl 
+lets hope this works k  
 package Amin;
 
 use strict;
