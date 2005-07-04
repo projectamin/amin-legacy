@@ -3,7 +3,10 @@ test2
 test
 
 adding crud here to test 
-lets hope this works k, this time :)  
+lets hope this works k, this time :)
+
+updated to full path due to lack of $PATH hope this works 
+  
 package Amin;
 
 use strict;
