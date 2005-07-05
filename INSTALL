@@ -1,0 +1,46 @@
+Installing Amin should be easy to do.
+
+Please read this entire document before
+typing anything. 
+
+To install Amin you should only need to type
+
+perl Makefile.PL
+make
+make install
+
+You will also need to answer the questions
+when prompted. Amin installs many other perl
+modules. Those modules will ask their own 
+questions. 
+
+The make process above should install all the dependency
+modules that Amin requires. If it fails you could
+always install them manually. Here is a list of
+needed modules. If you have a newer version of any
+module that is acceptable. 
+
+Name => 'version'
+-----------------
+Cwd => '2.04',
+IPC::Run => '0.74',
+URI => '1.22',
+XML::SAX::Base => '1.02',
+XML::NamespaceSupport' => '0.03',
+XML::SAX => '0.12',
+Text::Iconv => '1.2',
+XML::Filter::BufferText => '0.01',
+XML::Generator::PerlData => '0.87',
+XML::SAX::ParserFactory => '1.01',
+XML::SAX::Writer => '0.39',
+XML::Filter::XInclude => '1.0',
+XML::SAX::Machines => '0.34',
+HTML::Tagset => '3.03',
+HTML::HeadParser => '2.17',
+LWP => '5.65',
+Sort::Naturally => '1.01',
+XML::Mini::Document => '1.28',
+Net::Daemon => '0.37',
+Crypt::Blowfish_PP => '1.12'
+
+Good Luck. ;)

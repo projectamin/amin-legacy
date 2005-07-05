@@ -1,0 +1,8 @@
+<amin:adminlist xmlns:amin="http://projectamin.org/ns/">
+   <amin:profile name="myskuid3">
+     <amin:uri>file://amin/xmlfiles/mkdir1.xml</amin:uri>
+   </amin:profile>
+   <amin:server name="my_box">
+     <amin:uri>file://tmp/my_box.xml</amin:uri>
+   </amin:server>
+</amin:adminlist>

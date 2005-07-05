@@ -1,0 +1,5 @@
+<amin:profile xmlns:amin='http://projectamin.org/ns/'>
+        <amin:command name="unzip">
+                <amin:param>/my/new/zip/file.zip</amin:param>
+        </amin:command>
+</amin:profile>

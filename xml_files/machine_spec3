@@ -1,0 +1,22 @@
+<machine xmlns:amin="http://projectamin.org/ns/">
+	<generator name="XML::SAX::PurePerl"/>
+	<handler name="XML::SAX::Writer" output="yes" />
+	<name>Amin::Machine::Dispatcher</name>
+	<filter name="Amin::Command::Mount">
+		<element>command</element>
+		<namespace>amin</namespace>
+		<name>mount</name>
+		<position>middle</position>
+		<download>http://projectamin.org/machines/command/mount.xml</download>
+		<version>1.0</version>
+	</filter>
+	<bundle name="Amin::Command">
+		<element>command</element>
+		<namespace>amin</namespace>
+		<name>command</name>
+		<position>middle</position>
+		<download>http://projectamin.org/machines/command.xml</download>
+		<version>1.0</version>
+	</bundle>
+</machine>	
+	

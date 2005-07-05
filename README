@@ -1,0 +1,33 @@
+Welcome to Amin!
+
+most recent information available at http://projectamin.org
+
+svn is available at 
+
+svn co svn://projectamin.org/amin
+
+Check the website for current branch information.
+
+Profiles for testing are at APAN.
+
+http://apan.projectamin.org
+ 
+Each section contains information that describes 
+those profiles.
+
+Installation instructions are in the INSTALL document
+
+License information can be found in the LICENSE document
+
+Profiles syntax can be found at http://docs.projectamin.org
+
+More information about Amin is available at the web site.
+
+If you want to develop code for Amin look at the Developer section
+of the documentation
+
+All of the documentation is available at http://docs.projectamin.org
+
+Have Fun
+
+Amin Group

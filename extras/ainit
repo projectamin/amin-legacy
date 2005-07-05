@@ -1,0 +1,214 @@
+#!/usr/bin/perl
+
+use strict;
+use vars qw(@ISA);
+use IO::All;
+use Getopt::Std;
+
+our ($opt_h, $opt_u, $opt_p, $opt_c, $opt_l, $opt_b, $opt_d, $opt_f, $opt_m);
+getopts('hcbldu:p:f:');
+        
+
+#CHANGE THESE IF YA WANT
+
+my $port = "8000";
+my $domain = "";
+
+
+#main	
+if ($opt_h) {
+	help();
+} elsif ($opt_c) {
+	culprit();
+} elsif ($opt_l) {
+	license();
+} elsif ($opt_f) {
+	config_file()
+} elsif ($opt_u) {
+	uri($opt_u);
+} elsif ($opt_p) {
+	profile($opt_p);
+} elsif ($opt_b) {
+	bugs();
+} elsif ($opt_d) {
+	daemonize()
+} elsif ($opt_m) {
+	monitor()
+} else {
+	usage();
+}
+exit  1;    
+    
+
+sub daemonize {
+	my $socket = io("$domain:$port")->fork->accept; 
+        #$connection = $server->accept;              # Get a connection socket
+        my $input < $socket;                       # Get some data from it
+        "Thank you!" > $socket;                 # Thank the caller
+        $socket->close;                         # Hang up
+    #io(':6666')->accept->slurp > io->devnull;   # Take a complaint and file it
+    #my $socket = io(':12345')->fork->accept;
+    #$socket->print($_) while <DATA>;
+    #$socket->close;
+    
+    
+    
+}    
+    
+sub config_file {
+
+
+
+}
+    
+sub uri {
+	my $profile = shift;
+}
+
+sub profile {
+	my $profile = shift;
+}    
+    
+    
+    
+    
+sub usage {
+        my $head = "Usage: $0 ";
+        my $indent = " " x length $head;
+        print $head,   "-h help\n";
+        print $indent, "-u ainit profile as uri\n";
+        print $indent, "-p ainit profile as <STDIN>\n";
+        print $indent, "-f config file as uri\n";
+	print $indent, "-l license info\n";
+	print $indent, "-c culprit info\n";
+	print $indent, "-d run ainit as a daemon\n";
+	
+	
+	my $example =  "\nExamples:\n";
+	print $example;
+	my $eindent = " " x length $example;
+	print $eindent, "$0 -u file://my/ainit_profile.xml\n\n";
+	print $eindent, "$0 -u file://my/ainit_profile.xml -f http://example.com/ainit/ainit_config.xml\n\n";
+	print $eindent, "$0 -f file://usr/etc/ainit_config.xml\n\n";
+	print $eindent, "$0 -d -f http://example.com/ainit/ainit_config.xml\n\n";
+	print $eindent, "$0 -d \n\n";
+	
+	
+}
+
+sub help {
+	my $help = "  This is ainit. As in AAAAAIIIINNN it kewl? If you 
+	don't think it is now, you will soon. :) This help will probably
+	be replaced with a condensed version of options and uri to a 
+	web page with full help. 
+	
+	Ainit at the moment is barebones and basic. As we move into the
+	more advanced ainit, expect to see the condensed version here 
+	and that soon to come uri.
+	
+	For now grok that ainit is going to become _the_ init replacement.
+	We are sick of the whole init setup and are going to sweep it to 
+	the dustbin of history. Init is technology that belongs in the 
+	last century, and we are happy to leave it there.
+	
+	Ainit uses Amin to perform the actual init.d typical functions.
+	Ainit has it's own filter set within Amin that provides all the
+	conditional/dependency/clustering/other features we all want to 
+	stuff into ainit. This filtering set acts like Cond.pm, Chroot.pm
+	etc. in Amin now. Otherwise the ainit profiles are your typical 
+	Amin profiles. 
+	
+	Ainit runs in several modes. 
+	
+	You can run Ainit by itself to start, stop any service
+	
+	ainit -u file://my/ainit_profile.xml start/stop/i_want_a_beer/restart/whatever_parameters_you_have_in_your_ainit_profile
+	
+	or you can supply the profile to the config file through
+	ainit and let the config file figure out if it needs another beer or not. ie
+	
+	ainit -u file://my/ainit_profile.xml -f http://example.com/ainit/ainit_config.xml
+	
+	so use your buddies config if ya like, its a good thing. :)
+	
+	even better. forget supplying ainit a ainit_profile. Just use your
+	config file. ie
+	
+	ainit -f http://example.com/ainit/ainit_config.xml
+	
+	You can supply a config file to the daemon option or you can just
+	put your ainit_config.xml in /etc/amin. 
+	
+	ainit -d 
+	
+	will find it and daemonize to variables in ainit. For now if you
+	want customize such options, open ainit in your favorite editor
+	and edit away.
+	
+	More details on the ainit_config file to soon come....
+	
+	Have fun and good luck.
+	";
+      
+	my $head = "Help: ";
+	my $indent = " " x length $head;
+	print $head, "\n";
+	print $indent, $help, "\n";
+}
+
+sub bugs {
+	my $bugs = "none yet, this will change, guaranteed.";
+	my $head = "Bugs: ";
+	my $indent = " " x length $head;
+	print $head, "\n";
+	print $indent, $bugs, "\n";
+}
+
+
+
+sub culprit {
+	my $author = "Bryan Dumm 
+	 Email: bryan\@bcpub.com 
+	 IRC: irc.projectamin.org #amin ";
+	my $head = "Culprit: ";
+	my $indent = " " x length $head;
+	print $head, "\n";
+	print $indent, $author, "\n";
+
+
+}
+
+sub license {
+
+	my $license = "Copyright (c) 2001-2004, BC Publishing, Inc.(http://projectamin.org/)
+         All rights reserved.
+
+	 Redistribution and use in source and binary forms, with or without
+	 modification, are permitted provided that the following conditions
+	 are met:
+
+	 Redistributions of source code must retain the above copyright notice,
+	 this list of conditions and the following disclaimer. Redistributions
+	 in binary form must reproduce the above copyright notice, this list of
+	 conditions and the following disclaimer in the documentation and/or other
+	 materials provided with the distribution. Neither the name of the Amin Group
+	 nor the names of its contributors may be used to endorse or promote products
+	 derived from this software without specific prior written permission.
+
+	 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\"
+ 	 AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ 	 IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+	 ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+	 LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+	 DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+	 SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
+	 AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+	 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+	 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n\n";
+
+	my $head = "License: ";
+	my $indent = " " x length $head;
+	print $head, "\n";
+	print $indent, $license, "\n";
+
+}

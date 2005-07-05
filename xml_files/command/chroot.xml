@@ -1,0 +1,8 @@
+<amin:profile xmlns:amin='http://projectamin.org/ns/'>
+         <amin:chroot dir="/mnt/chroot">
+                <amin:command name="mkdir">
+			<amin:flag>p</amin:flag>
+                        <amin:param>/tmp/inside_chroot</amin:param>
+                </amin:command>
+         </amin:chroot>
+</amin:profile>

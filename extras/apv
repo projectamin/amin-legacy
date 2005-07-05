@@ -1,0 +1,208 @@
+#!/usr/bin/perl
+
+#This is a profile and adminlist viewer.
+#It has two modes for adminlists, interactive
+#or non-interactive. interactive just asks for
+#the user to respond for the next profile.
+use strict;
+use Getopt::Std;
+use Sort::Naturally;
+use Amin::Frontend::CLI::CommandViewer;
+use Amin::Frontend::CLI::Adminlist;
+use XML::SAX::PurePerl;
+
+our ($opt_h, $opt_u, $opt_p, $opt_a, $opt_i, $opt_c, $opt_l, $opt_b);
+getopts('hcbliu:p:a:');
+        
+#main	
+if ($opt_h == 1) {
+	help();
+} elsif ($opt_c == 1) {
+	culprit();
+} elsif ($opt_l == 1) {
+	license();
+} elsif ($opt_u) {
+	uri($opt_u);
+} elsif ($opt_p) {
+	profile($opt_p);
+} elsif ($opt_a) {
+	adminlist($opt_a);
+} elsif ($opt_b) {
+	bugs();
+} else {
+	usage();			
+}
+exit  1;
+
+
+sub uri {
+	my $profile = shift;
+	my $h = Amin::Frontend::CLI::CommandViewer->new();
+	my $p = XML::SAX::PurePerl->new(Handler => $h);
+	my $results = $p->parse_uri($profile);
+	foreach (@$results) {
+		if ($_ eq "") {
+			next;
+		} else {
+			print "$_\n";
+		}
+	}
+}
+
+sub profile {
+	my $profile = shift;
+	my $h = Amin::Frontend::CLI::CommandViewer->new();
+	my $p = XML::SAX::PurePerl->new(Handler => $h);
+	my $results = $p->parse_uri($profile);
+	foreach (@$results) {
+		print "$_\n";
+	}
+}
+
+sub adminlist {
+
+	my $adminlist = shift;
+	my $h = Amin::Frontend::CLI::Adminlist->new();
+	my $p = XML::SAX::PurePerl->new(Handler => $h);
+	my @profiles;
+	
+	my $adminmap = $p->parse_uri($adminlist);
+	foreach my $key (nsort keys %$adminmap) {
+		if ($key =~ m/profile/) {
+		push @profiles, $adminmap->{$key};
+		}
+	}
+
+	foreach my $profile (@profiles) {
+		uri($profile);
+		if ($opt_i) {
+			my $x=0;
+			while ($x != 1) {
+				print "\nnext profile(y/n)\n";
+				my $res = <STDIN>;
+				chomp $res;
+				if ($res eq "y") {
+					$x = 1;
+				}
+				if ($res eq "n") {
+					$x = 1;
+					exit;
+				}
+			}		
+		}
+	}
+}
+
+
+
+sub profile_local {
+	my ($profile, $type) = @_;
+}
+
+
+
+
+
+
+
+sub usage {
+        my $head = "Usage: $0 ";
+        my $indent = " " x length $head;
+        print $head,   "-h help\n";
+        print $indent, "-u profile as uri\n";
+        print $indent, "-p profile as <STDIN>\n";
+        print $indent, "-a adminlist as uri\n";
+        print $indent, "-i interactive mode for adminlist\n";
+	print $indent, "-l license info\n";
+	print $indent, "-c culprit info\n";
+	my $example =  "\nExamples:\n";
+	print $example;
+	my $eindent = " " x length $example;
+	print $eindent, "$0 -i -a http://projectamin.org/someadminlist.xml\n";
+	print $eindent, "$0 -u file://profiles/myprofile.xml\n\n";
+	
+}
+
+sub help {
+	my $help = "This is the Amin profile viewer. It's purpose is to
+      translate Amin xml <commands> back into the original commands the 
+      xml is representing or so we hope.  
+      
+      You can feed this program a profile as <STDIN> or as a uri. You can 
+      also use an adminlist to process many profiles at once. Adminlists 
+      also have a \"interactive\" option. This option will ask you to press 
+      \"y\" or \"n\" for the next profile in the adminlist. 
+      
+      The default is to process everything at once, and this may not be 
+      what you wanted to do. The default method is good for redirecting 
+      the output to a file to capture all the translated commands";
+      
+	my $head = "Help: ";
+	my $indent = " " x length $head;
+	print $head, "\n";
+	print $indent, $help, "\n";
+}
+
+sub bugs {
+	my $bugs = "  Although this program works, some of your profiles 
+	may not be able to translate back into a normal bash script. This 
+	is because some Amin commands have no bash equivalent or no proper
+	filter has been written for apv. 
+	\n
+	If someone wants to design a filter system for such problems, please
+	write to the culprit\n\n";
+	my $head = "Bugs: ";
+	my $indent = " " x length $head;
+	print $head, "\n";
+	print $indent, $bugs, "\n";
+}
+
+
+
+sub culprit {
+	my $author = "Bryan Dumm 
+	 Email: bryan\@bcpub.com 
+	 IRC: irc.projectamin.org #amin ";
+	my $head = "Culprit: ";
+	my $indent = " " x length $head;
+	print $head, "\n";
+	print $indent, $author, "\n";
+
+
+}
+
+sub license {
+
+	my $license = "Copyright (c) 2001-2004, BC Publishing, Inc.(http://projectamin.org/)
+         All rights reserved.
+
+	 Redistribution and use in source and binary forms, with or without
+	 modification, are permitted provided that the following conditions
+	 are met:
+
+	 Redistributions of source code must retain the above copyright notice,
+	 this list of conditions and the following disclaimer. Redistributions
+	 in binary form must reproduce the above copyright notice, this list of
+	 conditions and the following disclaimer in the documentation and/or other
+	 materials provided with the distribution. Neither the name of the Amin Group
+	 nor the names of its contributors may be used to endorse or promote products
+	 derived from this software without specific prior written permission.
+
+	 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\"
+ 	 AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ 	 IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+	 ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+	 LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+	 DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+	 SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
+	 AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+	 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+	 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n\n";
+
+	my $head = "License: ";
+	my $indent = " " x length $head;
+	print $head, "\n";
+	print $indent, $license, "\n";
+
+}
+

@@ -1,0 +1,190 @@
+#!/usr/bin/perl
+
+use Amin;
+use Amin::Controller::CLI;
+use Getopt::Long;
+use strict;
+
+my $cli = Amin::Controller::CLI->new();
+my $help = (<<END);
+
+amin is a simple Amin controller.
+
+Any uri option can use other uris schemes
+than the example http:// ones below. This 
+includes uris like https:// file:// or ftp://.
+There are other uri schemes accepted, but 
+some may have problems... Please see LWP for
+full details. 
+
+The controller accepts the -u uri profile option 
+with any uri ie http://example.com/profile.xml. 
+
+The controller accepts the -p option
+with the profile as STDIN
+
+The controller accepts the -a adminlist option
+with any uri ie http://example.com/adminlist.xml
+
+The controller accepts the -n networkmap option
+with any uri ie http://example.com/networkmap.xml
+The networkmap option will apply to any adminlist
+or profile(either uri or STDIN). Networkmaps inside
+of an adminlist will be processed in addition to 
+this networkmap option. 
+
+The controller accepts the -m machine spec option
+with any uri ie http://example.com/machine_spec.xml
+Changing the machine_spec will alter your machine 
+processing. Please see Amin::Machines for more
+details. 
+
+The controller accepts the -t machine type option
+with one of the available machine types. By default 
+Amin has three machine types. Dispatcher, ByRecord
+and Tap. You call these by using their full module
+names, ie.
+
+Amin::Machine::Dispatcher
+Amin::Machine::ByRecord
+Amin::Machine::Tap
+
+You may also design your own machines and supply 
+their full module names. Please see Amin::Machine 
+for more details on building your own machine...
+
+The controller accepts the -x filter parameter option,
+which can be passed into the machine, for any processing
+by various machine filters
+
+Please perldoc the various Amin modules or visit
+the website at http://projectamin.org/ for more information.
+
+As strange as it may seem this works....
+
+amin -u http://projectamin.org/apan/tests/command/mkdir.xml \
+-a http://projectamin.org/apan/tests/adminlist/mkdir.xml \
+-n http://projectamin.org/apan/tests/networkmap.xml/mkdir.xml \
+-m http://projectamin.org/apan/tests/machines/mkdir.xml \
+-t Dispatcher -x Kewl_Stuff \
+-p <command name="mkdir"><param >/tmp/mkdir/ya</param></command>
+
+And yes -p options will also get the -t -x options applied
+to it. The -p option was put at the end as not to confuse
+anyone over the STDIN. 
+
+In terms of processing order, an adminlist is processed
+first, then a profile by uri and finally a profile by STDIN.
+You can make your own controller if you are unhappy with this
+order.
+
+END
+
+#define help
+$cli->help($help);
+
+
+my $usage = (<<END);
+[-h|-help]
+[-u|-uri] uri:// 
+[-p|-profile] as <STDIN>
+[-a|-adminlist] uri://
+[-n|-networkmap] uri://
+[-m|-machine_spec] uri://
+[-x|-filter_param] parameters
+[-t|-machine_type] ex. Dispatcher
+[-v|-version] 
+END
+
+$cli->usage($usage);
+
+my $version = "2.0";
+$cli->version($version);
+
+#pass the $cli object to get_profile
+#this will load up the $cli object with
+#all the details from the command line
+get_profile($cli);
+
+#the commented out code below is all
+#a simple uri based controller needs
+
+my $amin = Amin->new();
+#$amin->parse($cli->{'URI'});
+
+#this controller is a little more advanced.
+if (defined $cli->networkmap) {
+	$amin->set_networkmap($cli->networkmap);
+} elsif (defined $cli->machine_spec) {
+	$amin->set_machine_spec($cli->machine_spec);
+} elsif (defined $cli->machine_type) {
+	$amin->set_machine_type($cli->machine_type);
+} elsif (defined $cli->filter_param) {
+	$amin->set_filter_param($cli->filter_param);
+}
+
+if (defined $cli->adminlist) {
+	$amin->parse_adminlist($cli->adminlist);
+} elsif (defined $cli->uri) {
+        $amin->parse_uri($cli->uri);
+} elsif (defined $cli->profile) {
+	$amin->parse_string($cli->profile);
+} else {
+	print "nothing to parse\n";
+}
+
+sub get_profile {
+	my $cli = shift;
+        my ($help, $uri, $profile, $adminlist, $networkmap, 
+	    $machine_spec, $machine_type, $filter_param, $version, $type);
+	my $opts_ok = &GetOptions( "h|help"    => \$help,
+				   "u|uri=s"     => \$uri,
+				   "p|profile=s" => \$profile,
+				   "a|adminlist=s" => \$adminlist,
+				   "n|networkmap=s" => \$networkmap,
+				   "m|machine_spec=s" => \$machine_spec,
+				   "x|filter_param=s" => \$filter_param,
+				   "t|machine_type=s" => \$type,
+				   "v|version" => \$version,
+	);
+        if ( $help ) {
+                $cli->print_help();
+                exit 1;
+        }
+	if ($uri) {
+		$cli->uri($uri);
+	} 
+	if ($profile) {
+		$cli->profile($profile);
+	} 
+	if ($adminlist) {
+		$cli->adminlist($adminlist);
+	} 
+	if ($networkmap) {
+		$cli->networkmap($networkmap);
+	}
+	if ($machine_spec) {
+		$cli->machine_spec($machine_spec);
+	} 
+	if ($filter_param) {
+		$cli->filter_param($filter_param);
+	} 
+	if ($machine_type) {
+		$cli->machine_type();
+	} 
+	if ($version) {
+		$cli->print_version();
+                exit 1;
+	} 
+        if (!$opts_ok) {
+                $cli->print_usage();
+                exit 1;
+        };
+	if ((!$uri) && (!$profile) && (!$adminlist) && 
+	    (!$networkmap) && (!$version) && (!$help)) {	
+		$cli->print_usage();
+		exit  1;
+	}
+}
+
+1;

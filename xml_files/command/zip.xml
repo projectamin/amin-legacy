@@ -1,0 +1,6 @@
+<amin:profile xmlns:amin='http://projectamin.org/ns/'>
+        <amin:command name="zip">
+                <amin:param name="b">/my/files/to/zip/*</amin:param>
+                <amin:param>/my/new/zip/file.zip</amin:param>
+        </amin:command>
+</amin:profile>

@@ -1,0 +1,31 @@
+<machine xmlns:amin="http://projectamin.org/ns/">
+	<generator name="XML::SAX::PurePerl"/>
+	<handler name="XML::SAX::Writer" output="yes" />
+	<name>Amin::Machine::Dispatcher</name>
+	<filter name="Amin::Command::Mkdir">
+		<namespace>amin</namespace>
+		<element>command</element>
+		<name>mkdir</name>
+		<position>middle</position>
+		<download>http://projectamin.org/machines/command/mkdir.xml</download>
+		<version>1.2</version>
+		<option>Kewl Stuff</option>
+	</filter>
+	<filter name="Amin::Command::Ls">
+		<element>command</element>
+		<namespace>amin</namespace>
+		<name>ls</name>
+		<position>middle</position>
+		<download>http://projectamin.org/machines/command/ls.xml</download>
+		<version>1.0</version>
+	</filter>
+	<bundle name="Amin::Command">
+		<element>command</element>
+		<namespace>amin</namespace>
+		<name>command</name>
+		<position>middle</position>
+		<download>http://projectamin.org/machines/command.xml</download>
+		<version>1.0</version>
+	</bundle>
+</machine>	
+	

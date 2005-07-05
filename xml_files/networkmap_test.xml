@@ -1,0 +1,7 @@
+<amin:networkmap xmlns:amin="http://projectamin.org/ns/">
+   <amin:server name="my_box">
+     <amin:ip>192.168.1.1</amin:ip>
+     <amin:port>8000</amin:port>
+   </amin:server>
+</amin:networkmap>
+

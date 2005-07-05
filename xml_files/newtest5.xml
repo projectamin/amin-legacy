@@ -1,0 +1,29 @@
+<amin:profile xmlns:amin='http://projectamin.org/ns/'>
+        <amin:command name="mkdir">
+                <amin:param>test_dir</amin:param>
+                <amin:flag name="mode">0754</amin:flag>
+                <amin:shell name="dir">/tmp</amin:shell>
+        </amin:command>
+        <amin:command name="mkdir">
+                <amin:param>test_dir2</amin:param>
+                <amin:flag name="mode">0754</amin:flag>
+                <amin:shell name="dir">/tmp</amin:shell>
+        </amin:command>
+	<amin:command name="textdump">
+		<amin:param name="target">hg</amin:param>
+		<amin:param name="content">Hello
+				Does This
+			all
+	line
+		up
+right?
+</amin:param>
+		<amin:shell name="dir">/tmp/test_dir</amin:shell>
+	</amin:command>
+	<amin:command name="move">
+		<amin:param name="source">hg</amin:param>
+		<amin:param name="target">/tmp/test_dir2</amin:param>
+		<amin:shell name="dir">/tmp/test_dir</amin:shell>
+		<amin:flag>v</amin:flag>
+	</amin:command>
+</amin:profile>

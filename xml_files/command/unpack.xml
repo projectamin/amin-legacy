@@ -1,0 +1,6 @@
+<amin:profile xmlns:amin='http://projectamin.org/ns/'>
+        <amin:command name="unpack">
+                <amin:param name="target">/usr/src</amin:param>
+                <amin:param name="archive">/packages/package.tar.bz2</amin:param>
+        </amin:command>
+</amin:profile>
