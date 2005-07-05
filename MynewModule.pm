@@ -13,7 +13,7 @@ Some PAckage
 
 =head1 SYNOPSIS
 
-yea something here
+yea something changed
 
 =head1 DESCRIPTION
 
