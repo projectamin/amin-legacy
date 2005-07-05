@@ -4,7 +4,7 @@ testing again
 moo!
 adding crud here to test 
 lets hope this works k, this time :)
-
+add some omre stuff in here 
 updated to full path due to lack of $PATH hope this works 
   
 package Amin;
