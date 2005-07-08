@@ -240,6 +240,15 @@ if ($self->{URI}) {
 		);
 		$parent{$iptables{module}} = \%iptables;
 
+                my %ifconfig = (
+                                'module' => 'Amin::Command::Ifconfig',
+                                'element' => 'command',
+                                'namespace' => 'amin',
+                                'name' => 'ifconfig',
+                                'position' => 'middle',
+                                'version' => '1.0',
+                );
+                $parent{$ifconfig{module}} = \%ifconfig;
 
 		my %link = (
 				'module' => 'Amin::Command::Link',
