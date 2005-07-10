@@ -110,8 +110,8 @@ sub end_element {
 			$acmd{'ENV_VARS'} = $self->{'ENV_VARS'};
 		}
 		my $cmd = $self->amin_command(\%acmd);
-	        # die Dumper($cmd);
-		if ($cmd->{STATUS} != 0) {
+	        # die Dumper(@param);
+		if ($cmd->{STATUS} != 1) {
 			$self->{Spec}->{amin_error} = "red";
 			my $text = "Could not set $address on $interface. Reason: $cmd->{ERR}";
 			$self->text($text);
