@@ -292,6 +292,16 @@ if ($self->{URI}) {
 				'version' => '1.0',
 		);
 		$parent{$mv{module}} = \%mv;
+	    
+	        my %pconfigure = (
+		                'module' => 'Amin::Command::Pconfigure',
+		                'element' => 'command',
+		                'namespace' => 'amin',
+		                'name' => 'pconfigure',
+		                'position' => 'middle',
+		                'version' => '1.0',
+		);
+	        $parent{$pconfigure{module}} = \%pconfigure;
 
 
 		my %patch = (
