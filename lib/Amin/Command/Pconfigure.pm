@@ -3,6 +3,7 @@ package Amin::Command::Pconfigure;
 use strict;
 use vars qw(@ISA);
 use Amin::Elt;
+use Data::Dumper;
 
 @ISA = qw(Amin::Elt);
 my %attrs;
@@ -30,22 +31,21 @@ sub characters {
 			$self->dir($data);
 		}
 	}
+        if ($attrs{'{}name'}->{Value} eq "bootstrap") {
+	        if ($data ne "") {
+		        $self->bootstrap($data);
+		}
+	}
 	if ($attrs{'{}name'}->{Value} eq "env") {
 		if ($data ne "") {
 			$self->env_vars($data);
 		}
 	}
-	if ($element->{LocalName} eq "param") {
-		if ($attrs{'{}name'}->{Value} eq "") {
-			if ($data ne "") {
-				my @things = $data =~ m/([\*\+\.\w=\/-]+|'[^']+')\s*/g;
-				foreach (@things) {
-					$self->param($_);
-				}
-			}
+	if ($attrs{'{}name'}->{Value} eq "param") {
+		if ($data ne "") {
+			$self->param($data);
 		}
 	}
-
 	if ($element->{LocalName} eq "flag") {
 		if ($attrs{'{}name'}->{Value} eq "") {
 			if ($data ne "") {
@@ -60,11 +60,12 @@ sub end_element {
 	my ($self, $element) = @_;
 
 	if ($element->{LocalName} eq "command") {
-
+                my $command;
 		my $dir = $self->{'DIR'};
 		my $xflag = $self->{'FLAG'};
 		my $param = $self->{'PARAM'};
-		my ($flag, @flag, @param);
+	        my $bootstrap = $self->{'BOOTSTRAP'};
+		my ($flag, @flag, @param, $bootstrap);
 		my $log = $self->{Spec}->{Log};
 
 		foreach my $ip (@$xflag){
@@ -74,10 +75,6 @@ sub end_element {
 				$flag = "--" . $ip;
 				push @flag, $flag;
 			}
-		}
-
-		foreach my $ip (@$param){
-			push @param, $ip;
 		}
 
 		if ($dir) {
@@ -91,12 +88,20 @@ sub end_element {
 				return;
 			}
 		}
-
-		my %acmd;
-	        $acmd{'CMD'} = "./configure.gnu";
+                if ($bootstrap eq "yes") {
+		my $command = "./configure.gnu -Dstatic_ext='IO Fcntl POSIX'";
+	        
+		   } else {
+		    
+		my $command = "./configure.gnu";
+		       }
+		
+		my %acmd;    
+		$acmd{'CMD'} = \$command;
 		$acmd{'FLAG'} = \@flag;
 		$acmd{'PARAM'} = \@param;
-
+                # die Dumper($command);
+	    
 		if ($self->{'ENV_VARS'}) {
 			$acmd{'ENV_VARS'} = $self->{'ENV_VARS'};
 		}
@@ -137,12 +142,11 @@ sub end_element {
 	}
 }
 
-sub config {
-	my $self = shift;
-	$self->{CONFIG} = shift if @_;
-	return $self->{CONFIG};
+sub bootstrap {
+        my $self = shift;
+        $self->{BOOTSTRAP} = shift @_;
+        return $self->{BOOTSTRAP};
 }
-
 
 1;
 
@@ -165,9 +169,9 @@ Perl Configure - reader class filter for the Perl equivalent to the configure co
 
         <amin:command name="pconfigure">
                 <amin:flag>
-                        prefix=/usr
-                        -
+                prefix=/usr
                 </amin:flag>
+                <amin:param name='bootstrap'>yes</amin:param>
                 <amin:shell name="dir">/usr/src/perl-5.8.6</amin:shell>
         </amin:command>
  
