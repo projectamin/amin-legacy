@@ -60,12 +60,12 @@ sub end_element {
 	my ($self, $element) = @_;
 
 	if ($element->{LocalName} eq "command") {
-                my $command;
+                my $configure;
 		my $dir = $self->{'DIR'};
 		my $xflag = $self->{'FLAG'};
 		my $param = $self->{'PARAM'};
 	        my $bootstrap = $self->{'BOOTSTRAP'};
-		my ($flag, @flag, @param, $bootstrap);
+		my ($flag, @flag);
 		my $log = $self->{Spec}->{Log};
 
 		foreach my $ip (@$xflag){
@@ -88,19 +88,19 @@ sub end_element {
 				return;
 			}
 		}
-                if ($bootstrap eq "yes") {
-		my $command = "./configure.gnu -Dstatic_ext='IO Fcntl POSIX'";
-	        
-		   } else {
+                 if ($bootstrap eq "yes") {
+		        $configure = "./configure.gnu -Dstatic_ext='IO Fcntl POSIX'";
+		     
+		    } else {
 		    
-		my $command = "./configure.gnu";
-		       }
+		        $configure = "./configure.gnu";
+		        }
 		
 		my %acmd;    
-		$acmd{'CMD'} = \$command;
+		$acmd{'CMD'} = \$configure;
 		$acmd{'FLAG'} = \@flag;
-		$acmd{'PARAM'} = \@param;
-                # die Dumper($command);
+		$acmd{'PARAM'} = \$param;
+                die Dumper($configure, @flag, $param);
 	    
 		if ($self->{'ENV_VARS'}) {
 			$acmd{'ENV_VARS'} = $self->{'ENV_VARS'};
@@ -126,9 +126,6 @@ sub end_element {
 		my $text = "Executing Configure ";
 		if (@flag) {
 			$text = $text . join (", ", @flag)
-		}
-		if (@param) {
-			$text = $text .  " " . join (", ", @param);
 		}
 		$text = $text . " in $dir";
 		$self->text($text);
