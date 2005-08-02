@@ -25,31 +25,31 @@ sub characters {
 	my $attrs = $self->{"ATTRS"};
 	my $element = $self->{"ELEMENT"};
 	
-	if (($attrs{'{}name'}->{Value} eq "type") ||
-	    ($attrs{'{}name'}->{Value} eq "t")) {
+	if ($element->{LocalName} eq "param") {
 		if ($data ne "") {
-			$self->type($data);
+			if ($attrs{'{}name'}->{Value} eq "device") {
+				$self->device($data);
+			}
 		}
 	}
-	if (($attrs{'{}name'}->{Value} eq "options") ||
-	    ($attrs{'{}name'}->{Value} eq "O")) {
+	if ($element->{LocalName} eq "shell") {
 		if ($data ne "") {
-			$self->options($data);
-		}
-	}
-	if ($attrs{'{}name'}->{Value} eq "device") {
-		if ($data ne "") {
-			$self->device($data);
-		}
-	}
-	if ($attrs{'{}name'}->{Value} eq "env") {
-		if ($data ne "") {
-			$self->env_vars($data);
+			if ($attrs{'{}name'}->{Value} eq "env") {
+				$self->env_vars($data);
+			}
 		}
 	}
 	if ($element->{LocalName} eq "flag") {
-		if ($attrs{'{}name'}->{Value} eq "") {
-			if ($data ne "") {
+		if ($data ne "") {
+			if (($attrs{'{}name'}->{Value} eq "type") ||
+			    ($attrs{'{}name'}->{Value} eq "t")) {
+				$self->type($data);
+			}
+			if (($attrs{'{}name'}->{Value} eq "options") ||
+			    ($attrs{'{}name'}->{Value} eq "O")) {
+				$self->options($data);
+			}
+			if ($attrs{'{}name'}->{Value} eq "") {
 				$self->flag(split(/\s+/, $data));
 			}
 		}
@@ -179,12 +179,9 @@ sub filter_map {
 			$_ =~ s/-//;
 			$_ =~ s/--//;
 			if ($scratch{name}) {
-				#this completes the -m 0755 crap
 				if ($_ =~ /\d+/) {
 					$char = $_;
 				} else {
-					#this is a param and their -m is 0000
-					#why they want this is unknown :)
 					my %param;
 					$param{"char"} = $_;
 					push @params, \%param;
@@ -196,14 +193,11 @@ sub filter_map {
 				%scratch = {};
 			} else {
 				if ($_ =~ /^.*=.*$/) {
-					#check for stuff like -m=0755 crap
 					($_, $char) = split (/=/, $_);
 				} elsif ($_ eq "t") {
-					#check for stuff like -m 0755 crap
 					$scratch{name} = $_;
 					$stop = 1;
 				} elsif ($_ eq "O") {
-					#check for stuff like -m 0755 crap
 					$scratch{name} = $_;
 					$stop = 1;
 				} else  {
@@ -278,7 +272,7 @@ Linux 2.0 14 September 1997 umount
 
         <amin:command name="umount">
                 <amin:flag name="t">ext2</amin:flag>
-                <amin:param name="device">/mnt/si/packages/</amin:param>
+                <amin:param name="device">/mnt/chroot</amin:param>
         </amin:command>
 
 =back  

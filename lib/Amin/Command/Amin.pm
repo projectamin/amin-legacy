@@ -25,10 +25,9 @@ sub characters {
 	my $attrs = $self->{"ATTRS"};
 	$data = $self->fix_text($data);
 
-	if ($element->{LocalName} eq "param") {
-
-		if ($attrs{'{}name'}->{Value} eq "version") {
-			if ($data ne "") {
+	if ($data ne "") {
+		if ($element->{LocalName} eq "param") {
+			if ($attrs{'{}name'}->{Value} eq "version") {
 				$self->version($data);
 			}
 		}

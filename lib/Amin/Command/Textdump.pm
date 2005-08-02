@@ -24,21 +24,20 @@ sub characters {
 	$data = $self->fix_text($data);
 	my $attrs = $self->{"ATTRS"};
 
-	if ($attrs{'{}name'}->{Value} eq "content") {
-		if ($data ne "") {
-			$self->content($data);
+	if ($data ne "") {
+		if ($element->{LocalName} eq "param") {
+		
+			if ($attrs{'{}name'}->{Value} eq "content") {
+				$self->content($data);
+			}
+			if ($attrs{'{}name'}->{Value} eq "target") {
+				$self->target($data);
+			}
 		}
-	}
-
-	if ($attrs{'{}name'}->{Value} eq "dir") {
-		if ($data ne "") {
-			$self->dir($data);
-		}
-	}
-
-	if ($attrs{'{}name'}->{Value} eq "target") {
-		if ($data ne "") {
-			$self->target($data);
+		if ($element->{LocalName} eq "shell") {
+			if ($attrs{'{}name'}->{Value} eq "dir") {
+				$self->dir($data);
+			}
 		}
 	}
 	$self->SUPER::characters($chars);

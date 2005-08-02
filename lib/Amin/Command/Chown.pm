@@ -78,6 +78,20 @@ sub end_element {
 						$flag = "--" . $ip;
 					} elsif ($ip eq "version") {
 						$flag = "--" . $ip;
+					} elsif ($ip eq "silent") {
+						$flag = "--" . $ip;
+					} elsif ($ip eq "quiet") {
+						$flag = "--" . $ip;
+					} elsif ($ip eq "changes") {
+						$flag = "--" . $ip;
+					} elsif ($ip eq "dereference") {
+						$flag = "--" . $ip;
+					} elsif ($ip eq "no-dereference") {
+						$flag = "--" . $ip;
+					} elsif ($ip eq "recursive") {
+						$flag = "--" . $ip;
+					} elsif ($ip eq "verbose") {
+						$flag = "--" . $ip;
 					} else {
 						$flag = "-" . $ip;
 					}
@@ -87,6 +101,20 @@ sub end_element {
 						$flag = " --" . $ip;
 					} elsif ($ip eq "version") {
 						$flag = " --" . $ip;
+					} elsif ($ip eq "silent") {
+						$flag = "--" . $ip;
+					} elsif ($ip eq "quiet") {
+						$flag = "--" . $ip;
+					} elsif ($ip eq "changes") {
+						$flag = "--" . $ip;
+					} elsif ($ip eq "dereference") {
+						$flag = "--" . $ip;
+					} elsif ($ip eq "no-dereference") {
+						$flag = "--" . $ip;
+					} elsif ($ip eq "recursive") {
+						$flag = "--" . $ip;
+					} elsif ($ip eq "verbose") {
+						$flag = "--" . $ip;
 					} else {
 						$flag = " -" . $ip;
 					}

@@ -25,20 +25,21 @@ sub characters {
 	my $attrs = $self->{"ATTRS"};
 	my $element = $self->{"ELEMENT"};
 	
-	if ($attrs{'{}name'}->{Value} eq "env") {
-		if ($data ne "") {
-			$self->env_vars($data);
+	if ($data ne "") {
+		if ($element->{LocalName} eq "shell") {
+			if ($attrs{'{}name'}->{Value} eq "env") {
+				$self->env_vars($data);
+			}
 		}
-	}
-	if ($element->{LocalName} eq "flag") {
-		if ($attrs{'{}name'}->{Value} eq "") {
-			if ($data ne "") {
+		if ($element->{LocalName} eq "flag") {
+			if ($attrs{'{}name'}->{Value} eq "reference") {
+				$self->reference($data);
+			}
+			if ($attrs{'{}name'}->{Value} eq "") {
 				$self->flag(split(/\s+/, $data));
 			}
 		}
-	}
-	if ($element->{LocalName} eq "param") {
-		if ($data ne "") {
+		if ($element->{LocalName} eq "param") {
 			if ($attrs{'{}name'}->{Value} eq "") {
 				$self->param(split(/\s+/, $data));
 			}
@@ -63,6 +64,7 @@ sub end_element {
 		my $group = $self->{GROUP};
 		my $xflag = $self->{'FLAG'};
 		my $xparam = $self->{'PARAM'};
+		my $reference = $self->{'REFERENCE'};
 		
 		my (%acmd, @param, @flag, $flag);
 		
@@ -78,6 +80,20 @@ sub end_element {
 						$flag = "--" . $ip;
 					} elsif ($ip eq "version") {
 						$flag = "--" . $ip;
+					} elsif ($ip eq "silent") {
+						$flag = "--" . $ip;
+					} elsif ($ip eq "quiet") {
+						$flag = "--" . $ip;
+					} elsif ($ip eq "changes") {
+						$flag = "--" . $ip;
+					} elsif ($ip eq "dereference") {
+						$flag = "--" . $ip;
+					} elsif ($ip eq "no-dereference") {
+						$flag = "--" . $ip;
+					} elsif ($ip eq "recursive") {
+						$flag = "--" . $ip;
+					} elsif ($ip eq "verbose") {
+						$flag = "--" . $ip;
 					} else {
 						$flag = "-" . $ip;
 					}
@@ -86,6 +102,20 @@ sub end_element {
 					if ($ip eq "help") {
 						$flag = " --" . $ip;
 					} elsif ($ip eq "version") {
+						$flag = " --" . $ip;
+					} elsif ($ip eq "silent") {
+						$flag = " --" . $ip;
+					} elsif ($ip eq "quiet") {
+						$flag = " --" . $ip;
+					} elsif ($ip eq "changes") {
+						$flag = " --" . $ip;
+					} elsif ($ip eq "dereference") {
+						$flag = " --" . $ip;
+					} elsif ($ip eq "no-dereference") {
+						$flag = " --" . $ip;
+					} elsif ($ip eq "recursive") {
+						$flag = " --" . $ip;
+					} elsif ($ip eq "verbose") {
 						$flag = " --" . $ip;
 					} else {
 						$flag = " -" . $ip;
@@ -153,6 +183,11 @@ sub group {
 	return $self->{GROUP};
 }
 
+sub reference {
+	my $self = shift;
+	$self->{REFERENCE} = shift if @_;
+	return $self->{REFERENCE};
+}
 
 sub filter_map {
 	my $self = shift;
@@ -177,7 +212,7 @@ sub filter_map {
 			$_ =~ s/-//;
 			$_ =~ s/--//;
 			if ($_ =~ /^.*=.*$/) {
-				#check for stuff like -m=0755 crap
+				#check for stuff like -r=/some/file
 				($_, $char) = split (/=/, $_);
 			} else  {
 				#its just a flag

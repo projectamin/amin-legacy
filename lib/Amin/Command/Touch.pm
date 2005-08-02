@@ -25,33 +25,30 @@ sub characters {
 	my $attrs = $self->{"ATTRS"};
 	my $element = $self->{"ELEMENT"};
 	
-	if (($attrs{'{}name'}->{Value} eq "date") ||
-	    ($attrs{'{}name'}->{Value} eq "d")) {
-		if ($data ne "") {
-			$self->date($data);
-		}
-	}
-	if (($attrs{'{}name'}->{Value} eq "reference") ||
-	    ($attrs{'{}name'}->{Value} eq "r")) {
-		if ($data ne "") {
-			$self->options($data);
-		}
-	}
-	if ($attrs{'{}name'}->{Value} eq "env") {
-		if ($data ne "") {
-			$self->env_vars($data);
-		}
-	}
-	if ($element->{LocalName} eq "flag") {
-		if ($attrs{'{}name'}->{Value} eq "") {
-			if ($data ne "") {
+	if ($data ne "") {
+		if ($element->{LocalName} eq "flag") {
+			if (($attrs{'{}name'}->{Value} eq "date") ||
+			    ($attrs{'{}name'}->{Value} eq "d")) {
+				$self->date($data);
+			}
+			if (($attrs{'{}name'}->{Value} eq "reference") ||
+			    ($attrs{'{}name'}->{Value} eq "r")) {
+				$self->options($data);
+			}
+			if ($attrs{'{}name'}->{Value} eq "") {
 				$self->flag(split(/\s+/, $data));
 			}
 		}
-	}
-	if ($element->{LocalName} eq "param") {
-		if ($attrs{'{}name'}->{Value} eq "") {
-			if ($data ne "") {
+	
+		if ($element->{LocalName} eq "shell") {
+	
+			if ($attrs{'{}name'}->{Value} eq "env") {
+				$self->env_vars($data);
+			}
+		}
+	
+		if ($element->{LocalName} eq "param") {
+			if ($attrs{'{}name'}->{Value} eq "") {
 				$self->param(split(/\s+/, $data));
 			}
 		}
@@ -83,6 +80,8 @@ sub end_element {
 						$flag = "--" . $ip;
 					} elsif ($ip eq "version") {
 						$flag = "--" . $ip;
+					} elsif ($ip eq "nocreate") {
+						$flag = "--" . $ip;
 					} else {
 						$flag = "-" . $ip;
 					}
@@ -92,6 +91,8 @@ sub end_element {
 						$flag = " --" . $ip;
 					} elsif ($ip eq "version") {
 						$flag = " --" . $ip;
+					} elsif ($ip eq "nocreate") {
+						$flag = "--" . $ip;
 					} else {
 						$flag = " -" . $ip;
 					}

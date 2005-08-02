@@ -24,44 +24,35 @@ sub characters {
 	$data = $self->fix_text($data);
 	my $attrs = $self->{"ATTRS"};
 	my $element = $self->{"ELEMENT"};
-
-	if ($attrs{'{}name'}->{Value} eq "basename") {
-		if ($data ne "") {
+	
+	if ($data ne "") {
+		if ($attrs{'{}name'}->{Value} eq "basename") {
 			$self->basename($data);
 		}
-	}
-
-	if ($element->{LocalName} eq "param") {
-		if ($attrs{'{}name'}->{Value} eq "") {
-			if ($data ne "") {
+		if ($element->{LocalName} eq "param") {
+			if ($attrs{'{}name'}->{Value} eq "") {
 				my @things = $data =~ m/([\*\+\.\w=\/-]+|'[^']+')\s*/g;
 				foreach (@things) {
 					$self->param($_);
 				}
 			}
 		}
-	}
-	if ($element->{LocalName} eq "special") {
-		if ($attrs{'{}name'}->{Value} eq "") {
-			if ($data ne "") {
+		if ($element->{LocalName} eq "special") {
+			if ($attrs{'{}name'}->{Value} eq "") {
 				$self->special($data);
 			}
 		}
-	}
 
-	if ($attrs{'{}name'}->{Value} eq "dir") {
-		if ($data ne "") {
-			$self->dir($data);
+		if ($element->{LocalName} eq "shell") {
+			if ($attrs{'{}name'}->{Value} eq "dir") {
+				$self->dir($data);
+			}
+			if ($attrs{'{}name'}->{Value} eq "env") {
+				$self->env_vars($data);
+			}
 		}
-	}
-	if ($attrs{'{}name'}->{Value} eq "env") {
-		if ($data ne "") {
-			$self->env_vars($data);
-		}
-	}
-	if ($element->{LocalName} eq "flag") {
-		if ($attrs{'{}name'}->{Value} eq "") {
-			if ($data ne "") {
+		if ($element->{LocalName} eq "flag") {
+			if ($attrs{'{}name'}->{Value} eq "") {
 				$self->flag(split(/\s+/, $data));
 			}
 		}

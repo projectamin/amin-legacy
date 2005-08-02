@@ -25,32 +25,31 @@ sub characters {
 	my $attrs = $self->{"ATTRS"};
 	my $element = $self->{"ELEMENT"};
 
-	if ($attrs{'{}name'}->{Value} eq "set") {
-		if ($data ne "") {
-			$self->set($data);
-		}
-	}
-	if ($attrs{'{}name'}->{Value} eq "dir") {
-		if ($data ne "") {
-			$self->dir($data);
-		}
-	}
-	if ($attrs{'{}name'}->{Value} eq "env") {
-		if ($data ne "") {
-			$self->env_vars($data);
-		}
-	}
-	if ($attrs{'{}name'}->{Value} eq "target") {
-		if ($data ne "") {
-			my @things = $data =~ m/([\*\+\.\w=\/-]+|'[^']+')\s*/g;
-			foreach (@things) {
-				$self->target($_);
+	if ($data ne "") {
+		if ($element->{LocalName} eq "param") {
+			if ($attrs{'{}name'}->{Value} eq "set") {
+				$self->set($data);
+			}
+			if ($attrs{'{}name'}->{Value} eq "target") {
+				my @things = $data =~ m/([\*\+\.\w=\/-]+|'[^']+')\s*/g;
+				foreach (@things) {
+					$self->target($_);
+				}
 			}
 		}
-	}
-	if ($element->{LocalName} eq "flag") {
-		if ($attrs{'{}name'}->{Value} eq "") {
-			if ($data ne "") {
+		if ($element->{LocalName} eq "shell") {
+			if ($attrs{'{}name'}->{Value} eq "dir") {
+				$self->dir($data);
+			}
+			if ($attrs{'{}name'}->{Value} eq "env") {
+				$self->env_vars($data);
+			}
+		}
+		if ($element->{LocalName} eq "flag") {
+			if ($attrs{'{}name'}->{Value} eq "reference") {
+				$self->reference($data);
+			}
+			if ($attrs{'{}name'}->{Value} eq "") {
 				$self->flag(split(/\s+/, $data));
 			}
 		}
@@ -68,16 +67,55 @@ sub end_element {
 		my $targets = $self->{'TARGET'};
 		my $xflag = $self->{'FLAG'};
 		my $command = $self->{'COMMAND'};
+		my $reference = $self->{'REFERENCE'};
 		my @target;
 		my $log = $self->{Spec}->{Log};
 
 		my ($flag, @flag);
 
+		my $state;
 		foreach my $ip (@$xflag){
 			if (($ip =~ /^-/) || ($ip =~ /^--/)) {
 				push @flag, $ip;
 			} else {	
-				$flag = "-" . $ip;
+				if ($state == 0) {
+					if ($ip eq "help") {
+						$flag = "--" . $ip;
+					} elsif ($ip eq "version") {
+						$flag = "--" . $ip;
+					} elsif ($ip eq "silent") {
+						$flag = "--" . $ip;
+					} elsif ($ip eq "quiet") {
+						$flag = "--" . $ip;
+					} elsif ($ip eq "changes") {
+						$flag = "--" . $ip;
+					} elsif ($ip eq "recursive") {
+						$flag = "--" . $ip;
+					} elsif ($ip eq "verbose") {
+						$flag = "--" . $ip;
+					} else {
+						$flag = "-" . $ip;
+					}
+					$state = 1;
+				} else {
+					if ($ip eq "help") {
+						$flag = " --" . $ip;
+					} elsif ($ip eq "version") {
+						$flag = " --" . $ip;
+					} elsif ($ip eq "silent") {
+						$flag = " --" . $ip;
+					} elsif ($ip eq "quiet") {
+						$flag = " --" . $ip;
+					} elsif ($ip eq "changes") {
+						$flag = " --" . $ip;
+					} elsif ($ip eq "recursive") {
+						$flag = " --" . $ip;
+					} elsif ($ip eq "verbose") {
+						$flag = " --" . $ip;
+					} else {
+						$flag = " -" . $ip;
+					}
+				}
 				push @flag, $flag;
 			}
 		}
@@ -148,6 +186,89 @@ sub set {
 	my $self = shift;
 	$self->{SET} = shift if @_;
 	return $self->{SET};
+}
+
+sub reference {
+	my $self = shift;
+	$self->{REFERENCE} = shift if @_;
+	return $self->{REFERENCE};
+}
+
+sub filter_map {
+	my $self = shift;
+	my $command = shift;
+	my %command;
+	my @flags;
+	my @params;
+	my @shells;
+	my @things = split(/([\*\+\.\w=\/-]+|'[^']+')\s*/, $command);
+
+	my %scratch;
+	my $stop;
+	foreach (@things) {
+	#check for real stuff
+	if ($_) {
+		my $x = 1; 
+		#check for flag
+		if (($_ =~ /^-.*$/) || ($_ =~ /^--.*$/)) {
+			#it is a flag
+			my %flag;
+			my $char;
+			$_ =~ s/-//;
+			$_ =~ s/--//;
+			if ($_ =~ /^.*=.*$/) {
+				#check for stuff like -r=/some/file
+				($_, $char) = split (/=/, $_);
+			} else  {
+				#its just a flag
+				$char = $_;
+				$_ = undef;
+			}
+			
+			if ($_) {
+				$flag{"name"} = $_;
+			}
+			$flag{"char"} = $char;
+			push @flags, \%flag;
+		} elsif ($_ =~ /^.*=.*$/) {
+			my %shell;
+			#it is an env variable 
+			$shell{"name"} = 'env';
+			$shell{"char"} = $_;
+			push @shells, \%shell;
+		} else {
+			#it is either a param, command name
+			if (!$command{name}) {
+				$command{name} = $_;
+			} else {
+				my %param;
+				$param{"char"} = $_;
+				if ($x == 1) {
+					$param{"name"} = "group";
+				} elsif ($x == 2) {
+					$param{"name"} = "target";
+				}
+				$x++;
+				push @params, \%param;
+			}
+		}
+	}
+	}
+	
+	
+	if (@shells) {
+		$command{shell} = \@shells;
+	}
+	if (@flags) {
+		$command{flag} = \@flags;
+	}
+	if (@params) {
+		$command{param} = \@params;
+	}
+	
+	my %fcommand;
+	$fcommand{command} = \%command;
+	return \%fcommand;	
 }
 
 
