@@ -26,26 +26,6 @@ sub characters {
 	my $attrs = $self->{"ATTRS"};
 	my $element = $self->{"ELEMENT"};
 	
-	if ($attrs{'{}name'}->{Value} eq "interface") {
-		if ($data ne "") {
-			$self->interface($data);
-		}
-	}
-	if ($attrs{'{}name'}->{Value} eq "address") {
-		if ($data ne "") {
-			$self->address($data);
-		}
-	}
-	if ($attrs{'{}name'}->{Value} eq "netmask") {
-		if ($data ne "") {
-			$self->netmask($data);
-		}
-	}
-        if ($attrs{'{}name'}->{Value} eq "state") {
-	        if ($data ne "") {
-		        $self->state($data);
-		    }
-	    }
 	if ($attrs{'{}name'}->{Value} eq "env") {
 		if ($data ne "") {
 			$self->env_vars($data);
@@ -57,6 +37,24 @@ sub characters {
 				$self->flag(split(/\s+/, $data));
 			}
 		}
+	    if ($element->{LocalName} eq "param") {
+		if ($attrs{'{}name'}->{Value} eq "") {
+		    $self->param(split(/\s+/, $data));
+		}
+		if ($attrs{'{}name'}->{Value} eq "interface") {
+		    $self->interface($data);
+		    
+		}
+		if ($attrs{'{}name'}->{Value} eq "address") {
+		    $self->address($data);
+		}
+		if ($attrs{'{}name'}->{Value} eq "netmask") {
+		    $self->netmask($data);
+		}
+		if ($attrs{'{}name'}->{Value} eq "state") {
+		    $self->state($data);
+		}
+	    }
 	}
 	$self->SUPER::characters($chars);
 }
