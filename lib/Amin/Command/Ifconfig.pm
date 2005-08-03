@@ -55,6 +55,9 @@ sub characters {
 		if ($attrs{'{}name'}->{Value} eq "state") {
 		    $self->state($data);
 		}
+		if ($attrs{'{}name'}->{Value} eq "tunnel") {
+		    $self->tunnel($data);
+		}
 	    }
 	}
 	$self->SUPER::characters($chars);
