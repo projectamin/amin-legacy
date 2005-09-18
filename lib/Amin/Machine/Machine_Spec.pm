@@ -345,7 +345,7 @@ if ($self->{URI}) {
 		                'position' => 'middle',                                                        
 		                'version' => '1.0',                                                            
 		);                                                                                             
-	        $parent{$rm{module}} = \%rm;
+	        $parent{$route{module}} = \%route;
 	    
 		my %rpm = (
 				'module' => 'Amin::Command::Rpm',
