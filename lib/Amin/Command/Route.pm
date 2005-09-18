@@ -58,6 +58,10 @@ sub characters {
 		    $self->state($data);
 		}
 		if ($attrs{'{}name'}->{Value} eq "type") {
+		    $self->state($data);
+		}
+		if ($attrs{'{}name'}->{Value} eq "metric") {
+		    $self->state($data);
 		}
 	    }
 	}
