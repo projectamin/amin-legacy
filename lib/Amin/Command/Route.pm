@@ -107,14 +107,14 @@ sub end_element {
 			}
 		}
 	
-	        push @param, "$type";
-		push @param, "$interface";
+	        push @param, "$state";
+		push @param, "$type";
 		push @param, "$address";
 	        push @param, "$netmask";
-	        push @param, "$state";
+	        push @param, "$interface";
 	        push @param, "$metric";
 
-		$acmd{'CMD'} = "ifconfig";
+		$acmd{'CMD'} = "route";
 		$acmd{'FLAG'} = \@flag;
 		$acmd{'PARAM'} = \@param;
 		if ($self->{'ENV_VARS'}) {
@@ -124,7 +124,7 @@ sub end_element {
 	        # die Dumper(@param);
 		if ($cmd->{STATUS} != 1) {
 			$self->{Spec}->{amin_error} = "red";
-			my $text = "Could not set $address on $interface. Reason: $cmd->{ERR}";
+			my $text = "Could not set $type route to $address. Reason: $cmd->{ERR}";
 			$self->text($text);
 
 			$log->error_message($text);
@@ -135,7 +135,7 @@ sub end_element {
 			return;
 		}
 
-		my $text = "New interface created as $interface with IP of $address and netmask of $netmask.";
+		my $text = "New $type route created to $address with netmask of $netmask.";
 		$self->text($text);
 		$log->success_message($text); 
 		if ($cmd->{OUT}) {
@@ -207,7 +207,7 @@ route 1.98 (2001-04-15)
         <amin:command name="route">
                 <amin:param name="state">add</amin:param>
                 <amin:param name="type">default gw</amin:param>
-                <amin:param name="ip">192.168.0.1</amin:param>
+                <amin:param name="address">192.168.0.1</amin:param>
                 <amin:param name="netmask">0.0.0.0</amin:param>
                 <amin:param name="metric">1</amin:param>
         </amin:command>
