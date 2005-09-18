@@ -337,6 +337,16 @@ if ($self->{URI}) {
 		$parent{$rm{module}} = \%rm;
 
 
+	        my %route = (
+                                'module' => 'Amin::Command::Route',                                               
+		                'element' => 'command',                                                        
+		                'namespace' => 'amin',                                                         
+		                'name' => 'route',                                                                
+		                'position' => 'middle',                                                        
+		                'version' => '1.0',                                                            
+		);                                                                                             
+	        $parent{$rm{module}} = \%rm;
+	    
 		my %rpm = (
 				'module' => 'Amin::Command::Rpm',
 				'element' => 'command',
