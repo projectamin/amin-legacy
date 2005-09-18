@@ -77,6 +77,7 @@ sub end_element {
 		my $address = $self->{'ADDRESS'};
 		my $netmask = $self->{'NETMASK'};
 	        my $state = $self->{'STATE'};
+	        my $metric = $self->{'METRIC'};
 	        my $type = $self->{'TYPE'};
 		my $xflag = $self->{'FLAG'};
 		
@@ -111,6 +112,7 @@ sub end_element {
 		push @param, "$address";
 	        push @param, "$netmask";
 	        push @param, "$state";
+	        push @param, "$metric";
 
 		$acmd{'CMD'} = "ifconfig";
 		$acmd{'FLAG'} = \@flag;
@@ -172,9 +174,15 @@ sub state {
 
 sub type {
         my $self = shift;
-        $self->{STATE} = shift if @_;
-        return $self->{STATE};
+        $self->{TYPE} = shift if @_;
+        return $self->{TYPE};
 }
+
+sub metric {                                                                                                     
+            my $self = shift;                                                                                      
+            $self->{METRIC} = shift if @_;                                                                          
+            return $self->{METRIC};                                                                                 
+    }
 
 1;
 
