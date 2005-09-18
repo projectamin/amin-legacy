@@ -114,7 +114,7 @@ sub end_element {
 	        push @param, "$interface";
 	        push @param, "$metric";
 
-		$acmd{'CMD'} = "route";
+		$acmd{'CMD'} = "route -v";
 		$acmd{'FLAG'} = \@flag;
 		$acmd{'PARAM'} = \@param;
 		if ($self->{'ENV_VARS'}) {
