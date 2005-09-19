@@ -145,7 +145,7 @@ sub end_element {
 		my $text = "Making directories in $dir (perm: =";
 		$text .= "$mode" || "default";
 	        $text .= "):";
-	        $text .= join (", ", @$target);
+	        $text .= join (", ", @target);
 		$self->text($text);
 
 		$log->success_message($text);
