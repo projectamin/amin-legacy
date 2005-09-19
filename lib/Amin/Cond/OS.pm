@@ -8,87 +8,83 @@ use Config;
 @ISA = qw(Amin::Elt);
 
 my $state = 0;
-my $otherstate = 0;
 
-my $OS = $^O;
+my $os = $^O;
 
-if ($OS =~ /darwin/) {
-	$OS = "darwin";
-}
-elsif ($OS =~ /freebsd/) {
-	$OS = "freebsd";
-}
-elsif ($OS =~ /openbsd/) {
-	$OS = "openbsd";
+if ($os =~ /darwin/) {
+	$os = "darwin";
+} elsif ($os =~ /freebsd/) {
+	$os = "freebsd";
+} elsif ($os =~ /openbsd/) {
+	$os = "openbsd";
 } else {
-	$OS = "default";
+	$os = "linux";
 }
 
-
-
+#log = 1 Super = 0
 sub start_element {
 	my ($self, $element) = @_;
 	my %attrs = %{$element->{Attributes}};
+	my $log = $self->{Handler}->{Spec}->{Log};
 
-	if (($state == 1) || ($otherstate == 1)) {
-		unless ($element->{LocalName} eq "cond") {
-			$self->SUPER::start_element($element);
-		}
-	}
-	if ($OS eq "darwin") {
-		if ($element->{LocalName} eq "darwin") {
-			$state = 1;
-			$self->SUPER::start_element($element);
-		}
-	}
-	if ($OS eq "freebsd") {
-		if ($element->{LocalName} eq "freebsd") {
-			$state = 1;
-			$self->SUPER::start_element($element);
-		}
-	}
-	if ($OS eq "openbsd") {
-		if ($element->{LocalName} eq "openbsd") {
-			$state = 1;
-			$self->SUPER::start_element($element);
-		}
-	}
-	if ($OS eq "linux") {
-		if (($element->{LocalName} eq "linux") || ($element->{LocalName} eq "default")) {
-			$state = 1;
-			$self->SUPER::start_element($element);
-		}
-	}
 	if ($element->{LocalName} eq "cond") {
+		$state = 1;
+		$log->driver_start_element($element->{Name}, %attrs);
+	}
+	if ($os eq $element->{LocalName}) {
+		$state = 0;
 		$self->SUPER::start_element($element);
 	}
+	if ($state == 1) {
+		unless (($element->{LocalName} eq "cond") ||
+			($element->{LocalName} eq $os)) {
+			$log->driver_start_element($element->{Name}, %attrs);
+		}
+	} else {
+		unless (($element->{LocalName} eq $os) ||
+			($element->{LocalName} eq "cond")) {
+			$self->SUPER::start_element($element);
+		}
+	}
+	
 }
 
 sub characters {
 	my ($self, $chars) = @_;
-	if (($state == 1) || ($otherstate == 1))  {
-		$self->SUPER::characters($chars);
+	my $data = $chars->{Data};
+	my $log = $self->{Handler}->{Spec}->{Log};
+	$data = $self->fix_text($data);
+	if ($data ne "") {
+		if ($state == 1) {
+			$log->driver_characters($data);
+		} else {
+			$self->SUPER::characters($chars);
+		}
 	}
 }
 
 sub end_element {
 	my ($self, $element) = @_;
-	if (($state == 1) || ($otherstate == 1)) {
-		unless ($element->{LocalName} eq "cond") {
-			$self->SUPER::end_element($element);
-		}
-	}
-	
-	if (($element->{LocalName} eq "darwin") || ($element->{LocalName} eq "freebsd") || 
-	   ($element->{LocalName} eq "openbsd") || ($element->{LocalName} eq "linux")  ||
-	   ($element->{LocalName} eq "default")) 
-	{
-		$state = 0;
-	}
+	my $log = $self->{Handler}->{Spec}->{Log};
 	
 	if ($element->{LocalName} eq "cond") {
-		$otherstate = 1;
+		$state = 0;
 		$self->SUPER::end_element($element);
+	}
+	if ($element->{LocalName} eq $os) {
+		$state = 1;
+		$self->SUPER::end_element($element);
+	}
+	if ($state == 1) {
+		unless (($element->{LocalName} eq "cond") ||
+			($element->{LocalName} eq $os)) {
+			$log->driver_end_element($element->{Name});
+		}
+	} else {
+		unless (($os eq $element->{LocalName}) ||
+			($element->{LocalName} eq "cond")) {
+			$self->SUPER::end_element($element);
+		}
 	}
 }
 
@@ -113,12 +109,7 @@ OS version 1.0
 	darwin
 	freebsd
 	openbsd
-	
-  everything else, including linux is considered as 
-	
 	default	
- 
-  either linux or default is acceptable in your xml. 
   
 =head1 XML
 
@@ -126,7 +117,7 @@ OS version 1.0
 
 =item Full example
 
-  <amin:cond name="OS">
+  <amin:cond name="os">
     <amin:darwin>
       <amin:command name="mkdir">
         <amin:param>/tmp/darwin</amin:param>
@@ -142,11 +133,11 @@ OS version 1.0
         <amin:param>/tmp/openbsd</amin:param>
       </amin:command>
     </amin:openbsd>
-    <amin:default>
+    <amin:linux>
       <amin:command name="mkdir">
         <amin:param>/tmp/linux</amin:param>
       </amin:command>
-    </amin:default>
+    </amin:linux>
   </amin:cond>
 
 =back  

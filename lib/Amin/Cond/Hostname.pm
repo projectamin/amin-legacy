@@ -5,63 +5,78 @@ package Amin::Cond::Hostname;
 use strict;
 use vars qw(@ISA);
 use Amin::Elt;
-use XML::SAX::Base;
-use Config;
+use Sys::Hostname;
 
-@ISA = qw(Amin::Elt XML::SAX::Base);
+@ISA = qw(Amin::Elt);
 
+my $local_hostname = hostname();
 my $state = 0;
 
-my $local_hostname = $Config{'aphostname'};
-
+#log = 1 Super = 0
 sub start_element {
 	my ($self, $element) = @_;
 	my %attrs = %{$element->{Attributes}};
-	my $hostname;
-
-	if ($element->{LocalName} eq "hostname") {
-		$hostname = $attrs{'{}name'}->{Value};
-	};
-			
-	if ($local_hostname eq $hostname) {
-			$state = 1;
-			$self->SUPER::start_element($element);
+	my $log = $self->{Handler}->{Spec}->{Log};
+	
+	if ($element->{LocalName} eq "cond"){
+		$log->driver_start_element($element->{Name}, %attrs);
+		$state = 1;
+	}
+	if ($element->{LocalName} eq $local_hostname) {
+		$self->SUPER::start_element($element);
+		$state = 0;
 	}
 	if ($state == 1) {
-		unless ($element->{LocalName} eq "cond") {
+		unless (($element->{LocalName} eq "cond") ||
+			($element->{LocalName} eq $local_hostname)) {
+			$log->driver_start_element($element->{Name}, %attrs);
+		}
+	} else {
+		unless (($element->{LocalName} eq $local_hostname) ||
+			($element->{LocalName} eq "cond")) {
 			$self->SUPER::start_element($element);
 		}
-	}
-	if ($element->{LocalName} eq "cond") {
-		$self->SUPER::start_element($element);
-	}
+	}	
 }
 
 sub characters {
 	my ($self, $chars) = @_;
-	if ($state == 1) {
-		$self->SUPER::characters($chars);
+	my $data = $chars->{Data};
+	my $log = $self->{Handler}->{Spec}->{Log};
+	$data = $self->fix_text($data);
+	if ($data ne "") {
+		if ($state == 1) {
+			$log->driver_characters($data);
+		} else {
+			$self->SUPER::characters($chars);
+		}
 	}
 }
 
 sub end_element {
 	my ($self, $element) = @_;
+	my $log = $self->{Handler}->{Spec}->{Log};
+	
+	if ($element->{LocalName} eq "cond"){
+		$state = 0;
+		$self->SUPER::end_element($element);
+	}	
+	if ($element->{LocalName} eq $local_hostname) {
+		$state = 1;
+		$self->SUPER::end_element($element);
+	}	
 	if ($state == 1) {
-		unless ($element->{LocalName} eq "cond") {
+		unless (($element->{LocalName} eq $local_hostname) ||
+			($element->{LocalName} eq "cond")) {
+			$log->driver_end_element($element->{Name});
+		}
+	} else {
+		unless (($element->{LocalName} eq "cond") ||
+			($element->{LocalName} eq $local_hostname)) {
 			$self->SUPER::end_element($element);
 		}
-	}
-	
-	if ($element->{LocalName} eq "hostname")  
-	{
-		$state = 0;
-	}
-	
-	if ($element->{LocalName} eq "cond") {
-		$self->SUPER::end_element($element);
-	}
+	}	
 }
-
 1;
 
 =head1 NAME

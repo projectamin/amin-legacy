@@ -4,115 +4,98 @@ package Amin::Cond::Arch;
 
 use strict;
 use vars qw(@ISA);
-use XML::SAX::Base;
 use Amin::Elt;
 use Config;
 
-@ISA = qw(Amin::Elt XML::SAX::Base);
+@ISA = qw(Amin::Elt);
 
 my $state = 0;
-my $otherstate = 0;
-
 my $arch = $Config{'archname'};
 
-	if ($arch =~ /ppc/) {
-			$arch = "ppc32";
-	}
-		elsif ($arch =~ /^ppc64$/) {
-			$arch = "ppc64";
-	}
-		elsif ($arch =~ /Power \Macintosh/) {
-			$arch = "ppc32";
-	}
-		elsif ($arch =~ /s390/) {
-			$arch = "s390";
-	}
-		elsif ($arch =~ /x86_64/) {
-			$arch = "x86_64";
-	}
-		elsif ($arch =~ /ia64/) {
-			$arch = "ia64";
-	} else {
-		$arch = "default";	
-	}
+if ($arch =~ /ppc/) {
+	$arch = "ppc32";
+} elsif ($arch =~ /^ppc64$/) {
+	$arch = "ppc64";
+} elsif ($arch =~ /Power \Macintosh/) {
+	$arch = "ppc32";
+} elsif ($arch =~ /s390/) {
+	$arch = "s390";
+} elsif ($arch =~ /x86_64/) {
+	$arch = "x86_64";
+} elsif ($arch =~ /ia64/) {
+	$arch = "ia64";
+} else {
+	$arch = "ia32";
+}
 
+#log = 1 Super = 0
 sub start_element {
 	my ($self, $element) = @_;
 	my %attrs = %{$element->{Attributes}};
+	my $log = $self->{Handler}->{Spec}->{Log};
 
-	if (($state == 1) || ($otherstate == 1)) {
-		unless ($element->{LocalName} eq "cond") {
-			$self->SUPER::start_element($element);
-		}
-	}
-	if ($arch eq "default") {
-		if (($element->{LocalName} eq "ia32") || ($element->{LocalName} eq "default")) {
-			$state = 1;
-			$self->SUPER::start_element($element);
-		}
-	}
-	if ($arch eq "ia64") {
-		if ($element->{LocalName} eq "ia64") {
-			$state = 1;
-			$self->SUPER::start_element($element);
-		}
-	}
-	if ($arch eq "ppc32") {
-		if ($element->{LocalName} eq "ppc32") {
-			$state = 1;
-			$self->SUPER::start_element($element);
-		}
-	}
-	if ($arch eq "ppc64") {
-		if ($element->{LocalName} eq "ppc64") {
-			$state = 1;
-			$self->SUPER::start_element($element);
-		}
-	}
-        if ($arch eq "x86_64") {
-                if ($element->{LocalName} eq "x86_64") {
-                        $state = 1;
-                        $self->SUPER::start_element($element);
-                }
-        }
-	if ($arch eq "S390") {
-		if ($element->{LocalName} eq "s390") {
-			$state = 1;
-			$self->SUPER::start_element($element);
-		}
-	}
 	if ($element->{LocalName} eq "cond") {
-		$self->SUPER::start_element($element);
+		$state = 1;
+		$log->driver_start_element($element->{Name}, %attrs);
 	}
+	if ($element->{LocalName} eq $arch) {
+		$self->SUPER::start_element($element);
+		$state = 0;
+	}
+	if ($state == 1) {
+		unless (($element->{LocalName} eq "cond") ||
+			($element->{LocalName} eq $arch)) {
+			$log->driver_start_element($element->{Name}, %attrs);
+		}
+	} else {
+		unless (($element->{LocalName} eq $arch) ||
+			($element->{LocalName} eq "cond")) {
+			$self->SUPER::start_element($element);
+		}
+	}
+	
 }
 
 sub characters {
 	my ($self, $chars) = @_;
-	if (($state == 1) || ($otherstate == 1))  {
-		$self->SUPER::characters($chars);
+	my $data = $chars->{Data};
+	my $log = $self->{Handler}->{Spec}->{Log};
+	$data = $self->fix_text($data);
+	if ($data ne "") {
+		if ($state == 1) {
+			$log->driver_characters($data);
+		} else {
+			$self->SUPER::characters($chars);
+		}
 	}
 }
 
+#log = 1 Super = 0
 sub end_element {
 	my ($self, $element) = @_;
-	if (($state == 1) || ($otherstate == 1)) {
-		unless ($element->{LocalName} eq "cond") {
+	my $log = $self->{Handler}->{Spec}->{Log};
+	
+	if ($element->{LocalName} eq "cond") {
+		$state = 0;
+		$self->SUPER::end_element($element);
+	}
+	if ($element->{LocalName} eq $arch) {
+		$state = 1;
+		$self->SUPER::end_element($element);
+	}
+	if ($state == 1) {
+		unless (($element->{LocalName} eq "cond") ||
+			($element->{LocalName} eq $arch)) {
+			$log->driver_end_element($element->{Name});
+		}
+	} else {
+		unless (($arch eq $element->{LocalName}) ||
+			($element->{LocalName} eq "cond")) {
 			$self->SUPER::end_element($element);
 		}
 	}
+
 	
-	if (($element->{LocalName} eq "ia32") || ($element->{LocalName} eq "ia64") || 
-	   ($element->{LocalName} eq "ppc32") || ($element->{LocalName} eq "s390") ||
-	   ($element->{LocalName} eq "x86_64") || ($element->{LocalName} eq "ppc64") || 
-	   ($element->{LocalName} eq "default")) 
-	{
-		$state = 0;
-	}
-	
-	if ($element->{LocalName} eq "cond") {
-		$otherstate = 1;
-		$self->SUPER::end_element($element);
-	}
 }
 
 1;
@@ -138,12 +121,8 @@ Arch version 1.0
 	s390
 	x86_64
 	ia64
-	
-  everything else, including ia32 is considered as 
-	
-	default	
+	ia32	
  
-  either ia32 or default is acceptable in your xml. 
   
 =head1 XML
 
@@ -177,11 +156,11 @@ Arch version 1.0
         <amin:param>/tmp/ia64</amin:param>
       </amin:command>
     </amin:ia64>
-    <amin:default>
+    <amin:ia32>
       <amin:command name="mkdir">
         <amin:param>/tmp/ia32</amin:param>
       </amin:command>
-    </amin:default>
+    </amin:ia32>
   </amin:cond>
 
 =back  
