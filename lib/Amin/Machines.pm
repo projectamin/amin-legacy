@@ -6,7 +6,6 @@ use Amin::Machine::Machine_Spec;
 
 my $DefaultSAXHandler ||= 'XML::SAX::Writer';
 my $DefaultSAXGenerator	||= 'XML::SAX::PurePerl';
-#my $DefaultSAXGenerator ||= 'XML::SAX::Expat';
 my $DefaultLog	||= 'Amin::Machine::Log::Standard';
 my $DefaultMachine ||= 'Amin::Machine::Dispatcher';
 my $mout;
@@ -39,7 +38,7 @@ sub new {
 	}
 	
 	if (!defined $args{Machine_Name} ) {
-		$args{Machine_Name} = $DefaultMachine;
+		$args{SMachine_Name} = $DefaultMachine;
 	}	
 	
 	
@@ -77,8 +76,6 @@ sub parse_uri {
 
 	
 	if (!$spec->{Log}) { $spec->{Log} = $self->{Log}; }
-	#re-adjust the log
-	$spec->{Log}->{Spec} = $spec;
 
 		
 	#build the machine and run it
@@ -125,7 +122,6 @@ sub machine_spec {
 	
 	my $ix = XML::Filter::XInclude->new(Handler => $h);
 	my $p = XML::SAX::PurePerl->new(Handler => $ix);
-	#my $p = XML::SAX::Expat->new(Handler => $h);
 	
 	my $spec;
 	if ($profile =~ /^</) {

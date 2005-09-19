@@ -11,7 +11,6 @@ sub new {
 	return $self;
 }
 
-
 sub run {
 	my ($self, $profile, $type) = @_;
 	
@@ -26,24 +25,37 @@ sub run {
 	my $machine_name;
 	my $handler;
 	my $next;
-	my @reverse = reverse @$fl;
-	foreach (@reverse) {	
-		if ($_ eq $reverse[-1]) {
-			
-			#this is the first module of the sax chain
-			if ($_ eq $reverse[0]) {
-				#this is also the last module of the sax chain
-				$next = $_->{module}->new(Handler => $spec->{Handler}, Spec => $spec);
-			}
-			$machine_name = $spec->{Machine_Name}->new(Handler => $next, Spec => $spec);
-		} elsif ($_ eq $reverse[0]) {
-			#this is the last module of the sax chain
-			$next = $_->{module}->new(Handler => $spec->{Handler},
-						  Spec => $spec);
+	
+	foreach (@$fl) {	
+		if (!$next) {
+			$next = $_->{module}->new(Handler => $spec->{Handler}, Spec => $spec);
 		} else {
-			$next = $_->{module}->new(Handler => $next, Spec => $spec);
+			$next = $_->{module}->new(Handler => $next);
 		}
 	}
+					
+	$machine_name = $spec->{Machine_Name}->new(Handler => $next);
+
+		
+	$spec->{Machine_Handler} = $machine_name;	
+	#	if ($_ eq $reverse[-1]) {
+			
+			#this is the first module of the sax chain
+	#		if ($_ eq $reverse[0]) {
+				#this is also the last module of the sax chain
+	#			$next = $_->{module}->new(Handler => $spec->{Handler}, Spec => $spec);
+	#		} else {
+	#			$next = $_->{module}->new(Handler => $next, Spec => $spec);
+	#		}
+			
+	#	} elsif ($_ eq $reverse[0]) {
+			#this is the last module of the sax chain
+	#	} else {
+	#		$next = $_->{module}->new(Handler => $next, Spec => $spec);
+	#	}
+	#}
+	
+	
 	my $p = $spec->{Generator}->new(Handler => $machine_name, Spec => $spec);
 	
 	if ($type eq "uri") {
@@ -65,9 +77,6 @@ sub parse_string {
 	my $results = $self->run($profile);
 	return $results;
 }
-
-
-
 
 1;
 
