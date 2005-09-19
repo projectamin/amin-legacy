@@ -8,6 +8,7 @@ use Amin::Machines;
 use Amin::Machine::AdminList;
 use Amin::Machine::NetworkMap;
 #use Amin::Machine::AdminList::Map;
+use Sort::Naturally;
 
 #use XML::SAX::Expat;
 
@@ -61,12 +62,13 @@ sub parse_adminlist {
 	#adminlists and then use the map to specify
 	#which names they want to run.
 	#my $h = Amin::Machine::AdminList::Name->new();
-	my $h;
-	my $p = XML::SAX::PurePerl->new(Handler => $h);
-	my $adminlist_map = $p->parse_uri($self->{adminlist_map});
+	#my $h;
+	#my $p = XML::SAX::PurePerl->new(Handler => $h);
+	#my $adminlist_map = $p->parse_uri($self->{adminlist_map});
 	
-	foreach my $key (keys %$adminlist) {
-		if (($key =~ m/server/) || ($adminlist_map->{key})) {
+	foreach my $key (nsort keys %$adminlist) {
+#		if (($key =~ m/server/) || ($adminlist_map->{key})) {
+		if ($key =~ m/server/) {
 			my $n = Amin::Machine::NetworkMap->new();
 			my $np = XML::SAX::PurePerl->new(Handler => $n);
 			$simplemap = $np->parse_uri($adminlist->{$key});
@@ -78,33 +80,30 @@ sub parse_adminlist {
 				}
 			}
 		}
-	}
-
-	foreach my $key (keys %$adminlist) {
-		if (($key =~ m/profile/) || ($adminlist_map->{key})) {
-		push @profiles, $adminlist->{$key};
+#		if (($key =~ m/profile/) || ($adminlist_map->{key})) {
+		if ($key =~ m/profile/) {
+			push @profiles, $adminlist->{$key};
 		}
-	}
-	
-	foreach my $key (keys %$adminlist) {
-		if (($key =~ m/adminlist/) || ($adminlist_map->{key})) {
-		push @adminlists, $adminlist->{$key};
+#		if (($key =~ m/adminlist/) || ($adminlist_map->{key})) {
+		if ($key =~ m/adminlist/) {
+			push @adminlists, $adminlist->{$key};
 		}
 	}
 		
 	#deal with adminlists within adminlists
 	#we have to repeat ourselves for a while....
 	foreach (@adminlists) {
-		my $h = Amin::Machine::AdminList::Name->new();
-		my $p = XML::SAX::PurePerl->new(Handler => $h);
-		my $adminlist = $p->parse_uri($_);
-	
-		foreach my $key (keys %$adminlist) {
-			if (($key =~ m/server/) || ($adminlist_map->{key})) {
+		my $ih = Amin::Machine::AdminList->new();
+		my $ip = XML::SAX::PurePerl->new(Handler => $ih);
+		my $iadminlist = $ip->parse_uri($_);
+		
+		foreach my $key (nsort keys %$iadminlist) {
+	#		if (($key =~ m/server/) || ($adminlist_map->{key})) {
+			if ($key =~ m/server/) {
 				my $n = Amin::Machine::NetworkMap->new();
 				my $np = XML::SAX::PurePerl->new(Handler => $n);
-				$simplemap = $np->parse_uri($adminlist->{$key});
-				foreach my $map (@$simplemap) {
+				$simplemap = $np->parse_uri($iadminlist->{$key});
+				foreach my $map (@$simplemap) {	
 					if ($map eq undef) {
 						next;
 					} else {
@@ -112,15 +111,13 @@ sub parse_adminlist {
 					}
 				}
 			}
-		}
-		foreach my $key (keys %$adminlist) {
-			if (($key =~ m/profile/) || ($adminlist_map->{key})) {
-				push @profiles, $adminlist->{$key};
+	#		if (($key =~ m/profile/) || ($adminlist_map->{key})) {
+			if ($key =~ m/profile/) {
+				push @profiles, $iadminlist->{$key};
 			}
-		}
-		foreach my $key (keys %$adminlist) {
-			if (($key =~ m/adminlist/) || ($adminlist_map->{key})) {
-				push @adminlists, $adminlist->{$key};
+	#		if (($key =~ m/adminlist/) || ($adminlist_map->{key})) {
+			if ($key =~ m/adminlist/) {
+				push @adminlists, $iadminlist->{$key};
 			}
 		}
 	}
@@ -131,9 +128,9 @@ sub parse_adminlist {
 			my $protocol = $networkmap->{protocol};
 			foreach my $profile (@profiles) {
 				if ($profile =~ /^</) {
-					$mout = $protocol->parse_string($profile, $adminlist_map);
+				#	$mout = $protocol->parse_string($nm->{$networkmap}, $profile, $adminlist_map);
 				} else {
-					$mout = $protocol->parse_uri($profile, $adminlist_map);
+				#	$mout = $protocol->parse_uri($nm->{$networkmap}, $profile, $adminlist_map);
 				}
 			}
 		}
@@ -164,31 +161,10 @@ sub parse_string {
 		my $p = XML::SAX::PurePerl->new(Handler => $h);
 		my $nm = $p->parse($self->{NetworkMap});
 		
-		#get/parse/load the adminlist/class map
-		#this is used for when people name="" their 
-		#adminlists and then use the map to specify
-		#which names they want to run.
-		my $h = Amin::Machine::AdminList::Name->new();
-		my $p = XML::SAX::PurePerl->new(Handler => $h);
-		my $adminlist_map = $p->parse_uri($self->{adminlist_map});
-		my @networkmap;	
-		foreach my $key (keys %$nm) {
-			if (($key =~ m/server/) || ($adminlist_map->{key})) {
-				my $n = Amin::Machine::NetworkMap->new();
-				my $np = XML::SAX::PurePerl->new(Handler => $n);
-				my $simplemap = $np->parse_uri($nm->{$key});
-				foreach my $map (@$simplemap) {
-					if ($map eq undef) {
-						next;
-					} else {
-						push @networkmap, $adminlist_map;
-					}
-				}
-			}
-		}
-		foreach my $networkmap (@networkmap) {
+		#my @networkmap;	
+		foreach my $networkmap (keys %$nm) {
 			my $protocol = $networkmap->{protocol};
-			$mout = $protocol->parse_string($profile, $adminlist_map);
+			$mout = $protocol->parse_string($nm->{$networkmap},$profile);
 		}
 	} else {
 		$mout = $m->parse_string($profile);
@@ -210,33 +186,12 @@ sub parse_uri {
 	if ($self->{NetworkMap}) {
 		my $h = Amin::Machine::NetworkMap->new();
 		my $p = XML::SAX::PurePerl->new(Handler => $h);
-		my $nm = $p->parse($self->{NetworkMap});
+		my $nm = $p->parse_uri($self->{NetworkMap});
 		
-		#get/parse/load the adminlist/class map
-		#this is used for when people name="" their 
-		#adminlists and then use the map to specify
-		#which names they want to run.
-		my $h = Amin::Machine::AdminList::Name->new();
-		my $p = XML::SAX::PurePerl->new(Handler => $h);
-		my $adminlist_map = $p->parse_uri($self->{adminlist_map});
-		my @networkmap;	
-		foreach my $key (keys %$nm) {
-			if (($key =~ m/server/) || ($adminlist_map->{key})) {
-				my $n = Amin::Machine::NetworkMap->new();
-				my $np = XML::SAX::PurePerl->new(Handler => $n);
-				my $simplemap = $np->parse_uri($nm->{$key});
-				foreach my $map (@$simplemap) {
-					if ($map eq undef) {
-						next;
-					} else {
-						push @networkmap, $adminlist_map;
-					}
-				}
-			}
-		}
-		foreach my $networkmap (@networkmap) {
-			my $protocol = $networkmap->{protocol};
-			$mout = $protocol->parse_uri($uri, $adminlist_map);
+		#my @networkmap;	
+		foreach my $networkmap (keys %$nm) {
+			my $protocol = $nm->{$networkmap}->{protocol};
+			$mout = $protocol->parse_uri($nm->{$networkmap}, $uri);
 		}
 	
 	} else {
@@ -316,12 +271,12 @@ sub get_machine_type {
 sub set_filter_param {
 	my $self = shift;
 	my $filter_param = shift;
-	$self->{FILTER_PARAM} = $filter_param;
+	$self->{Filter_Param} = $filter_param;
 }
 
 sub get_filter_param {
 	my $self = shift;
-	return $self->{FILTER_PARAM};
+	return $self->{Filter_Param};
 }
 
 
@@ -445,7 +400,8 @@ ad-infitum, and if you hook adminlists in a circle link
 fashion will continue to process the adminlists within
 adminlists that link to each other forever....
 
-So don't do it.
+So don't do it. Want to see how fast Amin can take down
+your machine? Then do it... :)
 
 This method also uses the adminlist_map internal method
 to check for the correcting mappings during adminlist 

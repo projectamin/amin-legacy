@@ -91,7 +91,7 @@ sub text {
 sub amin_command {
 
 	my ($self, $cmd, $special, $cmd2) = @_;
-
+	my $debug = $self->{Spec}->{Filter_Param};
 	my ($in, $out, $err, $status, $command, $flag, $param, @cmd2, $flag2, $param2, @cmd);
 	if ($special ne "shell") {
 		$command = $cmd->{'CMD'};
@@ -168,7 +168,9 @@ sub amin_command {
 		$status = $h->result;
 	} else {
 		my $h = harness \@cmd, \$in, \$out, \$err;
-		#print ":@cmd:";
+		if ($debug eq "ac") {
+			print ":@cmd:";
+		}
 		run $h ;
 		$status = $h->result;
 	}
