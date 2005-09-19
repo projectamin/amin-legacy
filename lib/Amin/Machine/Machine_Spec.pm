@@ -337,16 +337,6 @@ if ($self->{URI}) {
 		$parent{$rm{module}} = \%rm;
 
 
-	        my %route = (
-                                'module' => 'Amin::Command::Route',                                               
-		                'element' => 'command',                                                        
-		                'namespace' => 'amin',                                                         
-		                'name' => 'route',                                                                
-		                'position' => 'middle',                                                        
-		                'version' => '1.0',                                                            
-		);                                                                                             
-	        $parent{$route{module}} = \%route;
-	    
 		my %rpm = (
 				'module' => 'Amin::Command::Rpm',
 				'element' => 'command',
@@ -476,7 +466,7 @@ if ($self->{URI}) {
 				'position' => 'begin',
 				'version' => '1.0',
 		);
-		$parent{$depend{module}} = \%mount;
+		$parent{$depend{module}} = \%depend;
 
 
 		my %arch = (
@@ -487,7 +477,7 @@ if ($self->{URI}) {
 				'position' => 'begin',
 				'version' => '1.0',
 		);
-		$parent{$arch{module}} = \%mount;
+		$parent{$arch{module}} = \%arch;
 
 
 		my %archu = (
@@ -510,7 +500,6 @@ if ($self->{URI}) {
 				'version' => '1.0',
 		);
 		$parent{$hostname{module}} = \%hostname;
-
 
 		my %os = (
 				'module' => 'Amin::Cond::OS',
@@ -537,8 +526,10 @@ sub start_element {
 		#corresponding with this start_element
 		
 		if ($_ eq "") { next; }
-		if ($stuff->{$_}->{element} eq $element->{LocalName}) {
-		if (($stuff->{$_}->{name} eq $attrs{'{}name'}->{Value}) || ($element->{LocalName} eq $stuff->{$_}->{name})) {
+		if ($stuff->{$_}->{'element'} eq $element->{'LocalName'}) {
+		if (($stuff->{$_}->{'name'} eq $attrs{'{}name'}->{'Value'}) 
+		|| ($stuff->{$_}->{'name'} eq $element->{'LocalName'} )) {
+
 		#logic to add new element to @machine_filters or not
 		my $x = 0;
 		if (@machine_filters) {
@@ -608,8 +599,6 @@ sub end_document {
 			next;
 		}
 		no strict 'refs';
-		
-
 		eval "require $_->{module}";
 		if ($@) {
 			if ($_->{'download'}) {
@@ -657,26 +646,26 @@ sub end_document {
 		
 	}
 	
-	#push our filters onto the new stack
+	#push our filters onto the new stack in reverse
 	my @newfilters;
-	push (@newfilters, @beg);
-	push (@newfilters, @mid);
 	push (@newfilters, @end);
+	push (@newfilters, @mid);
+	push (@newfilters, @beg);
 	
 	
 	@machine_filters = ();
 	@machine_bundle = ();
 	
+	
 	my %spec;
 	$spec{Filter_List} = \@newfilters;
-	#if these are defined from the machine spec then set them up
 	#Handler has to be special to ignore X:S:B 
 	if ($self->{FHandler}) { $spec{Handler} = $self->{FHandler}; }
+	
+	#if these are defined from the machine spec then set them up
 	if ($self->{Log}) { $spec{Log} = $self->{Log}; }
 	if ($self->{Filter_Param}) { $spec{Filter_Param} = $self->{Filter_Param}; }
-	
 	if ($self->{Generator}) { $spec{Generator} = $self->{Generator}; }
-	
 	return \%spec;
 }
 
