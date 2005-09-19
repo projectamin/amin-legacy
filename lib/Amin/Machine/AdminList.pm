@@ -7,13 +7,17 @@ use Amin::Elt;
 
 @ISA = qw(XML::SAX::Base Amin::Elt);
 
-my (%networkmap, $x);
 my %attrs;
+my (%adminlist, $x, $y, $z);
+
 
 sub start_element {
 	my ($self, $element) = @_;
 	$self->element($element);
 	%attrs = %{$element->{Attributes}};
+	if ($attrs{'{}name'}->{Value}) {
+		$self->name($attrs{'{}name'}->{Value});
+	}
 	$self->attrs(%attrs);
 }
 
@@ -22,67 +26,88 @@ sub characters {
 	my $data = $chars->{Data};
 	my $element = $self->{"ELEMENT"};
 	$data = $self->fix_text($data);
-	my $attrs = $self->{"ATTRS"};
 	my $element = $self->{"ELEMENT"};
-	if ($attrs{'{}name'}->{Value} eq "name") {
+	
+	if ($element->{LocalName} eq "uri") {
 		if ($data ne "") {
-			$self->name($data);
+			$self->uri($data);
 		}
 	}
-	if ($element->{LocalName} eq "FullPath") {
-		if ($data ne "") {
-			$self->fullpath($data);
-		}
-	}
-
 }
 
 sub end_element {
 	my ($self, $element) = @_;
 	if ($element->{LocalName} eq "server") {
-		$x++;
-		my $name;
-		if ($self->name) {
-			$name = $self->name;
-		} else {
-			$name = "server$x";
+		#don't add empty/bad uris
+		if ($self->uri) {
+			$x++;
+			my $name;
+			if ($self->name) {
+				$name = $self->name;
+			} else {
+				$name = "server$x";
+			}
+			$adminlist{$name} = $self->uri;
+			#reset stuff
+			$self->{URI} = "";
+			$self->{NAME} = "";
 		}
-		$networkmap{$name} = $self->fullpath;
-		#reset stuff
-		$self->{FULLPATH} = "";
-		$self->{NAME} = "";
 	}
 	if ($element->{LocalName} eq "profile") {
-		$x++;
-		my $name;
-		if ($self->name) {
-			$name = $self->name;
-		} else {
-			$name = "profile$x";
+		#don't add empty/bad uris
+		if ($self->uri) {
+			$y++;
+			my $name;
+			if ($self->name) {
+				$name = $self->name;
+			} else {
+				$name = "profile$y";
+			}
+			$adminlist{$name} = $self->uri;
+			#reset stuff
+			$self->{URI} = "";
+			$self->{NAME} = "";
 		}
-		$networkmap{$name} = $self->fullpath;
-		#reset stuff
-		$self->{FULLPATH} = "";
-		$self->{NAME} = "";
+	}
+	if ($element->{LocalName} eq "adminlist") {
+		#catch the root adminlist or some empty
+		#adminlist
+		if ($self->uri) {
+			$z++;
+			my $name;
+			if ($self->name) {
+				$name = $self->name;
+			} else {
+				$name = "adminlist$z";
+			}
+			$adminlist{$name} = $self->uri;
+			#reset stuff
+			$self->{URI} = "";
+			$self->{NAME} = "";
+		}
 	}
 }
 
 sub end_document {
 	my $self = shift;
-	return \%networkmap;
+	return \%adminlist;
 }
 
 sub start_document {
 	my $self = shift;
-	#reset some stuff
-	%networkmap = {};
+
 	$x = 0;
+	$y = 0;
+	$z = 0;
+	%adminlist = ();	
 }
 
-sub fullpath {
+
+
+sub uri {
 	my $self = shift;
-	$self->{FULLPATH} = shift if @_;
-	return $self->{FULLPATH};
+	$self->{URI} = shift if @_;
+	return $self->{URI};
 }
 
 sub name {

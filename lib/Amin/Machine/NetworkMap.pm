@@ -4,6 +4,7 @@ use strict;
 use vars qw(@ISA);
 use XML::SAX::Base;
 use Amin::Elt;
+use Amin::Protocol::Standard;
 
 @ISA = qw(XML::SAX::Base Amin::Elt);
 
@@ -24,26 +25,79 @@ sub characters {
 	my $element = $self->{"ELEMENT"};
 	$data = $self->fix_text($data);
 
-	if ($element->{LocalName} eq "ip") {
-		if ($data ne "") {
+	if ($data ne "") {
+		if ($element->{LocalName} eq "ip") {
 			$self->ip($data);
 		}
-	}
-
-	if ($element->{LocalName} eq "port") {
-		if ($data ne "") {
+		if ($element->{LocalName} eq "auth") {
+			$self->auth($data);
+		}
+		if ($element->{LocalName} eq "protocol") {
+			$self->protocol($data);
+		}
+		if ($element->{LocalName} eq "port") {
 			$self->port($data);
+		}
+		if ($element->{LocalName} eq "user") {
+			$self->user($data);
+		}
+		if ($element->{LocalName} eq "key") {
+			$self->key($data);
+		}
+		if ($element->{LocalName} eq "password") {
+			$self->password($data);
 		}
 	}
 }
 
 sub end_element {
 	my ($self, $element) = @_;
+	
 
 	if ($element->{LocalName} eq "server") {
+		
+		#get/load the protocol
+		my $protocol;
+		if ($self->protocol) {
+			#load the protocol
+			$protocol = $self->protocol;
+			eval "require $protocol"; 
+			if ($@) {
+			#	my $log = $self->{Spec}->{Log};
+			#	$self->{Spec}->{amin_error} = "red";
+				die "Protocol loading failed. Reason $@";
+			#	$log->error_message($text);
+			}				
+			$protocol = $protocol->new();
+		} else {
+			#load the standard protocol
+			$protocol = Amin::Protocol::Standard->new();
+		}
+		
+		#get/load the auth module
+		my $auth;
+		if ($self->auth) {
+			#load the auth
+			eval "require $self->auth;"; 
+			if ($@) {
+				my $log = $self->{Spec}->{Log};
+				$self->{Spec}->{amin_error} = "red";
+				my $text = "Auth loading failed. Reason $@";
+				$log->error_message($text);
+			}				
+			$auth = $self->auth->new();
+		}
+		
 		my %server;
 		$server{name} = $self->name;
 		$server{ip} = $self->ip;
+		$server{protocol} = $protocol;
+		$server{'user'} = $self->user;
+		$server{'key'} = $self->key;
+		$server{'password'} = $self->password;
+		if ($self->auth) {
+			$server{auth} = $auth;
+		}
 		$server{port} = $self->port;
 		$maps{$server{name}} = \%server;
 	}
@@ -56,8 +110,8 @@ sub end_document {
 
 sub start_document {
 	my $self = shift;
-	%maps = undef;
-	%attrs = {};
+	%maps = ();
+	%attrs = ();
 }
 
 sub element {
@@ -72,6 +126,18 @@ sub ip {
 	return $self->{IP};
 }
 
+sub auth {
+	my $self = shift;
+	$self->{AUTH} = shift if @_;
+	return $self->{AUTH};
+}
+
+sub protocol {
+	my $self = shift;
+	$self->{PROTOCOL} = shift if @_;
+	return $self->{PROTOCOL};
+}
+
 sub name {
 	my $self = shift;
 	$self->{NAME} = shift if @_;
@@ -83,6 +149,29 @@ sub port {
 	$self->{PORT} = shift if @_;
 	return $self->{PORT};
 }
+
+sub user {
+	my $self = shift;
+	$self->{USER} = shift if @_;
+	return $self->{USER};
+}
+
+sub password {
+	my $self = shift;
+	$self->{PASSWORD} = shift if @_;
+	return $self->{PASSWORD};
+}
+
+sub key {
+	my $self = shift;
+	$self->{KEY} = shift if @_;
+	return $self->{KEY};
+}
+
+
+
+1;
+
 
 =head1 NAME
 
@@ -138,5 +227,3 @@ and so on.
 =back  
 
 =cut
-
-1;
