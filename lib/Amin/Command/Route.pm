@@ -34,11 +34,9 @@ sub characters {
 	if ($element->{LocalName} eq "flag") {
 		if ($attrs{'{}name'}->{Value} eq "") {
 			if ($data ne "") {
-				$self->flag(split(/\s+/, $data));
+				$self->flag($data);
 			}
 		}
-
-# need to add in hardwaretypes and network protocol options also
  
 	    if ($element->{LocalName} eq "param") {
 		if ($attrs{'{}name'}->{Value} eq "") {
@@ -46,7 +44,6 @@ sub characters {
 		}
 		if ($attrs{'{}name'}->{Value} eq "interface") {
 		    $self->interface($data);
-		    
 		}
 		if ($attrs{'{}name'}->{Value} eq "address") {
 		    $self->address($data);
@@ -58,10 +55,10 @@ sub characters {
 		    $self->state($data);
 		}
 		if ($attrs{'{}name'}->{Value} eq "type") {
-		    $self->state($data);
+		    $self->type($data);
 		}
 		if ($attrs{'{}name'}->{Value} eq "metric") {
-		    $self->state($data);
+		    $self->metric($data);
 		}
 	    }
 	}
@@ -79,33 +76,11 @@ sub end_element {
 	        my $state = $self->{'STATE'};
 	        my $metric = $self->{'METRIC'};
 	        my $type = $self->{'TYPE'};
-		my $xflag = $self->{'FLAG'};
+		my $flag = $self->{'FLAG'};
 		
-		my (%acmd, @param, @flag, $flag);
+		my (%acmd, @flag, @param);
 		
 		my $log = $self->{Spec}->{Log};
-	    
-		foreach my $ip (@$xflag){
-			if (($ip =~ /^-/) || ($ip =~ /^--/)) {
-				push @flag, $ip;
-			} else {	
-				if ($state == 0) {
-					if ($ip eq "bind") {
-						$flag = "--" . $ip;
-					} else {
-						$flag = "-" . $ip;
-					}
-					$state = 1;
-				} else {
-					if ($ip eq "bind") {
-						$flag = " --" . $ip;
-					} else {
-						$flag = " -" . $ip;
-					}
-				}
-				push @flag, $flag;
-			}
-		}
 	
 	        push @param, "$state";
 		push @param, "$type";
@@ -121,7 +96,7 @@ sub end_element {
 			$acmd{'ENV_VARS'} = $self->{'ENV_VARS'};
 		}
 		my $cmd = $self->amin_command(\%acmd);
-	        # die Dumper(@param);
+	        die Dumper(@param);
 		if ($cmd->{STATUS} != 1) {
 			$self->{Spec}->{amin_error} = "red";
 			my $text = "Could not set $type route to $address. Reason: $cmd->{ERR}";
@@ -210,6 +185,11 @@ route 1.98 (2001-04-15)
                 <amin:param name="address">192.168.0.1</amin:param>
                 <amin:param name="netmask">0.0.0.0</amin:param>
                 <amin:param name="metric">1</amin:param>
+        </amin:command>
+
+        <amin:command name="route">
+                <amin:param name="state">del</amin:param>
+                <amin:param name="type">default</amin:param>
         </amin:command>
 
 =back  
