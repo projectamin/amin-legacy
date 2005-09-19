@@ -14,15 +14,17 @@ sub start_element {
 	my %attrs = %{$element->{Attributes}};
 	my $log = $self->{Spec}->{Log};
 	
-	my $huh = $spec->{Filter_List};
-	foreach (@$huh) {
+	my $fl = $spec->{Filter_List};
+	foreach (@ $fl) {
 		if ($element->{LocalName} eq $_->{element})  {
-		if (($attrs{'{}name'}->{Value} eq $_->{name}) || ($element->{LocalName} eq $_->{name})) {
+		if (($attrs{'{}name'}->{Value} eq $_->{name}) || 
+		($element->{LocalName} eq $_->{name})) {
+			
 			if ($self->{Spec}->{amin_error}) {
 				#if there is an error reset handler to Empty
 				$self->set_handler( Amin::Machine::Handler::Empty->new(Handler => $spec->{Handler}, Spec => $spec) );
 			} else {
-				eval "require $_->{module};"; 
+				eval "require $_->{module}"; 
 				if ($@) {
 					$self->{Spec}->{amin_error} = "red";
 					my $text = "Dispatcher failed could not load $_->{module}. Reason $@";
@@ -31,11 +33,8 @@ sub start_element {
 					$self->set_handler( $_->{module}->new(Handler => $spec->{Handler}, Spec => $spec) );
 				}
 			}	
-		}# else {
-		
-		#	$self->set_handler($spec->{Handler});
-		#}
-	}
+		}
+		}
 	}
 	$self->SUPER::start_element($element);
 }
