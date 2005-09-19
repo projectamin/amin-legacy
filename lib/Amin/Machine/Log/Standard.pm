@@ -23,7 +23,9 @@ sub driver_end_element {
 
 sub driver_characters {
     my ($self, $data) = @_;
-    $self->SUPER::characters({Data => $data});
+    my %chars;
+    $chars{Data} = $data;
+    $self->SUPER::characters(\%chars);
 }
 
 sub error_message {
@@ -33,6 +35,20 @@ sub error_message {
 
 	$att{Name} = "type";
 	$att{Value} = "error";
+	$attrs{'{}type'} = \%att;
+	$self->driver_start_element('amin:message', %attrs);
+	$self->driver_characters($text);
+	$self->driver_end_element('amin:message');
+
+}
+
+sub warn_message {
+	my ($self, $text) = @_;
+	my %attrs;
+	my %att;
+
+	$att{Name} = "type";
+	$att{Value} = "warn";
 	$attrs{'{}type'} = \%att;
 	$self->driver_start_element('amin:message', %attrs);
 	$self->driver_characters($text);
