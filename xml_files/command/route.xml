@@ -1,0 +1,11 @@
+<amin:profile xmlns:amin='http://projectamin.org/ns/'>
+
+        <amin:command name="route">                                                                            
+                <amin:param name="state">add -net</amin:param>                                                      
+                <amin:param name="type">default gw</amin:param>                                                
+                <amin:param name="address">192.168.0.1</amin:param>                                            
+                <amin:param name="netmask">0.0.0.0</amin:param>                                                
+                <amin:param name="metric">1</amin:param>                                                       
+        </amin:command>
+	
+</amin:profile>
