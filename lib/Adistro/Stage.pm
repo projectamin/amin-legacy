@@ -4,55 +4,81 @@ package Adistro::Stage;
 
 use strict;
 use vars qw(@ISA);
-use XML::SAX::Base;
 use Amin::Elt;
 
-@ISA = qw(Amin::Elt XML::SAX::Base);
+@ISA = qw(Amin::Elt);
 
-my $state = 1;
-my $otherstate = 0;
-my %attrs;
+my $state = 0;
 
+#log = 1 Super = 0
 sub start_element {
 	my ($self, $element) = @_;
 	my %attrs = %{$element->{Attributes}};
-	$self->attrs(%attrs);
+	$self->attrs(\%attrs);
 	my $param = $self->{Spec}->{Filter_Param};
+	my $log = $self->{Handler}->{Spec}->{Log};
 
 	if ($element->{LocalName} eq "stage") {
-		unless ($attrs{'{}name'}->{Value} eq $param) {
+		if ($attrs{'{}name'}->{Value} eq $param) {
 			$state = 0;
+			$self->SUPER::start_element($element);
+		} else {
+			$state = 1;
+			$log->driver_start_element($element->{Name}, %attrs);
 		}
 	}
-	if (($state == 1) || ($otherstate == 1)) {
+	if ($state == 1) {
+		unless ($element->{LocalName} eq "stage") {
+			$log->driver_start_element($element->{Name}, %attrs);
+		}
+	} else {
 		unless ($element->{LocalName} eq "stage") {
 			$self->SUPER::start_element($element);
 		}
-	}
-	if ($element->{LocalName} eq "stage") {
-		$self->SUPER::start_element($element);
 	}
 }
 
 sub characters {
 	my ($self, $chars) = @_;
-	
-	if (($state == 1) || ($otherstate == 1))  {
-		$self->SUPER::characters($chars);
+	my $data = $chars->{Data};
+	my $log = $self->{Handler}->{Spec}->{Log};
+	$data = $self->fix_text($data);
+	if ($data ne "") {
+		if ($state == 1) {
+			$log->driver_characters($data);
+		} else {
+			$self->SUPER::characters($chars);
+		}
 	}
 }
 
 sub end_element {
 	my ($self, $element) = @_;
 	my $attrs = $self->{"ATTRS"};
+	my $param = $self->{Spec}->{Filter_Param};
+	my $log = $self->{Handler}->{Spec}->{Log};
 	
-	if (($state == 1) || ($otherstate == 1)) {
+	if ($element->{LocalName} eq "stage") {
+		$self->SUPER::end_element($element);
+	}
+	
+	if ($element->{LocalName} eq "stage") {
+		if ($attrs{'{}name'}->{Value} eq $param) {
+			$state = 1;
+			$self->SUPER::end_element($element);
+		} else {
+			$state = 0;
+			$log->driver_end_element($element->{Name});
+		}
+	}
+	if ($state == 1) {
+		unless ($element->{LocalName} eq "stage") {
+			$log->driver_end_element($element->{Name});
+		}
+	} else {
 		unless ($element->{LocalName} eq "stage") {
 			$self->SUPER::end_element($element);
 		}
-	}
-	if ($element->{LocalName} eq "stage") {
-		$self->SUPER::end_element($element);
 	}
 }
 
