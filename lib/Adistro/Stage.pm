@@ -5,7 +5,7 @@ package Adistro::Stage;
 use strict;
 use vars qw(@ISA);
 use Amin::Elt;
-
+#test2
 @ISA = qw(Amin::Elt);
 
 my $state = 0;
