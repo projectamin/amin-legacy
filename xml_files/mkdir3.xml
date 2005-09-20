@@ -1,16 +1,6 @@
 <amin:profile xmlns:amin='http://projectamin.org/ns/'>
 	<amin:command name='mkdir'>
 		<amin:flag name='m'>0755</amin:flag>
-		<amin:param>/tmp/test_ashell</amin:param>
+		<amin:param>/tmp/test_dir3</amin:param>
 	</amin:command>
-        <amin:command name="mkdir">
-                <amin:param>test_dir</amin:param>
-                <amin:flag name="mode">0754</amin:flag>
-                <amin:shell name="dir">/tmp</amin:shell>
-        </amin:command>
-        <amin:command name="mkdir">
-                <amin:param>test_dir1</amin:param>
-                <amin:flag name="mode">0754</amin:flag>
-                <amin:shell name="dir">/tmp</amin:shell>
-        </amin:command>
 </amin:profile>
