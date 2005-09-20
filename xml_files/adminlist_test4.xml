@@ -1,0 +1,11 @@
+<amin:adminlist xmlns:amin="http://projectamin.org/ns/">
+   <amin:profile>
+     <amin:uri>file://amin/xml_files/mkdir5.xml</amin:uri>
+   </amin:profile>
+   <amin:profile>
+     <amin:uri>file://amin/xml_files/mkdir6.xml</amin:uri>
+   </amin:profile>
+   <amin:adminlist>
+     <amin:uri>file://amin/xml_files/adminlist_test6.xml</amin:uri>
+  </amin:adminlist>
+</amin:adminlist>
