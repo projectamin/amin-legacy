@@ -5,19 +5,18 @@ package Adistro::Stage;
 use strict;
 use vars qw(@ISA);
 use Amin::Elt;
-#test2
 @ISA = qw(Amin::Elt);
 
 my $state = 0;
-
+my (%attrs);
 #log = 1 Super = 0
 sub start_element {
 	my ($self, $element) = @_;
 	my %attrs = %{$element->{Attributes}};
 	$self->attrs(\%attrs);
 	my $param = $self->{Spec}->{Filter_Param};
-	my $log = $self->{Handler}->{Spec}->{Log};
-
+	my $log = $self->{Spec}->{Log};
+	
 	if ($element->{LocalName} eq "stage") {
 		if ($attrs{'{}name'}->{Value} eq $param) {
 			$state = 0;
@@ -57,10 +56,6 @@ sub end_element {
 	my $attrs = $self->{"ATTRS"};
 	my $param = $self->{Spec}->{Filter_Param};
 	my $log = $self->{Handler}->{Spec}->{Log};
-	
-	if ($element->{LocalName} eq "stage") {
-		$self->SUPER::end_element($element);
-	}
 	
 	if ($element->{LocalName} eq "stage") {
 		if ($attrs{'{}name'}->{Value} eq $param) {
@@ -103,8 +98,9 @@ Adistro::Stage amin-0.5.0
   
   amin -u file://my/package.xml -x install
   
-  Your controller can set the filter_param internally and there
-  is no need for typing out filter_param(s). 
+  Your controller can also set the filter_param(s) internally and 
+  there may be no need for typing out filter_param(s). Please consult
+  your controller documentation. 
   
 =head1 XML
 
