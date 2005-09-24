@@ -30,7 +30,8 @@ sub run {
 		if (!$next) {
 			$next = $_->{module}->new(Handler => $spec->{Handler}, Spec => $spec);
 		} else {
-			$next = $_->{module}->new(Handler => $next);
+			#$next = $_->{module}->new(Handler => $next);
+			$next = $_->{module}->new(Handler => $next, Spec => $spec);
 		}
 	}
 					
