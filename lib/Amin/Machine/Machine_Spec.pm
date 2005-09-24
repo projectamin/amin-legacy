@@ -520,6 +520,16 @@ if ($self->{URI}) {
 		);
 		$parent{$os{module}} = \%os;
 
+		my %stage = (
+				'module' => 'Adistro::Stage',
+				'element' => 'stage',
+				'namespace' => 'adistro',
+				'name' => 'stage',
+				'position' => 'begin',
+				'version' => '1.0',
+		);
+		$parent{$stage{module}} = \%stage;
+		
 		$spec->{Filter} = \%parent;
 	}
 }
