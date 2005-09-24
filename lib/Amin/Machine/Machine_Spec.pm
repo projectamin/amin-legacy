@@ -520,7 +520,7 @@ if ($self->{URI}) {
 		);
 		$parent{$os{module}} = \%os;
 
-		my %stage = (
+		my %adstage = (
 				'module' => 'Adistro::Stage',
 				'element' => 'stage',
 				'namespace' => 'adistro',
@@ -528,8 +528,18 @@ if ($self->{URI}) {
 				'position' => 'begin',
 				'version' => '1.0',
 		);
-		$parent{$stage{module}} = \%stage;
+		$parent{$adstage{module}} = \%adstage;
 		
+		my %aistage = (
+				'module' => 'Ainit::Stage',
+				'element' => 'stage',
+				'namespace' => 'ainit',
+				'name' => 'stage',
+				'position' => 'begin',
+				'version' => '1.0',
+		);
+		$parent{$aistage{module}} = \%aistage;
+
 		$spec->{Filter} = \%parent;
 	}
 }
@@ -544,10 +554,13 @@ sub start_element {
 		#check if there is a machine_filters element 
 		#corresponding with this start_element
 		
+
 		if ($_ eq "") { next; }
+
 		if ($stuff->{$_}->{'element'} eq $element->{'LocalName'}) {
 		if (($stuff->{$_}->{'name'} eq $attrs{'{}name'}->{'Value'}) 
 		|| ($stuff->{$_}->{'name'} eq $element->{'LocalName'} )) {
+		if ($stuff->{$_}->{namespace} eq $element->{Prefix}) {
 
 		#logic to add new element to @machine_filters or not
 		my $x = 0;
@@ -569,6 +582,8 @@ sub start_element {
 			#first filter
 			if ($stuff->{$_} eq "") { next; }
 			push @machine_filters, $stuff->{$_};
+		}
+
 		}
 		}
 		}
@@ -610,7 +625,7 @@ sub start_element {
 sub end_document {
 	my $self = shift;
 	my (@beg, @mid, @end);
-	my $log = $self->{Spec}->{Log};
+
 	#sort the filters into their pipeline positions
 	foreach (@machine_filters) {
 		#autoload modules
@@ -625,26 +640,29 @@ sub end_document {
 				run \@cmd;
 				eval "require $_->{module}";
 				if ($@) {
-					$self->{Spec}->{amin_error} = "red";
-					my $text = "Machine_Spec failed could not load $_->{module}. Reason $@";
-					$log->error_message($text);
+					#$self->{Spec}->{amin_error} = "red";
+					#my $text = "Machine_Spec failed could not load $_->{module}. Reason $@";
+					#$log->error_message($text);
+					die "Machine_Spec failed could not load $_->{module}. Reason $@";
 				}
 			} else {
 				#so amin isn't installed at all
 				eval "require PAR";
 				if ($@) {
-					$self->{Spec}->{amin_error} = "red";
-					my $text = "If PAR was installed, we might be able to fix the problem. can not load the PAR module";
-					$log->error_message($text);
+					#$self->{Spec}->{amin_error} = "red";
+					#my $text = "If PAR was installed, we might be able to fix the problem. can not load the PAR module";
+					#$log->error_message($text);
+					die "If PAR was installed, we might be able to fix the problem. can not load the PAR module";
 				} else {
 					use lib 'http://projectamin.org/amin-latest.par';
 					use lib 'http://projectamin.org/lwp.par';
 			
 					eval "require $_->{module}";
 					if ($@) {
-						$self->{Spec}->{amin_error} = "red";
-						my $text = "Machine_Spec failed could not load $_->{module}. Reason $@";
-						$log->error_message($text);
+						#$self->{Spec}->{amin_error} = "red";
+						#my $text = "Machine_Spec failed could not load $_->{module}. Reason $@";
+						#$log->error_message($text);
+						die "Machine_Spec failed could not load $_->{module}. Reason $@";
 					}
 				}
 			}
