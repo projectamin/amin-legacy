@@ -163,7 +163,7 @@ sub metric {
 
 =head1 NAME
 
-ROUTE - show / manipulate the IP routing table
+ROUTE - util show / manipulate the IP routing table
 
 =head1 version
 
