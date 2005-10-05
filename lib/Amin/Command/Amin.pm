@@ -4,7 +4,7 @@ use strict;
 use vars qw(@ISA);
 use Amin::Elt;
 
-#test 5
+#test 4
 @ISA = qw(Amin::Elt);
 my %attrs;
 
