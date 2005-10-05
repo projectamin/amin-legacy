@@ -139,6 +139,9 @@ sub filter_map {
 	return \%fcommand;	
 }
 
+sub version {
+	return "1.0";
+}
 
 1;
 
@@ -169,10 +172,12 @@ amin  0.5.0
 =over 4
 
 =item Full example
-
-        <amin:command name="amin">
+ 
+ <amin:profile xmlns:amin='http://projectamin.org/ns/'>
+	<amin:command name="amin">
                 <amin:param name="version">0.5.0</amin:param>
         </amin:command>
+ </amin:profile>
 
 =back  
 
