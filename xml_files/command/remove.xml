@@ -1,6 +1,17 @@
 <amin:profile xmlns:amin='http://projectamin.org/ns/'>
+	<!-- used for when zip/unzip works
         <amin:command name="remove">
-                <amin:param name="target">limits hg</amin:param>
+                <amin:param name="target">limits hg linked_thing touchfile touchfile2 amin-file.zip</amin:param>
+                <amin:shell name="dir">/tmp/amin-tests/</amin:shell>
+        </amin:command>
+	<amin:command name="remove">
+		<amin:flag>rf</amin:flag>
+                <amin:param name="target">tmp/</amin:param>
+                <amin:shell name="dir">/tmp/amin-tests/</amin:shell>
+        </amin:command>
+	-->
+        <amin:command name="remove">
+                <amin:param name="target">limits hg linked_thing touchfile touchfile2</amin:param>
                 <amin:shell name="dir">/tmp/amin-tests/</amin:shell>
         </amin:command>
 </amin:profile>
