@@ -1,0 +1,8 @@
+<amin:profile xmlns:amin='http://projectamin.org/ns/'>
+        <amin:command name="head">
+                <amin:param name="bytes">512b</amin:param>
+                <amin:param>hg</amin:param>
+                <amin:flag>q</amin:flag>
+                <amin:shell name="dir">/tmp/amin-tests/</amin:shell>
+        </amin:command>
+</amin:profile>
