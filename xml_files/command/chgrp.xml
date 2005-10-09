@@ -2,6 +2,6 @@
         <amin:command name="chgrp">
                 <amin:flag>c</amin:flag>
                 <amin:param name="group">bin</amin:param>
-                <amin:param name="target">/tmp/limits</amin:param>
+                <amin:param name="target">/tmp/amin-tests/limits</amin:param>
         </amin:command>
 </amin:profile>
