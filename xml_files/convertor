@@ -1,0 +1,35 @@
+#!/usr/bin/perl
+
+#xml_files convertor
+use strict;
+use FindBin qw($Bin);
+
+
+#if you have some profiles that don't use the default $search below you 
+#must supply it as the argument to this program, for it to be converted right :)
+#have fun
+
+
+my $search = shift @ARGV;
+
+if (!$search) {
+	$search = "file://amin/xml_files";
+};
+
+my $replace = "file:/$Bin";
+opendir(DIR, $Bin) or die "can't opendir $Bin: $!";
+while (defined($file = readdir(DIR))) {
+	if ($file =~ /.xml/) {
+		my $xmlfile = $Bin . "/" . $file;
+		open (XML, "< $xmlfile");
+		my @lines = <XML>;
+		close (XML);
+		open (XMLW, "> $xmlfile");
+		foreach (@lines) {
+			$_ =~ s/$search/$replace/;
+			print XMLW $_;
+		}
+		close (XMLW);
+	}
+}
+closedir(DIR);
