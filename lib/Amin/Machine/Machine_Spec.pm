@@ -7,542 +7,74 @@ use Amin::Machine::Machine_Spec::Document;
 use XML::Filter::XInclude;
 use XML::SAX::PurePerl;
 use IPC::Run qw( run );
+use File::Basename qw(dirname);
+use Data::Dumper;
 
 @ISA = qw(XML::SAX::Base);
 
-#parent is defined in one of four ways
-#1. uri
+
+my $spec;
+#the spec is defined in one of four ways
+#1. any uri
 #2. /etc/amin/machine_spec.xml
 #3. ~/.amin/machine_spec.xml
-#4. the %filters dataset below
+#4. the default machine spec found inside
+#   ~perl/site_perl/Amin/Machine/Machine_Spec/machine_spec.xml
 
 my $home = $ENV{'HOME'};
 my $configfile = "$home/.amin/machine_spec.xml";
-my $spec;
 my @machine_filters;
 my @machine_bundle;
 my %control;
 
 sub start_document {
 	my $self = shift;
-
-	
-if ($self->{URI}) {
-	#process the uri
-	my $h = Amin::Machine::Machine_Spec::Document->new();
-	my $x = XML::Filter::XInclude->new(Handler => $h);
-	my $p = XML::SAX::PurePerl->new(Handler => $x);
-	$spec = $p->parse_uri($self->{URI});	
-	$control{ICONTROL} = "yes";
-} elsif (-f '/etc/amin/machine_spec.xml') {
-	#check if %filters is set
-	unless ($control{ICONTROL}) {
-		my $uri = "file://etc/amin/machine_spec.xml";
-		#process /etc/amin/machine_spec.xml
+	if ($self->{URI}) {
+		#process the uri
 		my $h = Amin::Machine::Machine_Spec::Document->new();
 		my $x = XML::Filter::XInclude->new(Handler => $h);
 		my $p = XML::SAX::PurePerl->new(Handler => $x);
-		$spec = $p->parse_uri($uri);	
+		$spec = $p->parse_uri($self->{URI});	
 		$control{ICONTROL} = "yes";
+	} elsif (-f '/etc/amin/machine_spec.xml') {
+		#check if %filters is set
+		unless ($control{ICONTROL}) {
+			my $uri = "file://etc/amin/machine_spec.xml";
+			#process /etc/amin/machine_spec.xml
+			my $h = Amin::Machine::Machine_Spec::Document->new();
+			my $x = XML::Filter::XInclude->new(Handler => $h);
+			my $p = XML::SAX::PurePerl->new(Handler => $x);
+			$spec = $p->parse_uri($uri);	
+			$control{ICONTROL} = "yes";
+		}
+	} elsif (-f $configfile) {
+		#check if %filters is set
+		unless ($control{ICONTROL}) {
+			my $uri = "file:/" . $configfile;
+			#process ~/.amin/machine_spec.xml
+			my $h = Amin::Machine::Machine_Spec::Document->new();
+			my $x = XML::Filter::XInclude->new(Handler => $h);
+			my $p = XML::SAX::PurePerl->new(Handler => $x);
+			$spec = $p->parse_uri($uri);	
+			$control{ICONTROL} = "yes";
+		}
+	} else {
+		#check if %filters is set
+		unless ($control{ICONTROL}) {
+			#mess with stuff
+			my $dir = $INC{'Amin.pm'};
+		        $dir = dirname($dir);
+			my $uri = "file:/" . $dir . "/Amin/Machine/Machine_Spec/machine_spec.xml";
+			
+			#define the spec
+			#process ~perl/site_perl/Amin/Machine/Machine_Spec/machine_spec.xml
+			my $h = Amin::Machine::Machine_Spec::Document->new();
+			my $x = XML::Filter::XInclude->new(Handler => $h);
+			my $p = XML::SAX::PurePerl->new(Handler => $x);
+			$spec = $p->parse_uri($uri);	
+			$control{ICONTROL} = "yes";
+		}
 	}
-} elsif (-f $configfile) {
-	#check if %filters is set
-	unless ($control{ICONTROL}) {
-		my $uri = "file:/" . $configfile;
-		#process ~/.amin/machine_spec.xml
-		my $h = Amin::Machine::Machine_Spec::Document->new();
-		my $x = XML::Filter::XInclude->new(Handler => $h);
-		my $p = XML::SAX::PurePerl->new(Handler => $x);
-		$spec = $p->parse_uri($uri);	
-		$control{ICONTROL} = "yes";
-	}
-
-
-} else {
-	#check if %filters is set
-	unless ($control{ICONTROL}) {
-		#define the parents ie Filters
-		
-		my %parent;
-		my %mkdir = (   
-				'module' => 'Amin::Command::Mkdir',
-				'element' => 'command',
-				'namespace' => 'amin',
-				'name' => 'mkdir',
-				'position' => 'middle',
-				'version' => '1.0',
-				
-		);
-		#add it
-		$parent{$mkdir{module}} = \%mkdir;
-	
-		my %mount = (
-				'module' => 'Amin::Command::Mount',
-				'element' => 'command',
-				'namespace' => 'amin',
-				'name' => 'mount',
-				'position' => 'middle',
-				'version' => '1.0',
-		);
-		$parent{$mount{module}} = \%mount;
-
-		my %textdump = (
-				'module' => 'Amin::Command::Textdump',
-				'element' => 'command',
-				'namespace' => 'amin',
-				'name' => 'textdump',
-				'position' => 'middle',
-				'version' => '1.0',
-		);
-		$parent{$textdump{module}} = \%textdump;
-
-
-		my %ls = (
-				'module' => 'Amin::Command::Ls',
-				'element' => 'command',
-				'namespace' => 'amin',
-				'name' => 'ls',
-				'position' => 'middle',
-				'version' => '1.0',
-		);
-		$parent{$ls{module}} = \%ls;
-
-
-		my %move = (
-				'module' => 'Amin::Command::Move',
-				'element' => 'command',
-				'namespace' => 'amin',
-				'name' => 'move',
-				'position' => 'middle',
-				'version' => '1.0',
-		);
-		$parent{$move{module}} = \%move;
-
-
-
-		my %amin = (
-				'module' => 'Amin::Command::Amin',
-				'element' => 'command',
-				'namespace' => 'amin',
-				'name' => 'amin',
-				'position' => 'middle',
-				'version' => '1.0',
-		);
-		$parent{$amin{module}} = \%amin;
-
-
-		my %chgrp = (
-				'module' => 'Amin::Command::Chgrp',
-				'element' => 'command',
-				'namespace' => 'amin',
-				'name' => 'chgrp',
-				'position' => 'middle',
-				'version' => '1.0',
-		);
-		$parent{$chgrp{module}} = \%chgrp;
-
-
-		my %chmod = (
-				'module' => 'Amin::Command::Chmod',
-				'element' => 'command',
-				'namespace' => 'amin',
-				'name' => 'chmod',
-				'position' => 'middle',
-				'version' => '1.0',
-		);
-		$parent{$chmod{module}} = \%chmod;
-
-
-		my %chown = (
-				'module' => 'Amin::Command::Chown',
-				'element' => 'command',
-				'namespace' => 'amin',
-				'name' => 'chown',
-				'position' => 'middle',
-				'version' => '1.0',
-		);
-		$parent{$chown{module}} = \%chown;
-
-
-		my %configure = (
-				'module' => 'Amin::Command::Configure',
-				'element' => 'command',
-				'namespace' => 'amin',
-				'name' => 'configure',
-				'position' => 'middle',
-				'version' => '1.0',
-		);
-		$parent{$configure{module}} = \%configure;
-
-
-		my %copy = (
-				'module' => 'Amin::Command::Copy',
-				'element' => 'command',
-				'namespace' => 'amin',
-				'name' => 'copy',
-				'position' => 'middle',
-				'version' => '1.0',
-		);
-		$parent{$copy{module}} = \%copy;
-
-
-		my %cp = (
-				'module' => 'Amin::Command::Cp',
-				'element' => 'command',
-				'namespace' => 'amin',
-				'name' => 'cp',
-				'position' => 'middle',
-				'version' => '1.0',
-		);
-		$parent{$cp{module}} = \%cp;
-
-
-		my %df = (
-				'module' => 'Amin::Command::Df',
-				'element' => 'command',
-				'namespace' => 'amin',
-				'name' => 'df',
-				'position' => 'middle',
-				'version' => '1.0',
-		);
-		$parent{$df{module}} = \%df;
-
-
-		my %du = (
-				'module' => 'Amin::Command::Du',
-				'element' => 'command',
-				'namespace' => 'amin',
-				'name' => 'du',
-				'position' => 'middle',
-				'version' => '1.0',
-		);
-		$parent{$du{module}} = \%du;
-
-
-		my %echo = (
-				'module' => 'Amin::Command::Echo',
-				'element' => 'command',
-				'namespace' => 'amin',
-				'name' => 'echo',
-				'position' => 'middle',
-				'version' => '1.0',
-		);
-		$parent{$echo{module}} = \%echo;
-
-
-		my %iptables = (
-				'module' => 'Amin::Command::Iptables',
-				'element' => 'command',
-				'namespace' => 'amin',
-				'name' => 'iptables',
-				'position' => 'middle',
-				'version' => '1.0',
-		);
-		$parent{$iptables{module}} = \%iptables;
-
-                my %ifconfig = (
-                                'module' => 'Amin::Command::Ifconfig',
-                                'element' => 'command',
-                                'namespace' => 'amin',
-                                'name' => 'ifconfig',
-                                'position' => 'middle',
-                                'version' => '1.0',
-                );
-                $parent{$ifconfig{module}} = \%ifconfig;
-
-		my %link = (
-				'module' => 'Amin::Command::Link',
-				'element' => 'command',
-				'namespace' => 'amin',
-				'name' => 'link',
-				'position' => 'middle',
-				'version' => '1.0',
-		);
-		$parent{$link{module}} = \%link;
-
-
-		my %ln = (
-				'module' => 'Amin::Command::Ln',
-				'element' => 'command',
-				'namespace' => 'amin',
-				'name' => 'ln',
-				'position' => 'middle',
-				'version' => '1.0',
-		);
-		$parent{$ln{module}} = \%ln;
-
-
-		my %make = (
-				'module' => 'Amin::Command::Make',
-				'element' => 'command',
-				'namespace' => 'amin',
-				'name' => 'make',
-				'position' => 'middle',
-				'version' => '1.0',
-		);
-		$parent{$make{module}} = \%make;
-
-
-		my %mv = (
-				'module' => 'Amin::Command::Mv',
-				'element' => 'command',
-				'namespace' => 'amin',
-				'name' => 'mv',
-				'position' => 'middle',
-				'version' => '1.0',
-		);
-		$parent{$mv{module}} = \%mv;
-	    
-	        my %pconfigure = (
-		                'module' => 'Amin::Command::Pconfigure',
-		                'element' => 'command',
-		                'namespace' => 'amin',
-		                'name' => 'pconfigure',
-		                'position' => 'middle',
-		                'version' => '1.0',
-		);
-	        $parent{$pconfigure{module}} = \%pconfigure;
-
-
-		my %patch = (
-				'module' => 'Amin::Command::Patch',
-				'element' => 'command',
-				'namespace' => 'amin',
-				'name' => 'patch',
-				'position' => 'middle',
-				'version' => '1.0',
-		);
-		$parent{$patch{module}} = \%patch;
-
-
-		my %remove = (
-				'module' => 'Amin::Command::Remove',
-				'element' => 'command',
-				'namespace' => 'amin',
-				'name' => 'remove',
-				'position' => 'middle',
-				'version' => '1.0',
-		);
-		$parent{$remove{module}} = \%remove;
-
-
-		my %rm = (
-				'module' => 'Amin::Command::Rm',
-				'element' => 'command',
-				'namespace' => 'amin',
-				'name' => 'rm',
-				'position' => 'middle',
-				'version' => '1.0',
-		);
-		$parent{$rm{module}} = \%rm;
-
-	        my %route = (
-		                'module' => 'Amin::Command::Route',
-                                'element' => 'command',
-		                'namespace' => 'amin',
-		                'name' => 'route',
-		                'position' => 'middle',
-		                'version' => '1.0',
-		);
-	        $parent{$route{module}} = \%route;
-	    
-		my %rpm = (
-				'module' => 'Amin::Command::Rpm',
-				'element' => 'command',
-				'namespace' => 'amin',
-				'name' => 'rpm',
-				'position' => 'middle',
-				'version' => '1.0',
-		);
-		$parent{$rpm{module}} = \%rpm;
-
-
-		my %rsync = (
-				'module' => 'Amin::Command::Rsync',
-				'element' => 'command',
-				'namespace' => 'amin',
-				'name' => 'rsync',
-				'position' => 'middle',
-				'version' => '1.0',
-		);
-		$parent{$rsync{module}} = \%rsync;
-
-
-		my %search_replace = (
-				'module' => 'Amin::Command::Search_replace',
-				'element' => 'command',
-				'namespace' => 'amin',
-				'name' => 'search_replace',
-				'position' => 'middle',
-				'version' => '1.0',
-		);
-		$parent{$search_replace{module}} = \%search_replace;
-
-
-		my %system_command = (
-				'module' => 'Amin::Command::System_command',
-				'element' => 'command',
-				'namespace' => 'amin',
-				'name' => 'system_command',
-				'position' => 'middle',
-				'version' => '1.0',
-		);
-		$parent{$system_command{module}} = \%system_command;
-
-
-		my %touch = (
-				'module' => 'Amin::Command::Touch',
-				'element' => 'command',
-				'namespace' => 'amin',
-				'name' => 'touch',
-				'position' => 'middle',
-				'version' => '1.0',
-		);
-		$parent{$touch{module}} = \%touch;
-
-
-		my %umount = (
-				'module' => 'Amin::Command::Umount',
-				'element' => 'command',
-				'namespace' => 'amin',
-				'name' => 'umount',
-				'position' => 'middle',
-				'version' => '1.0',
-		);
-		$parent{$umount{module}} = \%umount;
-
-
-		my %unpack = (
-				'module' => 'Amin::Command::Unpack',
-				'element' => 'command',
-				'namespace' => 'amin',
-				'name' => 'unpack',
-				'position' => 'middle',
-				'version' => '1.0',
-		);
-		$parent{$unpack{module}} = \%unpack;
-
-
-		my %unzip = (
-				'module' => 'Amin::Command::Unzip',
-				'element' => 'command',
-				'namespace' => 'amin',
-				'name' => 'unzip',
-				'position' => 'middle',
-				'version' => '1.0',
-		);
-		$parent{$unzip{module}} = \%unzip;
-
-
-		my %zip = (
-				'module' => 'Amin::Command::Zip',
-				'element' => 'command',
-				'namespace' => 'amin',
-				'name' => 'zip',
-				'position' => 'middle',
-				'version' => '1.0',
-		);
-		$parent{$zip{module}} = \%zip;
-
-
-		my %chroot = (
-				'module' => 'Amin::Chroot',
-				'element' => 'chroot',
-				'namespace' => 'amin',
-				'name' => 'chroot',
-				'position' => 'begin',
-				'version' => '1.0',
-		);
-		$parent{$chroot{module}} = \%chroot;
-
-
-		my %download = (
-				'module' => 'Amin::Download',
-				'element' => 'download',
-				'namespace' => 'amin',
-				'name' => 'download',
-				'position' => 'begin',
-				'version' => '1.0',
-		);
-		$parent{$download{module}} = \%download;
-
-
-		my %depend = (
-				'module' => 'Amin::Depend',
-				'element' => 'depend',
-				'namespace' => 'amin',
-				'name' => 'depend',
-				'position' => 'begin',
-				'version' => '1.0',
-		);
-		$parent{$depend{module}} = \%depend;
-
-
-		my %arch = (
-				'module' => 'Amin::Cond::Arch',
-				'element' => 'cond',
-				'namespace' => 'amin',
-				'name' => 'arch',
-				'position' => 'begin',
-				'version' => '1.0',
-		);
-		$parent{$arch{module}} = \%arch;
-
-
-		my %archu = (
-				'module' => 'Amin::Cond::Archu',
-				'element' => 'cond',
-				'namespace' => 'amin',
-				'name' => 'archu',
-				'position' => 'begin',
-				'version' => '1.0',
-		);
-		$parent{$archu{module}} = \%archu;
-
-
-		my %hostname = (
-				'module' => 'Amin::Cond::Hostname',
-				'element' => 'cond',
-				'namespace' => 'amin',
-				'name' => 'hostname',
-				'position' => 'begin',
-				'version' => '1.0',
-		);
-		$parent{$hostname{module}} = \%hostname;
-
-		my %os = (
-				'module' => 'Amin::Cond::OS',
-				'element' => 'cond',
-				'namespace' => 'amin',
-				'name' => 'os',
-				'position' => 'begin',
-				'version' => '1.0',
-		);
-		$parent{$os{module}} = \%os;
-
-		my %adstage = (
-				'module' => 'Adistro::Stage',
-				'element' => 'stage',
-				'namespace' => 'adistro',
-				'name' => 'stage',
-				'position' => 'begin',
-				'version' => '1.0',
-		);
-		$parent{$adstage{module}} = \%adstage;
-		
-		my %aistage = (
-				'module' => 'Ainit::Stage',
-				'element' => 'stage',
-				'namespace' => 'ainit',
-				'name' => 'stage',
-				'position' => 'begin',
-				'version' => '1.0',
-		);
-		$parent{$aistage{module}} = \%aistage;
-
-		$spec->{Filter} = \%parent;
-	}
-}
 }
 
 sub start_element {
@@ -755,8 +287,8 @@ The spec is defined in one of four ways
 
  3. user's home amin dir - ~/.amin/machine_spec.xml
 
- 4. internal amin %filters dataset and other various
-   machine defaults noted in other module documents.
+ 4. the default machine spec found inside
+    ~perl/site_perl/Amin/Machine/Machine_Spec/machine_spec.xml
    
 Example machine_spec.xml is shown in the XML section.
 
@@ -811,7 +343,7 @@ After first round of $spec manipulation, we move
 onto phase two. Phase two involves loading each 
 individual filter listed in the $spec. If the filter
 is not available, this module looks at the filter's
-"download" setting and runs this a new amin machine
+"download" setting and runs this as a new amin machine
 that tries to process the filter's download profile.
 
 A download profile is just a simple profile on how 
