@@ -25,47 +25,41 @@ sub characters {
 	my $attrs = $self->{"ATTRS"};
 	my $element = $self->{"ELEMENT"};
 	
-	if ($attrs{'{}name'}->{Value} eq "b") {
-		if ($data ne "") {
-			$self->path($data);
-		}
-	}
-	if ($attrs{'{}name'}->{Value} eq "t") {
-		if ($data ne "") {
-			$self->date($data);
-		}
-	}
-	if ($attrs{'{}name'}->{Value} eq "n") {
-		if ($data ne "") {
-			$self->suffix($data);
-		}
-	}
-	if ($attrs{'{}name'}->{Value} eq "x") {
-		if ($data ne "") {
-			$self->exclude($data);
-		}
-	}
-	if ($attrs{'{}name'}->{Value} eq "i") {
-		if ($data ne "") {
-			$self->include($data);
-		}
-	}
-	if ($attrs{'{}name'}->{Value} eq "env") {
-		if ($data ne "") {
-			$self->env_vars($data);
-		}
-	}
-	if ($element->{LocalName} eq "flag") {
-		if ($attrs{'{}name'}->{Value} eq "") {
-			if ($data ne "") {
-				$self->flag(split(/\s+/, $data));
+	if ($data ne "") {
+		if ($element->{LocalName} eq "shell") {
+			if ($attrs{'{}name'}->{Value} eq "env") {
+				$self->env_vars($data);
 			}
 		}
-	}
-	if ($element->{LocalName} eq "param") {
-		if ($attrs{'{}name'}->{Value} eq "") {
-			if ($data ne "") {
+		if ($element->{LocalName} eq "param") {
+			if ($attrs{'{}name'}->{Value} eq "source") {
+				$self->source(split(/\s+/, $data));
+			}
+			if ($attrs{'{}name'}->{Value} eq "target") {
+				$self->target(split(/\s+/, $data));
+			}
+			if ($attrs{'{}name'}->{Value} eq "") {
 				$self->param(split(/\s+/, $data));
+			}
+		}
+		if ($element->{LocalName} eq "flag") {
+			if ($attrs{'{}name'}->{Value} eq "") {
+				$self->flag(split(/\s+/, $data));
+			}
+			if ($attrs{'{}name'}->{Value} eq "b") {
+				$self->path($data);
+			}
+			if ($attrs{'{}name'}->{Value} eq "t") {
+				$self->date($data);
+			}
+			if ($attrs{'{}name'}->{Value} eq "n") {
+				$self->suffix($data);
+			}
+			if ($attrs{'{}name'}->{Value} eq "x") {
+				$self->exclude($data);
+			}
+			if ($attrs{'{}name'}->{Value} eq "i") {
+				$self->include($data);
 			}
 		}
 	}
@@ -84,6 +78,8 @@ sub end_element {
 		my $include = $self->{'INCLUDE'};
 		my $xflag = $self->{'FLAG'};
 		my $xparam = $self->{'PARAM'};
+		my $source = $self->{'SOURCE'};
+		my $target = $self->{'TARGET'};
 		
 		my (%acmd, @param, @flag, $flag);
 		
@@ -137,6 +133,12 @@ sub end_element {
 			$flag = "-x " . $exclude;
 			push @flag, $flag;
 		}
+		foreach my $xtarget (@$target){
+			push @param, $xtarget;
+		}
+		foreach my $xsource (@$source){
+			push @param, $xsource;
+		}
 		foreach my $ip (@$xparam){
 			push @param, $ip;
 		}
@@ -175,6 +177,11 @@ sub end_element {
 	}
 }
 
+sub source {
+	my $self = shift;
+	if (@_) {push @{$self->{SOURCE}}, @_; }
+	return @{ $self->{SOURCE} };
+}
 
 sub path {
 	my $self = shift;
@@ -316,6 +323,10 @@ sub filter_map {
 	return \%fcommand;	
 }
 
+sub version {
+	return "1.0";
+}
+
 1;
 
 =head1 NAME
@@ -336,10 +347,12 @@ Zip 2.3 (November 29th 1999)
 
 =item Full example
 
+ <amin:profile xmlns:amin='http://projectamin.org/ns/'>
         <amin:command name="zip">
-                <amin:param name="b">/my/files/to/zip/*</amin:param>
-                <amin:param>/my/new/zip/file.zip</amin:param>
+                <amin:flag name="b">/tmp/amin-tests/*</amin:flag>
+                <amin:param>/tmp/amin-tests/file.zip</amin:param>
         </amin:command>
+ </amin:profile>
 
 =back  
 

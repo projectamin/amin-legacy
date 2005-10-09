@@ -25,34 +25,31 @@ sub characters {
 	my $attrs = $self->{"ATTRS"};
 	my $element = $self->{"ELEMENT"};
 	
-	if ($attrs{'{}name'}->{Value} eq "d") {
-		if ($data ne "") {
-			$self->exdir($data);
-		}
-	}
-	if ($attrs{'{}name'}->{Value} eq "x") {
-		if ($data ne "") {
-			$self->exclude($data);
-		}
-	}
-	if ($attrs{'{}name'}->{Value} eq "env") {
-		if ($data ne "") {
-			$self->env_vars($data);
-		}
-	}
-	if ($element->{LocalName} eq "flag") {
-		if ($attrs{'{}name'}->{Value} eq "") {
-			if ($data ne "") {
-				$self->flag(split(/\s+/, $data));
-			}
-		}
-	}
-	if ($element->{LocalName} eq "param") {
-		if ($attrs{'{}name'}->{Value} eq "") {
-			if ($data ne "") {
+	if ($data ne "") {
+		if ($element->{LocalName} eq "param") {
+			if ($attrs{'{}name'}->{Value} eq "") {
 				$self->param(split(/\s+/, $data));
 			}
 		}
+		if ($element->{LocalName} eq "shell") {
+			if ($attrs{'{}name'}->{Value} eq "dir") {
+				$self->dir($data);
+			}
+			if ($attrs{'{}name'}->{Value} eq "env") {
+				$self->env_vars($data);
+			}
+		}
+		if ($element->{LocalName} eq "flag") {
+			if ($attrs{'{}name'}->{Value} eq "d") {
+				$self->exdir($data);
+			}
+			if ($attrs{'{}name'}->{Value} eq "x") {
+				$self->exclude($data);
+			}
+			if ($attrs{'{}name'}->{Value} eq "") {
+				$self->flag(split(/\s+/, $data));
+			}
+		}	
 	}
 	$self->SUPER::characters($chars);
 }
@@ -62,6 +59,7 @@ sub end_element {
 
 	if ($element->{LocalName} eq "command") {
 
+		my $dir = $self->{'DIR'};
 		my $exdir = $self->{'EXDIR'};
 		my $exclude = $self->{'EXCLUDE'};
 		my $xflag = $self->{'FLAG'};
@@ -70,6 +68,16 @@ sub end_element {
 		my (%acmd, @param, @flag, $flag);
 		
 		my $log = $self->{Spec}->{Log};
+		
+		if (! chdir $dir) {
+			$self->{Spec}->{amin_error} = "red";
+			my $text = "Unable to change directory to $dir. Reason: $!";
+			$self->text($text);
+
+			$log->error_message($text);
+			$self->SUPER::end_element($element);
+			return;
+		}
 		
 		my $state;
 		foreach my $ip (@$xflag){
@@ -255,6 +263,10 @@ sub filter_map {
 	return \%fcommand;	
 }
 
+sub version {
+	return "1.0";
+}
+
 1;
 
 =head1 NAME
@@ -275,9 +287,11 @@ UnZip 5.50 of 17 February 2002
 
 =item Full example
 
+ <amin:profile xmlns:amin='http://projectamin.org/ns/'>
         <amin:command name="unzip">
                 <amin:param>/my/new/zip/file.zip</amin:param>
         </amin:command>
+ </amin:profile>
 
 =back  
 

@@ -38,7 +38,7 @@ sub characters {
 				}
 			}
 		}
-		if ($element->{LocalName} eq "flag") {
+		if ($element->{LocalName} eq "shell") {
 			if ($attrs{'{}name'}->{Value} eq "dir") {
 				$self->dir($data);
 			}

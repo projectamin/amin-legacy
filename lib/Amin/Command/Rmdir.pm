@@ -25,29 +25,25 @@ sub characters {
 	my $attrs = $self->{"ATTRS"};
 	my $element = $self->{"ELEMENT"};
 
-	if ($element->{LocalName} eq "param") {
-		if ($data ne "") {
+	if ($data ne "") {
+		if ($element->{LocalName} eq "param") {
 			my @things = $data =~ m/([\*\+\.\w=\/-]+|'[^']+')\s*/g;
 			foreach (@things) {
 				$self->param($_);
 			}
 		}
-	}
+		if ($element->{LocalName} eq "shell") {
+			if ($attrs{'{}name'}->{Value} eq "dir") {
+				$self->dir($data);
+			}
+			if ($attrs{'{}name'}->{Value} eq "env") {
+				$self->env_vars($data);
+			}
+
+		}	
 	
-	
-	if ($attrs{'{}name'}->{Value} eq "dir") {
-		if ($data ne "") {
-			$self->dir($data);
-		}
-	}
-	if ($attrs{'{}name'}->{Value} eq "env") {
-		if ($data ne "") {
-			$self->env_vars($data);
-		}
-	}
-	if ($element->{LocalName} eq "flag") {
-		if ($attrs{'{}name'}->{Value} eq "") {
-			if ($data ne "") {
+		if ($element->{LocalName} eq "flag") {
+			if ($attrs{'{}name'}->{Value} eq "") {
 				$self->flag(split(/\s+/, $data));
 			}
 		}
@@ -107,7 +103,7 @@ sub end_element {
 		my %acmd;
 		$acmd{'CMD'} = $command;
 		$acmd{'FLAG'} = \@flag;
-		$acmd{'PARAM'} = \@target;
+		$acmd{'PARAM'} = \@param;
 		
 		if ($self->{'ENV_VARS'}) {
 			$acmd{'ENV_VARS'} = $self->{'ENV_VARS'};
@@ -142,6 +138,12 @@ sub end_element {
 	}
 }
 
+sub version {
+	return "1.0";
+}
+
+1;
+
 =head1 NAME
 
 Rmdir - reader class filter for the rmdir command.
@@ -160,16 +162,14 @@ Rmdir (coreutils) 5.0 March 2003
 
 =item Full example
 
+ <amin:profile xmlns:amin='http://projectamin.org/ns/'>
         <amin:command name="rmdir">
                 <amin:param>my_new_dir</amin:param>
                 <amin:shell name="dir">/tmp/</amin:shell>
-                <amin:flag>p</amin:flag>
         </amin:command>
+ </amin:profile>
 
 =back  
 
 =cut
-
-
-1;
 

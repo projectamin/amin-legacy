@@ -25,19 +25,25 @@ sub characters {
 	my $attrs = $self->{"ATTRS"};
 	my $element = $self->{"ELEMENT"};
 
-	if ($element->{LocalName} eq "param") {
-		if ($attrs{'{}name'}->{Value} eq "") {
-			if ($data ne "") {
+	if ($data ne "") {
+		if ($element->{LocalName} eq "param") {
+			if ($attrs{'{}name'}->{Value} eq "") {
 				my @things = $data =~ m/([\*\+\.\w=\/-]+|'[^']+')\s*/g;
 				foreach (@things) {
 					$self->param($_);
 				}
 			}
 		}
-	}
-	if ($element->{LocalName} eq "flag") {
-		if ($attrs{'{}name'}->{Value} eq "") {
-			if ($data ne "") {
+		if ($element->{LocalName} eq "shell") {
+			if ($attrs{'{}name'}->{Value} eq "dir") {
+				$self->dir($data);
+			}
+			if ($attrs{'{}name'}->{Value} eq "env") {
+				$self->env_vars($data);
+			}
+		}
+		if ($element->{LocalName} eq "flag") {
+			if ($attrs{'{}name'}->{Value} eq "") {
 				$self->flag($_);
 			}
 		}
@@ -52,17 +58,30 @@ sub end_element {
 		my $flag = $self->{'FLAG'};
 		my $xparam = $self->{'PARAM'};
 		my $command = $self->{'COMMAND'};
+		my $dir = $self->{'DIR'};
 		
-		my (@param);
+		my (@param, @flag);
 
 		my $log = $self->{Spec}->{Log};
+		
+		if ($dir) {
+			if (! chdir $dir) {
+				$self->{Spec}->{amin_error} = "red";
+				my $text = "Unable to change directory to $dir. Reason: $!";
+				$self->text($text);
+
+				$log->error_message($text);
+				$self->SUPER::end_element($element);
+				return;
+			}
+		}
 		
 		if ($flag) {	
 			$flag = "-" . $flag;
 			push @flag, $flag;
 		}
 		
-		foreach my $ip (@$param){
+		foreach my $ip (@$xparam){
 			push @param, $ip;
 		}
 

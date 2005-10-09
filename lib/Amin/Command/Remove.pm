@@ -153,7 +153,7 @@ rm (coreutils) 5.0 March 2003
 
  <amin:profile xmlns:amin='http://projectamin.org/ns/'>
         <amin:command name="remove">
-                <amin:param name="target">limits hg</amin:param>
+                <amin:param name="target">limits hg linked_thing touchfile touchfile2</amin:param>
                 <amin:shell name="dir">/tmp/amin-tests/</amin:shell>
         </amin:command>
  </amin:profile>
