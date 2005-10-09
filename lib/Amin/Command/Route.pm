@@ -3,7 +3,6 @@ package Amin::Command::Route;
 use strict;
 use vars qw(@ISA);
 use Amin::Elt;
-use Data::Dumper;
 
 @ISA = qw(Amin::Elt);
 my %attrs;
@@ -26,41 +25,41 @@ sub characters {
 	my $attrs = $self->{"ATTRS"};
 	my $element = $self->{"ELEMENT"};
 	
-	if ($attrs{'{}name'}->{Value} eq "env") {
-		if ($data ne "") {
-			$self->env_vars($data);
+	if ($data ne "") {
+		if ($element->{LocalName} eq "shell") {
+			if ($attrs{'{}name'}->{Value} eq "env") {
+				$self->env_vars($data);
+			}
 		}
-	}
-	if ($element->{LocalName} eq "flag") {
-		if ($attrs{'{}name'}->{Value} eq "") {
-			if ($data ne "") {
+		if ($element->{LocalName} eq "flag") {
+			if ($attrs{'{}name'}->{Value} eq "") {
 				$self->flag($data);
 			}
 		}
  
-	    if ($element->{LocalName} eq "param") {
-		if ($attrs{'{}name'}->{Value} eq "") {
-		    $self->param(split(/\s+/, $data));
+		if ($element->{LocalName} eq "param") {
+			if ($attrs{'{}name'}->{Value} eq "") {
+			    $self->param(split(/\s+/, $data));
+			}
+			if ($attrs{'{}name'}->{Value} eq "interface") {
+			    $self->interface($data);
+			}
+			if ($attrs{'{}name'}->{Value} eq "address") {
+			    $self->address($data);
+			}
+			if ($attrs{'{}name'}->{Value} eq "netmask") {
+			    $self->netmask($data);
+			}
+			if ($attrs{'{}name'}->{Value} eq "state") {
+			    $self->state($data);
+			}
+			if ($attrs{'{}name'}->{Value} eq "type") {
+			    $self->type($data);
+			}
+			if ($attrs{'{}name'}->{Value} eq "metric") {
+			    $self->metric($data);
+			}
 		}
-		if ($attrs{'{}name'}->{Value} eq "interface") {
-		    $self->interface($data);
-		}
-		if ($attrs{'{}name'}->{Value} eq "address") {
-		    $self->address($data);
-		}
-		if ($attrs{'{}name'}->{Value} eq "netmask") {
-		    $self->netmask($data);
-		}
-		if ($attrs{'{}name'}->{Value} eq "state") {
-		    $self->state($data);
-		}
-		if ($attrs{'{}name'}->{Value} eq "type") {
-		    $self->type($data);
-		}
-		if ($attrs{'{}name'}->{Value} eq "metric") {
-		    $self->metric($data);
-		}
-	    }
 	}
 	$self->SUPER::characters($chars);
 }
@@ -96,8 +95,7 @@ sub end_element {
 			$acmd{'ENV_VARS'} = $self->{'ENV_VARS'};
 		}
 		my $cmd = $self->amin_command(\%acmd);
-	        die Dumper(@param);
-		if ($cmd->{STATUS} != 1) {
+	        if ($cmd->{STATUS} != 1) {
 			$self->{Spec}->{amin_error} = "red";
 			my $text = "Could not set $type route to $address. Reason: $cmd->{ERR}";
 			$self->text($text);
@@ -159,6 +157,10 @@ sub metric {
             return $self->{METRIC};                                                                                 
     }
 
+sub version {
+	return "1.0";
+}
+
 1;
 
 =head1 NAME
@@ -179,6 +181,7 @@ route 1.98 (2001-04-15)
 
 =item Full example
 
+ <amin:profile xmlns:amin='http://projectamin.org/ns/'>
         <amin:command name="route">
                 <amin:param name="state">add</amin:param>
                 <amin:param name="type">default gw</amin:param>
@@ -191,6 +194,7 @@ route 1.98 (2001-04-15)
                 <amin:param name="state">del</amin:param>
                 <amin:param name="type">default</amin:param>
         </amin:command>
+ </amin:profile>
 
 =back  
 
