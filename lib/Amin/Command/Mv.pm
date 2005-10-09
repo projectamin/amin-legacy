@@ -6,6 +6,10 @@ use Amin::Command::Move;
 
 @ISA = qw(Amin::Command::Move);
 
+sub version {
+	return "1.0";
+}
+
 1;
 
 =head1 NAME
@@ -25,11 +29,13 @@ Mv - reader class filter for the move(mv) command.
 
 =item Full example
 
+ <amin:profile xmlns:amin='http://projectamin.org/ns/'>
         <amin:command name="mv">
-                <amin:param name="source">limits</amin:param>
-                <amin:param name="target">limit-new</amin:param>
-                <amin:shell name="dir">/tmp/</amin:shell>
+                <amin:param name="source">limit-new</amin:param>
+                <amin:param name="target">limits</amin:param>
+                <amin:shell name="dir">/tmp/amin-tests/</amin:shell>
         </amin:command>
+ </amin:profile>
 
 =back  
 

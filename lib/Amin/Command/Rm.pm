@@ -6,6 +6,10 @@ use Amin::Command::Remove;
 
 @ISA = qw(Amin::Command::Remove);
 
+sub version {
+	return "1.0";
+}
+
 1;
 
 =head1 NAME
@@ -26,10 +30,12 @@ rm (coreutils) 5.0 March 2003
 
 =item Full example
 
+ <amin:profile xmlns:amin='http://projectamin.org/ns/'>
         <amin:command name="remove">
-                <amin:param name="target">limits</amin:param>
-                <amin:shell name="dir">/tmp</amin:shell>
+                <amin:param name="target">pass my_new_dir/touchfile<</amin:param>
+                <amin:shell name="dir">/tmp/amin-tests/</amin:shell>
         </amin:command>
+ </amin:profile>
 
 =back  
 
