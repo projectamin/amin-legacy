@@ -90,6 +90,10 @@ sub end_element {
 		$acmd{'FLAG'} = \@flag;
 		$acmd{'PARAM'} = \@param;
 		
+		if ($self->{'ENV_VARS'}) {
+			$acmd{'ENV_VARS'} = $self->{'ENV_VARS'};
+		}
+		
 		my $cmd = $self->amin_command(\%acmd);
 
 		if ($cmd->{STATUS} != 0) {

@@ -85,15 +85,15 @@ sub end_element {
 		}
 
 		if ($dir) {
-		if (! chdir $dir) {
-			$self->{Spec}->{amin_error} = "red";
-			my $text = "Unable to change directory to $dir. Reason: $!";
-			$self->text($text);
+			if (! chdir $dir) {
+				$self->{Spec}->{amin_error} = "red";
+				my $text = "Unable to change directory to $dir. Reason: $!";
+				$self->text($text);
 
-			$log->error_message($text);
-			$self->SUPER::end_element($element);
-			return;
-		}
+				$log->error_message($text);
+				$self->SUPER::end_element($element);
+				return;
+			}
 		}
 		
 		my %acmd;

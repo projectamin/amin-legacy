@@ -26,6 +26,14 @@ sub characters {
 	my $element = $self->{"ELEMENT"};
 
 	if ($data ne "") {
+		if ($element->{LocalName} eq "shell") {
+			if ($attrs{'{}name'}->{Value} eq "dir") {
+				$self->dir($data);
+			}
+			if ($attrs{'{}name'}->{Value} eq "env") {
+				$self->env_vars($data);
+			}
+		}
 		if ($element->{LocalName} eq "param") {
 			if ($attrs{'{}name'}->{Value} eq "") {
 				my @things = $data =~ m/([\*\+\.\w=\/-]+|'[^']+')\s*/g;
@@ -62,6 +70,7 @@ sub end_element {
 	my ($self, $element) = @_;
 
 	if ($element->{LocalName} eq "command") {
+		my $dir = $self->{'DIR'};
 		my $xflag = $self->{'FLAG'};
 		my $xparam = $self->{'PARAM'};
 		my $command = $self->{'COMMAND'};
@@ -73,6 +82,19 @@ sub end_element {
 		
 		my ($flag, @flag, @param);
 		my $log = $self->{Spec}->{Log};
+		
+		if ($dir) {
+			if (! chdir $dir) {
+				$self->{Spec}->{amin_error} = "red";
+				my $text = "Unable to change directory to $dir. Reason: $!";
+				$self->text($text);
+
+				$log->error_message($text);
+				$self->SUPER::end_element($element);
+				return;
+			}
+		}
+		
 		my $state;
 		foreach my $ip (@$xflag){
 			if ($ip =~ /-/) {
@@ -121,6 +143,9 @@ sub end_element {
 		$acmd{'FLAG'} = \@flag;
 		$acmd{'PARAM'} = \@param;
 		
+		if ($self->{'ENV_VARS'}) {
+			$acmd{'ENV_VARS'} = $self->{'ENV_VARS'};
+		}
 		my $cmd = $self->amin_command(\%acmd);
 
 		if ($cmd->{STATUS} != 0) {

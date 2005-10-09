@@ -30,6 +30,9 @@ sub characters {
 			if ($attrs{'{}name'}->{Value} eq "env") {
 				$self->env_vars($data);
 			}
+			if ($attrs{'{}name'}->{Value} eq "dir") {
+				$self->dir($data);
+			}
 		}
 	
 		if ($element->{LocalName} eq "flag") {
@@ -64,6 +67,7 @@ sub end_element {
 
 	if ($element->{LocalName} eq "command") {
 
+		my $dir = $self->{'DIR'};
 		my $block_size = $self->{'BLOCK_SIZE'};
 		my $type = $self->{'TYPE'};
 		my $exclude_type = $self->{'EXCLUDE_TYPE'};
@@ -113,6 +117,17 @@ sub end_element {
 		if ($exclude_type) {
 			$flag = "-x " . $exclude_type;
 			push @flag, $flag;
+		}
+		if ($dir) {
+			if (! chdir $dir) {
+				$self->{Spec}->{amin_error} = "red";
+				my $text = "Unable to change directory to $dir. Reason: $!";
+				$self->text($text);
+
+				$log->error_message($text);
+				$self->SUPER::end_element($element);
+				return;
+			}
 		}
 		foreach my $ip (@$xparam){
 			push @param, $ip;

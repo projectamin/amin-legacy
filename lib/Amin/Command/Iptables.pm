@@ -25,7 +25,7 @@ sub characters {
 	my $attrs = $self->{"ATTRS"};
 
         if ($data ne "") {
-		if ($element->{LocalName} eq "flag") {
+		if ($element->{LocalName} eq "param") {
 			if ($attrs{'{}name'}->{Value} eq "action") {
 		        	$self->action($data);
 			}
