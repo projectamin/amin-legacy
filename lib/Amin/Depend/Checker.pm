@@ -2,7 +2,7 @@ package Amin::Depend::Checker;
 
 use strict;
 
-my $return = "pass";
+my $return = 0;
 
 
 sub start_element {
@@ -10,7 +10,7 @@ sub start_element {
 	%attrs = %{$element->{Attributes}};
 	
 	if ($attrs{'{}type'}->{Value} eq "error") {
-		$return = "fail";
+		$return = 1;
 	}
 }
 
@@ -35,6 +35,6 @@ Amin::Depend::Checker - reader class filter for the depend element.
   
   <amin:message type="error">
   
-  If found, $return is set to fail.
+  If found, $return is set to fail(1) instead of pass(0).
   
 =cut
