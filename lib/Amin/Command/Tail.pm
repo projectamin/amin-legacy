@@ -75,7 +75,7 @@ sub end_element {
 
 		if ($cmd->{STATUS} != 0) {
 			$self->{Spec}->{amin_error} = "red";
-			my $text = "Unable to run the userdel command. Reason: $cmd->{ERR}";
+			my $text = "Unable to run the tail command. Reason: $cmd->{ERR}";
 			$self->text($text);
 
 			$log->error_message($text);
@@ -86,7 +86,7 @@ sub end_element {
 			return;
 		}
 
-		my $text = "Userdel command was successful";
+		my $text = "Tail command was successful";
 		$self->text($text);
 
 		$log->success_message($text);
@@ -105,20 +105,24 @@ sub flag {
 	return $self->{FLAG};
 }
 
+sub version {
+	return "1.0";
+}
+
 
 1;
 
 =head1 NAME
 
-Userdel - reader class filter for the userdel command.
+Tail - reader class filter for the tail command.
 
 =head1 version
 
-Userdel 
+Tail 
 
 =head1 DESCRIPTION
 
-  A reader class for the userdel command. 
+  A reader class for the tail command. 
   
 =head1 XML
 
@@ -126,10 +130,12 @@ Userdel
 
 =item Full example
 
-        <amin:command name="userdel">
-                <amin:param>somename</amin:param>
-                <amin:flag>r</amin:flag>
+ <amin:profile xmlns:amin='http://projectamin.org/ns/'>
+        <amin:command name="tail">
+                <amin:param>hg</amin:param>
+		<amin:shell name="dir">/tmp/amin-tests/</amin:shell>
         </amin:command>
+ </amin:profile>
 
 =back  
 

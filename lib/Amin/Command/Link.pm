@@ -25,34 +25,30 @@ sub characters {
 	my $attrs = $self->{"ATTRS"};
 	my $element = $self->{"ELEMENT"};
 
-	if ($attrs{'{}name'}->{Value} eq "source") {
-		if ($data ne "") {
-			$self->source($data);
+	if ($data ne "") {
+		if ($element->{LocalName} eq "shell") {
+			if ($attrs{'{}name'}->{Value} eq "dir") {
+				$self->dir($data);
+			}
+			if ($attrs{'{}name'}->{Value} eq "env") {
+				$self->env_vars($data);
+			}
 		}
-	}
-	if ($attrs{'{}name'}->{Value} eq "dir") {
-		if ($data ne "") {
-			$self->dir($data);
+	
+		if ($element->{LocalName} eq "param") {
+			if ($attrs{'{}name'}->{Value} eq "source") {
+				$self->source($data);
+			}
+			if ($attrs{'{}name'}->{Value} eq "target") {
+				$self->target($data);
+			}
 		}
-	}
-	if ($attrs{'{}name'}->{Value} eq "env") {
-		if ($data ne "") {
-			$self->env_vars($data);
-		}
-	}
-	if ($attrs{'{}name'}->{Value} eq "target") {
-		if ($data ne "") {
-			$self->target($data);
-		}
-	}
-	if ($attrs{'{}name'}->{Value} eq "type") {
-		if ($data ne "") {
-			$self->type($data);
-		}
-	}
-	if ($element->{LocalName} eq "flag") {
-		if ($attrs{'{}name'}->{Value} eq "") {
-			if ($data ne "") {
+	
+		if ($element->{LocalName} eq "flag") {
+			if ($attrs{'{}name'}->{Value} eq "type") {
+				$self->type($data);
+			}
+			if ($attrs{'{}name'}->{Value} eq "") {
 				$self->flag(split(/\s+/, $data));
 			}
 		}
@@ -248,7 +244,9 @@ sub filter_map {
 	return \%fcommand;	
 }
 
-
+sub version {
+	return "1.0";
+}
 
 1;
 
@@ -272,12 +270,14 @@ ln (coreutils) 5.0 March 2003
 
 =item Full example
 
+ <amin:profile xmlns:amin='http://projectamin.org/ns/'>
        <amin:command name="link">
                 <amin:param name="source">original_thing</amin:param>
                 <amin:param name="target">linked_thing</amin:param>
                 <amin:flag>sf</amin:flag>
-                <amin:shell name="dir">/tmp</amin:shell>
+                <amin:shell name="dir">/tmp/amin-tests/</amin:shell>
         </amin:command>
+ </amin:profile>
 
 =back  
 

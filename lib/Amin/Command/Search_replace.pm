@@ -23,25 +23,28 @@ sub characters {
 	my $data = $chars->{Data};
 	$data = $self->fix_text($data);
 	my $attrs = $self->{"ATTRS"};
+	my $element = $self->{"ELEMENT"};
 
-	if ($attrs{'{}name'}->{Value} eq "find") {
-		if ($data ne "") {
-			$self->find($data);
+	if ($data ne "") {
+		if ($element->{LocalName} eq "shell") {
+			if ($attrs{'{}name'}->{Value} eq "dir") {
+				$self->dir($data);
+			}
 		}
-	}
-	if ($attrs{'{}name'}->{Value} eq "replace") {
-		if ($data ne "") {
-			$self->replace($data);
+	
+		if ($element->{LocalName} eq "flag") {
+			if ($attrs{'{}name'}->{Value} eq "find") {
+				$self->find($data);
+			}
+			
+			if ($attrs{'{}name'}->{Value} eq "replace") {
+				$self->replace($data);
+			}
 		}
-	}
-	if ($attrs{'{}name'}->{Value} eq "dir") {
-		if ($data ne "") {
-			$self->dir($data);
-		}
-	}
-	if ($attrs{'{}name'}->{Value} eq "target") {
-		if ($data ne "") {
-			$self->target($data);
+		if ($element->{LocalName} eq "param") {
+			if ($attrs{'{}name'}->{Value} eq "target") {
+				$self->target($data);
+			}
 		}
 	}
 	$self->SUPER::characters($chars);
@@ -201,6 +204,10 @@ sub filter_map {
 
 
 
+sub version {
+	return "1.0";
+}
+
 1;
 
 =head1 NAME
@@ -221,12 +228,14 @@ amin 0.5.0
 
 =item Full example
 
+ <amin:profile xmlns:amin='http://projectamin.org/ns/'>
        <amin:command name="search_replace">
                 <amin:param name="target">pass</amin:param>
                 <amin:flag name="find">root</amin:flag>
                 <amin:flag name="replace">0</amin:flag>
-                <amin:shell name="dir">/tmp</amin:shell>
+                <amin:shell name="dir">/tmp/amin-tests/</amin:shell>
         </amin:command>
+ </amin:profile>
 
 =back  
 

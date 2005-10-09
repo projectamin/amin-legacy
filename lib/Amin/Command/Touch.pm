@@ -259,6 +259,10 @@ sub filter_map {
 	return \%fcommand;	
 }
 
+sub version {
+	return "1.0";
+}
+
 1;
 
 =head1 NAME
@@ -279,9 +283,14 @@ Linux 2.0 14 September 1997 umount
 
 =item Full example
 
+ <amin:profile xmlns:amin='http://projectamin.org/ns/'>
         <amin:command name="touch">
-                <amin:param>/tmp/touchfile</amin:param>
+                <amin:param>/tmp/amin-tests/touchfile</amin:param>
         </amin:command>
+        <amin:command name="touch">
+                <amin:param>/tmp/amin-tests/touchfile2</amin:param>
+        </amin:command>
+ </amin:profile>
 
 =back  
 

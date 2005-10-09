@@ -25,34 +25,28 @@ sub characters {
 	my $attrs = $self->{"ATTRS"};
 	my $element = $self->{"ELEMENT"};
 
-	if ($element->{LocalName} eq "param") {
-		if ($attrs{'{}name'}->{Value} eq "") {
-			if ($data ne "") {
+	if ($data ne "") {
+		if ($element->{LocalName} eq "param") {
+			if ($attrs{'{}name'}->{Value} eq "") {
 				my @things = $data =~ m/([\*\+\.\w=\/-]+|'[^']+')\s*/g;
 				foreach (@things) {
 					$self->param($_);
 				}
 			}
 		}
-	}
-	if ($attrs{'{}name'}->{Value} eq "dir") {
-		if ($data ne "") {
-			$self->dir($data);
+		if ($element->{LocalName} eq "shell") {
+			if ($attrs{'{}name'}->{Value} eq "dir") {
+				$self->dir($data);
+			}
 		}
-	}
-	if ($attrs{'{}name'}->{Value} eq "bytes") {
-		if ($data ne "") {
-			$self->bytes($data);
-		}
-	}
-	if ($attrs{'{}name'}->{Value} eq "lines") {
-		if ($data ne "") {
-			$self->lines($data);
-		}
-	}
-	if ($element->{LocalName} eq "flag") {
-		if ($attrs{'{}name'}->{Value} eq "") {
-			if ($data ne "") {
+		if ($element->{LocalName} eq "flag") {
+			if ($attrs{'{}name'}->{Value} eq "bytes") {
+				$self->bytes($data);
+			}
+			if ($attrs{'{}name'}->{Value} eq "lines") {
+				$self->lines($data);
+			}
+			if ($attrs{'{}name'}->{Value} eq "") {
 				my @things = $data =~ m/([\*\+\.\w=\/-]+|'[^']+')\s*/g;
 				foreach (@things) {
 					$self->flag($_);
@@ -270,6 +264,10 @@ sub filter_map {
 	return \%fcommand;	
 }
 
+sub version {
+	return "1.0";
+}
+
 1;
 
 =head1 NAME
@@ -290,12 +288,14 @@ Head (coreutils)
 
 =item Full example
 
+ <amin:profile xmlns:amin='http://projectamin.org/ns/'>
         <amin:command name="head">
                 <amin:param name="bytes">512b</amin:param>
                 <amin:param>hg</amin:param>
                 <amin:flag>q</amin:flag>
-                <amin:shell name="dir">/tmp/</amin:shell>
+                <amin:shell name="dir">/tmp/amin-tests/</amin:shell>
         </amin:command>
+ </amin:profile>
 
 =back  
 

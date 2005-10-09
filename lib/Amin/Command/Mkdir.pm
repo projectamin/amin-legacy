@@ -26,13 +26,8 @@ sub characters {
 	my $attrs = $self->{"ATTRS"};
 	my $element = $self->{"ELEMENT"};
 
-	if (($attrs{'{}name'}->{Value} eq "mode") || ($attrs{'{}name'}->{Value} eq "m")) {
-		if ($data ne "") {
-			$self->mode($data);
-		}
-	}
-	if ($element->{LocalName} eq "param") {
-		if ($data ne "") {
+	if ($data ne "") {
+		if ($element->{LocalName} eq "param") {
 			my @things = $data =~ m/([\*\+\.\w=\/-]+|'[^']+')\s*/g;
 			foreach (@things) {
 				#target and param are same thing
@@ -43,21 +38,20 @@ sub characters {
 				}
 			}
 		}
-	}
-	
-	if ($attrs{'{}name'}->{Value} eq "dir") {
-		if ($data ne "") {
-			$self->dir($data);
+		if ($element->{LocalName} eq "flag") {
+			if ($attrs{'{}name'}->{Value} eq "dir") {
+				$self->dir($data);
+			}
+			if ($attrs{'{}name'}->{Value} eq "env") {
+				$self->env_vars($data);
+			}
 		}
-	}
-	if ($attrs{'{}name'}->{Value} eq "env") {
-		if ($data ne "") {
-			$self->env_vars($data);
-		}
-	}
-	if ($element->{LocalName} eq "flag") {
-		if ($attrs{'{}name'}->{Value} eq "") {
-			if ($data ne "") {
+		if ($element->{LocalName} eq "flag") {
+			if (($attrs{'{}name'}->{Value} eq "mode") || 
+			($attrs{'{}name'}->{Value} eq "m")) {
+				$self->mode($data);
+			}
+			if ($attrs{'{}name'}->{Value} eq "") {
 				$self->flag(split(/\s+/, $data));
 			}
 		}
@@ -258,6 +252,12 @@ sub filter_map {
 	return \%fcommand;	
 }
 
+sub version {
+	return "1.0";
+}
+
+1;
+
 =head1 NAME
 
 Mkdir - reader class filter for the mkdir command.
@@ -276,14 +276,13 @@ mkdir (coreutils) 5.0 March 2003
 
 =item Full example
 
+ <amin:profile xmlns:amin='http://projectamin.org/ns/'>
         <amin:command name="mkdir">
-                <amin:param name="target">my_new_dir</amin:param>
-                <amin:shell name="dir">/tmp/</amin:shell>
+                <amin:param name="target">/tmp/amin-tests/my_new_dir</amin:param>
                 <amin:flag>p</amin:flag>
         </amin:command>
+ </amin:profile>
 
 =back  
 
 =cut
-
-1;

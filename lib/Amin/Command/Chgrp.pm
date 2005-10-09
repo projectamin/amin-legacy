@@ -266,6 +266,10 @@ sub filter_map {
 	return \%fcommand;	
 }
 
+sub version {
+	return "1.0";
+}
+
 1;
 
 =head1 NAME
@@ -286,11 +290,13 @@ chgrp (coreutils) 5.0 March 2003
 
 =item Full example
 
+ <amin:profile xmlns:amin='http://projectamin.org/ns/'>
         <amin:command name="chgrp">
                 <amin:flag>c</amin:flag>
                 <amin:param name="group">bin</amin:param>
-                <amin:param name="target">/tmp/limits</amin:param>
+                <amin:param name="target">/tmp/amin-tests/limits</amin:param>
         </amin:command>
+ </amin:profile>
 
 =back  
 

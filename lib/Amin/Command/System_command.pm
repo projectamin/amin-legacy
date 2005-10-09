@@ -26,10 +26,10 @@ sub characters {
 	my $element = $self->{"ELEMENT"};
 	
 	if ($data ne "") {
-		if ($attrs{'{}name'}->{Value} eq "basename") {
-			$self->basename($data);
-		}
 		if ($element->{LocalName} eq "param") {
+			if ($attrs{'{}name'}->{Value} eq "basename") {
+				$self->basename($data);
+			}
 			if ($attrs{'{}name'}->{Value} eq "") {
 				my @things = $data =~ m/([\*\+\.\w=\/-]+|'[^']+')\s*/g;
 				foreach (@things) {
@@ -102,6 +102,15 @@ sub end_element {
 			my $special2 = "shell";
 			$cmd = $self->amin_command($special, $special2);
 		} else {
+			if (!$basename) {
+				$self->{Spec}->{amin_error} = "red";
+				my $text = "There must be a basename!";
+				$self->text($text);
+
+				$log->error_message($text);
+				$self->SUPER::end_element($element);
+				return;
+			}
 			$acmd{'CMD'} = $basename;
 			$acmd{'FLAG'} = \@flag;
 			$acmd{'PARAM'} = \@param;
@@ -217,12 +226,9 @@ sub filter_map {
 	return \%fcommand;	
 }
 
-
-
-
-
-
-
+sub version {
+	return "1.0";
+}
 
 1;
 
@@ -249,14 +255,21 @@ amin 0.5.0
 
 =item Full example
 
+ <amin:profile xmlns:amin='http://projectamin.org/ns/'>
        <amin:command name="system_command">
                 <amin:param name="basename">touch</amin:param>
-                <amin:param>/tmp/limits</amin:param>
+                <amin:param>/tmp/amin-tests/limits</amin:param>
         </amin:command>
+	
+	
+	<!-- sample special command
 
        <amin:command name="system_command">
                 <amin:special>straight -pass /thru/of/a/command</amin:special>
         </amin:command>
+ 	-->
+ 
+ </amin:profile>
 	
 =back  
 
