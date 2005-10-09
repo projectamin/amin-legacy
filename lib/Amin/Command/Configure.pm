@@ -25,41 +25,29 @@ sub characters {
 	my $attrs = $self->{"ATTRS"};
 	my $element = $self->{"ELEMENT"};
 
-	if ($attrs{'{}name'}->{Value} eq "config") {
-		if ($data ne "") {
-			$self->config($data);
-		}
-	}
+	if ($data ne "") {
 
-	if ($attrs{'{}name'}->{Value} eq "pre") {
-		if ($data ne "") {
-			$self->pre($data);
+		if ($element->{LocalName} eq "shell") {
+			if ($attrs{'{}name'}->{Value} eq "dir") {
+				$self->dir($data);
+			}
+			if ($attrs{'{}name'}->{Value} eq "env") {
+				$self->env_vars($data);
+			}
 		}
-	}
-	if ($attrs{'{}name'}->{Value} eq "dir") {
-		if ($data ne "") {
-			$self->dir($data);
-		}
-	}
-	if ($attrs{'{}name'}->{Value} eq "env") {
-		if ($data ne "") {
-			$self->env_vars($data);
-		}
-	}
-	if ($element->{LocalName} eq "param") {
-		if ($attrs{'{}name'}->{Value} eq "") {
-			if ($data ne "") {
+		if ($element->{LocalName} eq "param") {
+			if ($attrs{'{}name'}->{Value} eq "config") {
+				$self->config($data);
+			}
+			if ($attrs{'{}name'}->{Value} eq "") {
 				my @things = $data =~ m/([\*\+\.\w=\/-]+|'[^']+')\s*/g;
 				foreach (@things) {
 					$self->param($_);
 				}
 			}
 		}
-	}
-
-	if ($element->{LocalName} eq "flag") {
-		if ($attrs{'{}name'}->{Value} eq "") {
-			if ($data ne "") {
+		if ($element->{LocalName} eq "flag") {
+			if ($attrs{'{}name'}->{Value} eq "") {
 				$self->flag(split(/\s+/, $data));
 			}
 		}
@@ -72,7 +60,6 @@ sub end_element {
 
 	if ($element->{LocalName} eq "command") {
 
-		my $pre = $self->{'PRE'};
 		my $dir = $self->{'DIR'};
 		my $xflag = $self->{'FLAG'};
 		my $param = $self->{'PARAM'};
@@ -114,13 +101,6 @@ sub end_element {
 			$acmd{'ENV_VARS'} = $self->{'ENV_VARS'};
 		}
 		
-		my ($name, $value);
-			if ($pre) {
-				($name, $value) = split (/=/, $pre);
-				$acmd{'ENV_NAME'} = $name;
-				$acmd{'ENV_VALUE'} = $value;
-			}
-		
 		my $cmd = $self->amin_command(\%acmd);
 
 		if ($cmd->{STATUS} != 0) {
@@ -161,6 +141,9 @@ sub config {
 	return $self->{CONFIG};
 }
 
+sub version {
+	return "1.0";
+}
 
 1;
 
@@ -181,7 +164,13 @@ Configure - reader class filter for the configure command.
 
 =item Full example
 
-        <amin:command name="configure">
+ <amin:profile xmlns:amin='http://projectamin.org/ns/'>
+	<amin:command name="configure"> 
+		<amin:flag>prefix=/usr</amin:flag> 
+		<amin:shell name="dir">/tmp/amin-tests/fake-0.01</amin:shell> 
+	</amin:command>
+        <!-- more complicated example
+	<amin:command name="configure">
                 <amin:param name="config">../glibc-2.3.2/configure</amin:param>
                 <amin:flag>
                         prefix=/usr
@@ -195,6 +184,8 @@ Configure - reader class filter for the configure command.
                 </amin:flag>
                 <amin:shell name="dir">/usr/src/glibc-build</amin:shell>
         </amin:command>
+	-->
+ </amin:profile>
  
 =back  
 

@@ -56,7 +56,6 @@ sub end_element {
 	my ($self, $element) = @_;
 
 	if ($element->{LocalName} eq "command") {
-
 		my $xflag = $self->{'FLAG'};
 		my $target = $self->{'TARGET'};
 		my $dir = $self->{'DIR'};
@@ -82,7 +81,9 @@ sub end_element {
 			}
 		}
 
+		if ($dir) {
 		if (! chdir $dir) {
+			print "remove";
 			$self->{Spec}->{amin_error} = "red";
 			my $text = "Unable to change directory to $dir. Reason: $!";
 			$self->text($text);
@@ -90,6 +91,7 @@ sub end_element {
 			$log->error_message($text);
 			$self->SUPER::end_element($element);
 			return;
+		}
 		}
 
 		my %acmd;

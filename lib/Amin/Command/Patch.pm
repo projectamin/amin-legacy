@@ -24,32 +24,26 @@ sub characters {
 	$data = $self->fix_text($data);
 	my $attrs = $self->{"ATTRS"};
 	my $element = $self->{"ELEMENT"};
-	if ($attrs{'{}name'}->{Value} eq "dir") {
-		if ($data ne "") {
-			$self->dir($data);
-		}
-	}
-	if ($element->{LocalName} eq "flag") {
-		if ($attrs{'{}name'}->{Value} eq "") {
-			if ($data ne "") {
-				$self->flag(split(/\s+/, $data));
+	
+	if ($data ne "") {
+		if ($element->{LocalName} eq "shell") {
+			if ($attrs{'{}name'}->{Value} eq "dir") {
+				$self->dir($data);
+			}
+			if ($attrs{'{}name'}->{Value} eq "env") {
+				$self->env_vars($data);
 			}
 		}
-	}
-	if ($attrs{'{}name'}->{Value} eq "input") {
-		if ($data ne "") {
-
-			$self->input($data);
+		if ($element->{LocalName} eq "flag") {
+			if ($attrs{'{}name'}->{Value} eq "") {
+				$self->flag(split(/\s+/, $data));
+			}
+			if ($attrs{'{}name'}->{Value} eq "input") {
+				$self->input($data);
+			}
 		}
-	}
-	if ($attrs{'{}name'}->{Value} eq "env") {
-		if ($data ne "") {
-			$self->env_vars($data);
-		}
-	}
-	if ($element->{LocalName} eq "param") {
-		if ($attrs{'{}name'}->{Value} eq "") {
-			if ($data ne "") {
+		if ($element->{LocalName} eq "param") {
+			if ($attrs{'{}name'}->{Value} eq "") {
 				my @things = $data =~ m/([\*\+\.\w=\/-]+|'[^']+')\s*/g;
 				foreach (@things) {
 					$self->param($_);
@@ -278,7 +272,9 @@ sub filter_map {
 	return \%fcommand;	
 }
 
-
+sub version {
+	return "1.0";
+}
 
 1;
 
@@ -300,11 +296,17 @@ GNU 1998/03/21 PATCH
 
 =item Full example
 
+ <amin:profile xmlns:amin='http://projectamin.org/ns/'>
+       <amin:download>
+                <amin:param name="uri">http://projectamin.org/apan/tester/command/fake-0.02.patch</amin:param>
+                <amin:param name="file">/tmp/amin-tests/fake-0.02.patch</amin:param>
+        </amin:download>
         <amin:command name="patch">
                 <amin:flag>p1</amin:flag>
-                <amin:flag name="input">/packages/some.patch</amin:flag>
-                <amin:shell name="dir">/pacakges/my_package-1.0.6</amin:shell>
+                <amin:flag name="input">/tmp/amin-tests/fake-0.02.patch</amin:flag>
+                <amin:shell name="dir">/tmp/amin-tests/fake-0.01</amin:shell>
         </amin:command>
+ </amin:profile>
 
 =back  
 

@@ -25,26 +25,19 @@ sub characters {
 	my $attrs = $self->{"ATTRS"};
 	my $element = $self->{"ELEMENT"};
 
-	if ($attrs{'{}name'}->{Value} eq "pre") {
-		if ($data ne "") {
-			$self->pre($data);
+	if ($data ne "") {
+		if ($element->{LocalName} eq "shell") {
+			if ($attrs{'{}name'}->{Value} eq "dir") {
+				$self->dir($data);
+			}
+			if ($attrs{'{}name'}->{Value} eq "env") {
+				$self->env_vars($data);
+			}
 		}
-	}
-	if ($attrs{'{}name'}->{Value} eq "dir") {
-		if ($data ne "") {
-			$self->dir($data);
-		}
-	}
-	if ($attrs{'{}name'}->{Value} eq "env") {
-		if ($data ne "") {
-			$self->env_vars($data);
-		}
-	}
 
 
-	if ($element->{LocalName} eq "param") {
-		if ($attrs{'{}name'}->{Value} eq "") {
-			if ($data ne "") {
+		if ($element->{LocalName} eq "param") {
+			if ($attrs{'{}name'}->{Value} eq "") {
 				my @things = $data =~ m/([\+\.\w=\/-]+|'[^']+')\s*/g;
 				foreach (@things) {
 					$_ =~ s/(^'|'$)//gm;
@@ -52,10 +45,8 @@ sub characters {
 				}
 			}
 		}
-	}
-	if ($element->{LocalName} eq "flag") {
-		if ($attrs{'{}name'}->{Value} eq "") {
-			if ($data ne "") {
+		if ($element->{LocalName} eq "flag") {
+			if ($attrs{'{}name'}->{Value} eq "") {
 				$self->flag(split(/\s+/, $data));
 			}
 		}
@@ -67,8 +58,6 @@ sub end_element {
 	my ($self, $element) = @_;
 
 	if ($element->{LocalName} eq "command") {
-
-		my $pre = $self->{'PRE'};
 		my $dir = $self->{'DIR'};
 		my $param = $self->{'PARAM'};
 		my $xflag = $self->{'FLAG'};
@@ -95,6 +84,7 @@ sub end_element {
 			push @param, $ip;
 		}
 
+		if ($dir) {
 		if (! chdir $dir) {
 			$self->{Spec}->{amin_error} = "red";
 			my $text = "Unable to change directory to $dir. Reason: $!";
@@ -104,7 +94,8 @@ sub end_element {
 			$self->SUPER::end_element($element);
 			return;
 		}
-
+		}
+		
 		my %acmd;
 		$acmd{'CMD'} = $command;
 		$acmd{'FLAG'} = \@flag;
@@ -118,7 +109,7 @@ sub end_element {
 		my $cmd = $self->amin_command(\%acmd);
 		if ($cmd->{STATUS} != 0) {
 			$self->{Spec}->{amin_error} = "red";
-			my $text = "Unable to execute $pre $command in $dir. Reason: $cmd->{ERR}";
+			my $text = "Unable to execute $command in $dir. Reason: $cmd->{ERR}";
 			$self->text($text);
 
 			$log->error_message($text);
@@ -266,8 +257,9 @@ sub filter_map {
 	return \%fcommand;	
 }
 
-
-
+sub version {
+	return "1.0";
+}
 
 1;
 
@@ -289,10 +281,15 @@ GNU 22 August 1989
 
 =item Full example
 
-       <amin:command name="make">
-                <amin:param>install</amin:param>
-                <amin:shell name="dir">/tmp/package-2.5</amin:shell>
-        </amin:command>
+ <amin:profile xmlns:amin='http://projectamin.org/ns/'>
+	<amin:command name="make">
+		<amin:shell name="dir">/tmp/amin-tests/fake-0.01</amin:shell>
+	</amin:command>
+	<amin:command name="make">
+		<amin:param>install</amin:param>
+		<amin:shell name="dir">/tmp/amin-tests/fake-0.01</amin:shell>
+	</amin:command>
+ </amin:profile>
 
 =back  
 

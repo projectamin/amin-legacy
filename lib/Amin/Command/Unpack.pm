@@ -25,15 +25,16 @@ sub characters {
 	my $data = $chars->{Data};
 	$data = $self->fix_text($data);
 	my $attrs = $self->{"ATTRS"};
+	my $element = $self->{"ELEMENT"};
 
-	if ($attrs{'{}name'}->{Value} eq "archive") {
-		if ($data ne "") {
-			$self->archive($data);
-		}
-	}
-	if ($attrs{'{}name'}->{Value} eq "target") {
-		if ($data ne "") {
-			$self->target($data);
+	if ($data ne "") {
+		if ($element->{LocalName} eq "param") {
+			if ($attrs{'{}name'}->{Value} eq "archive") {
+				$self->archive($data);
+			}
+			if ($attrs{'{}name'}->{Value} eq "target") {
+				$self->target($data);
+			}
 		}
 	}
 	$self->SUPER::characters($chars);
@@ -328,6 +329,9 @@ sub filter_map {
 	return \%fcommand;	
 }
 
+sub version {
+	return "1.0";
+}
 
 1;
 
@@ -351,10 +355,16 @@ amin 0.5.0
 
 =item Full example
 
+ <amin:profile xmlns:amin='http://projectamin.org/ns/'>
+       <amin:download>
+                <amin:param name="uri">http://projectamin.org/apan/tester/command/fake-0.01.tar.bz2</amin:param>
+                <amin:param name="file">/tmp/amin-tests/fake-0.01.tar.bz2</amin:param>
+        </amin:download>
         <amin:command name="unpack">
-                <amin:param name="target">/usr/src</amin:param>
-                <amin:param name="archive">/packages/package.tar.bz2</amin:param>
+                <amin:param name="target">/tmp/amin-tests/</amin:param>
+                <amin:param name="archive">/tmp/amin-tests/fake-0.01.tar.bz2</amin:param>
         </amin:command>
+ </amin:profile>
 
 =back  
 
