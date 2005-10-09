@@ -3,6 +3,6 @@
                 <amin:param name="target">pass</amin:param>
                 <amin:flag name="find">root</amin:flag>
                 <amin:flag name="replace">0</amin:flag>
-                <amin:shell name="dir">/tmp</amin:shell>
+                <amin:shell name="dir">/tmp/amin-tests/</amin:shell>
         </amin:command>
 </amin:profile>
