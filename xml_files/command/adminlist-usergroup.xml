@@ -1,0 +1,22 @@
+<amin:adminlist xmlns:amin="http://projectamin.org/ns/">
+   <!-- groupadd is broke? groupdel is not tested but works
+   <amin:profile>
+     <amin:uri>file://amin/xml_files/command/groupadd.xml</amin:uri>
+   </amin:profile>
+   <amin:profile>
+     <amin:uri>file://amin/xml_files/command/groupdel.xml</amin:uri>
+   </amin:profile>
+   -->
+   <amin:profile>
+     <amin:uri>file://amin/xml_files/command/grpconv.xml</amin:uri>
+   </amin:profile>
+   <amin:profile>
+     <amin:uri>file://amin/xml_files/command/grpunconv.xml</amin:uri>
+   </amin:profile>
+   <amin:profile>
+     <amin:uri>file://amin/xml_files/command/pwconv.xml</amin:uri>
+   </amin:profile>
+   <amin:profile>
+     <amin:uri>file://amin/xml_files/command/pwunconv.xml</amin:uri>
+   </amin:profile>
+</amin:adminlist>

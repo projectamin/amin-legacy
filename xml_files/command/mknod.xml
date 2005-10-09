@@ -1,0 +1,11 @@
+<amin:profile xmlns:amin='http://projectamin.org/ns/'>
+        <amin:command name="mknod">
+                <amin:param name="target">null</amin:param>
+                <amin:param name="type">c</amin:param>
+                <amin:param name="major">1</amin:param>
+                <amin:param name="minor">3</amin:param>
+                <amin:flag name="mode">0755</amin:flag>
+                <amin:shell name="dir">/dev/</amin:shell>
+        </amin:command>
+</amin:profile>
+

@@ -1,0 +1,6 @@
+<amin:profile xmlns:amin='http://projectamin.org/ns/'>
+        <amin:command name="rsync">
+                <amin:param name="source">example.com:/my/files/*</amin:param>
+                <amin:param name="target">/my/rsync/dir</amin:param>
+        </amin:command>
+</amin:profile>

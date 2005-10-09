@@ -1,0 +1,5 @@
+<amin:profile xmlns:amin='http://projectamin.org/ns/'>
+        <amin:command name="rpm">
+                <amin:flag>-qa</amin:flag>
+        </amin:command>
+</amin:profile>

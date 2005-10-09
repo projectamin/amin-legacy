@@ -1,0 +1,6 @@
+<amin:profile xmlns:amin='http://projectamin.org/ns/'>
+        <amin:command name="kill">
+                <amin:param name="signal">9</amin:param>
+                <amin:param>apache</amin:param>
+        </amin:command>
+</amin:profile>

@@ -1,0 +1,22 @@
+<amin:adminlist xmlns:amin="http://projectamin.org/ns/">
+   <amin:adminlist>
+     <amin:uri>file://amin/xml_files/command/adminlist-generic.xml</amin:uri>
+   </amin:adminlist>
+   <amin:adminlist>
+     <amin:uri>file://amin/xml_files/command/adminlist-fileops.xml</amin:uri>
+   </amin:adminlist>
+   <amin:adminlist>
+     <amin:uri>file://amin/xml_files/command/adminlist-pacakge.xml</amin:uri>
+   </amin:adminlist>
+   <!-- use as needed.....   
+   <amin:adminlist>
+     <amin:uri>file://amin/xml_files/command/adminlist-network.xml</amin:uri>
+   </amin:adminlist>
+   <amin:adminlist>
+     <amin:uri>file://amin/xml_files/command/adminlist-usergroup.xml</amin:uri>
+   </amin:adminlist>
+   <amin:adminlist>
+     <amin:uri>file://amin/xml_files/command/adminlist-beware.xml</amin:uri>
+   </amin:adminlist>
+   -->
+</amin:adminlist>
