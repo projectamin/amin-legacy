@@ -2,10 +2,9 @@ package Amin::Command::Pwconv;
 
 use strict;
 use vars qw(@ISA);
-use Amin::Command::Elt;
-use Amin::Dispatcher;
+use Amin::Elt;
 
-@ISA = qw(Amin::Command::Elt Amin::Dispatcher);
+@ISA = qw(Amin::Elt);
 
 my (%attrs, @target);
 
@@ -59,6 +58,10 @@ sub end_element {
 	}
 }
 
+sub version {
+	return "1.0";
+}
+
 1;
 
 =head1 NAME
@@ -79,7 +82,9 @@ Pwconv 26 Sep 1997
 
 =item Full example
 
+ <amin:profile xmlns:amin='http://projectamin.org/ns/'>
         <amin:command name="pwconv" />
+ </amin:profile>
 
 =back  
 

@@ -2,10 +2,9 @@ package Amin::Command::Groupadd;
 
 use strict;
 use vars qw(@ISA);
-use Amin::Command::Elt;
-use Amin::Dispatcher;
+use Amin::Elt;
 
-@ISA = qw(Amin::Command::Elt Amin::Dispatcher);
+@ISA = qw(Amin::Elt);
 
 my (%attrs, @target);
 
@@ -27,24 +26,20 @@ sub characters {
 	my $attrs = $self->{"ATTRS"};
 	my $element = $self->{"ELEMENT"};
 
-	if ($element->{LocalName} eq "param") {
-		if ($attrs{'{}name'}->{Value} eq "") {
-			if ($data ne "") {
+	if ($data ne "") {
+		if ($element->{LocalName} eq "param") {
+			if ($attrs{'{}name'}->{Value} eq "") {
 				my @things = $data =~ m/([\*\+\.\w=\/-]+|'[^']+')\s*/g;
 				foreach (@things) {
 					$self->param($_);
 				}
 			}
 		}
-	}
-	if ($attrs{'{}name'}->{Value} eq "g") {
-		if ($data ne "") {
-			$self->g($data);
-		}
-	}
-	if ($element->{LocalName} eq "flag") {
-		if ($attrs{'{}name'}->{Value} eq "") {
-			if ($data ne "") {
+		if ($element->{LocalName} eq "flag") {
+			if ($attrs{'{}name'}->{Value} eq "g") {
+				$self->g($data);
+			}
+			if ($attrs{'{}name'}->{Value} eq "") {
 				$self->flag(split(/\s+/, $data));
 			}
 		}
@@ -63,6 +58,10 @@ sub end_element {
 		my ($flag, @flag, @param);
 		my $log = $self->{Spec}->{Log};
 
+		if ($g) {
+			$flag = "-g " . $g;
+			push @flag, $flag;
+		}
 		my $state;
 		foreach my $ip (@$xflag){
 			if ($state == 0) {
@@ -78,16 +77,12 @@ sub end_element {
 			push @param, $_;
 		}
 
-		if ($g) {
-			$flag = "-g " . $g;
-			push @flag, $flag;
-		}
 
 
 		my %acmd;
 		$acmd{'CMD'} = $command;
 		$acmd{'FLAG'} = \@flag;
-		$acmd{'PARAM'} = \@target;
+		$acmd{'PARAM'} = \@param;
 		
 		my $cmd = $self->amin_command(\%acmd);
 
@@ -221,6 +216,10 @@ sub filter_map {
 	return \%fcommand;	
 }
 
+sub version {
+	return "1.0";
+}
+
 1;
 
 =head1 NAME
@@ -241,10 +240,12 @@ Groupadd (coreutils)
 
 =item Full example
 
+ <amin:profile xmlns:amin='http://projectamin.org/ns/'>
         <amin:command name="groupadd">
                 <amin:flag name="g">134</amin:param>
                 <amin:param>mynewgroup</amin:param>
         </amin:command>
+ </amin:profile>
 
 =back  
 
