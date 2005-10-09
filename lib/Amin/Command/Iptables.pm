@@ -23,6 +23,7 @@ sub characters {
 	my $data = $chars->{Data};
 	$data = $self->fix_text($data);
 	my $attrs = $self->{"ATTRS"};
+	my $element = $self->{"ELEMENT"};
 
         if ($data ne "") {
 		if ($element->{LocalName} eq "param") {
