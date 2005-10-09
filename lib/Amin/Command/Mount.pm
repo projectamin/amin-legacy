@@ -25,29 +25,28 @@ sub characters {
 	my $attrs = $self->{"ATTRS"};
 	my $element = $self->{"ELEMENT"};
 	
-	if ($attrs{'{}name'}->{Value} eq "type") {
-		if ($data ne "") {
-			$self->type($data);
+	if ($data ne "") {
+		if ($element->{LocalName} eq "shell") {
+			if ($attrs{'{}name'}->{Value} eq "env") {
+				$self->env_vars($data);
+			}
 		}
-	}
-	if ($attrs{'{}name'}->{Value} eq "device") {
-		if ($data ne "") {
-			$self->device($data);
+	
+		if ($element->{LocalName} eq "param") {
+			if ($attrs{'{}name'}->{Value} eq "device") {
+				$self->device($data);
+			}
+			if ($attrs{'{}name'}->{Value} eq "target") {
+				$self->target($data);
+			}
 		}
-	}
-	if ($attrs{'{}name'}->{Value} eq "target") {
-		if ($data ne "") {
-			$self->target($data);
-		}
-	}
-	if ($attrs{'{}name'}->{Value} eq "env") {
-		if ($data ne "") {
-			$self->env_vars($data);
-		}
-	}
-	if ($element->{LocalName} eq "flag") {
-		if ($attrs{'{}name'}->{Value} eq "") {
-			if ($data ne "") {
+	
+	
+		if ($element->{LocalName} eq "flag") {
+			if ($attrs{'{}name'}->{Value} eq "type") {
+				$self->type($data);
+			}
+			if ($attrs{'{}name'}->{Value} eq "") {
 				$self->flag(split(/\s+/, $data));
 			}
 		}
@@ -272,13 +271,9 @@ sub filter_map {
 	return \%fcommand;	
 }
 
-
-
-
-
-
-
-
+sub version {
+	return "1.0";
+}
 
 1;
 
@@ -300,12 +295,14 @@ Linux 2.0 14 September 1997 mount
 
 =item Full example
 
+ <amin:profile xmlns:amin='http://projectamin.org/ns/'>
         <amin:command name="mount">
                 <amin:flag>bind</amin:flag>
 		<!--bind mounts some dir as a device onto this target-->
-                <amin:param name="device">/mnt/si/packages/</amin:param>
-                <amin:param name="target">/mnt/si/lsbsi-dev/packages/</amin:param>
+                <amin:param name="device">/tmp/amin-tests/my_new_dir</amin:param>
+                <amin:param name="target">/tmp/amin-tests/</amin:param>
         </amin:command>
+ </amin:profile>
 
 =back  
 

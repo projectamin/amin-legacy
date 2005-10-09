@@ -3,7 +3,6 @@ package Amin::Command::Ifconfig;
 use strict;
 use vars qw(@ISA);
 use Amin::Elt;
-use Data::Dumper;
 
 @ISA = qw(Amin::Elt);
 my %attrs;
@@ -26,41 +25,40 @@ sub characters {
 	my $attrs = $self->{"ATTRS"};
 	my $element = $self->{"ELEMENT"};
 	
-	if ($attrs{'{}name'}->{Value} eq "env") {
-		if ($data ne "") {
-			$self->env_vars($data);
+	if ($data ne "") {
+		if ($element->{LocalName} eq "shell") {
+			if ($attrs{'{}name'}->{Value} eq "env") {
+				$self->env_vars($data);
+			}
 		}
-	}
-	if ($element->{LocalName} eq "flag") {
-		if ($attrs{'{}name'}->{Value} eq "") {
-			if ($data ne "") {
+		if ($element->{LocalName} eq "flag") {
+			if ($attrs{'{}name'}->{Value} eq "") {
 				$self->flag(split(/\s+/, $data));
 			}
 		}
 
 # need to add in hardwaretypes and network protocol options also
  
-	    if ($element->{LocalName} eq "param") {
-		if ($attrs{'{}name'}->{Value} eq "") {
-		    $self->param(split(/\s+/, $data));
+		if ($element->{LocalName} eq "param") {
+			if ($attrs{'{}name'}->{Value} eq "") {
+			    $self->param(split(/\s+/, $data));
+			}
+			if ($attrs{'{}name'}->{Value} eq "interface") {
+			    $self->interface($data);
+			}
+			if ($attrs{'{}name'}->{Value} eq "address") {
+			    $self->address($data);
+			}
+			if ($attrs{'{}name'}->{Value} eq "netmask") {
+			    $self->netmask($data);
+			}
+			if ($attrs{'{}name'}->{Value} eq "state") {
+			    $self->state($data);
+			}
+			if ($attrs{'{}name'}->{Value} eq "tunnel") {
+			    $self->tunnel($data);
+			}
 		}
-		if ($attrs{'{}name'}->{Value} eq "interface") {
-		    $self->interface($data);
-		    
-		}
-		if ($attrs{'{}name'}->{Value} eq "address") {
-		    $self->address($data);
-		}
-		if ($attrs{'{}name'}->{Value} eq "netmask") {
-		    $self->netmask($data);
-		}
-		if ($attrs{'{}name'}->{Value} eq "state") {
-		    $self->state($data);
-		}
-		if ($attrs{'{}name'}->{Value} eq "tunnel") {
-		    $self->tunnel($data);
-		}
-	    }
 	}
 	$self->SUPER::characters($chars);
 }
@@ -165,6 +163,10 @@ sub state {
         return $self->{STATE};
 }
 
+sub version {
+	return "1.0";
+}
+
 
 1;
 
@@ -186,6 +188,7 @@ ifconfig 1.42 (2001-04-13)
 
 =item Full example
 
+ <amin:profile xmlns:amin='http://projectamin.org/ns/'>
         <amin:command name="ifconfig">
                 <amin:param name="interface">eth0:1</amin:param>
                 <amin:param name="address">192.168.0.1</amin:param>
@@ -196,6 +199,7 @@ ifconfig 1.42 (2001-04-13)
                 <amin:param name="interface">eth0:1</amin:param>
                 <amin:param name="state">down</amin:param>
         </amin:command>
+ </amin:profile>
 
 =back  
 

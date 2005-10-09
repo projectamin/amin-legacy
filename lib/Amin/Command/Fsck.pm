@@ -25,47 +25,35 @@ sub characters {
 	my $attrs = $self->{"ATTRS"};
 	my $element = $self->{"ELEMENT"};
 
-	if ($element->{LocalName} eq "param") {
-		if ($attrs{'{}name'}->{Value} eq "") {
-			if ($data ne "") {
+	if ($data ne "") {
+		if ($element->{LocalName} eq "param") {
+			if ($attrs{'{}name'}->{Value} eq "") {
 				my @things = $data =~ m/([\*\+\.\w=\/-]+|'[^']+')\s*/g;
 				foreach (@things) {
 					$self->param($_);
 				}
 			}
 		}
-	}
-	if ($element->{LocalName} eq "flag") {
-		if ($attrs{'{}name'}->{Value} eq "") {
-			if ($data ne "") {
+		if ($element->{LocalName} eq "flag") {
+			if ($attrs{'{}name'}->{Value} eq "") {
 				$self->flag($_);
 			}
-		}
-	}
-	if ($attrs{'{}name'}->{Value} eq "b") {
-		if ($data ne "") {
-			$self->superblock($data);
-		}
-	}
-	if ($attrs{'{}name'}->{Value} eq "B") {
-		if ($data ne "") {
-			$self->blocksize($data);
-		}
-	}
-	if ($attrs{'{}name'}->{Value} eq "j") {
-		if ($data ne "") {
-			$self->journal($data);
-		}
-	}
-	if ($attrs{'{}name'}->{Value} eq "l") {
-		if ($data ne "") {
-			$self->addbadblocks($data);
-		}
-	}
-	if ($attrs{'{}name'}->{Value} eq "L") {
-		if ($data ne "") {
-			$self->setbadblocks($data);
-		}
+			if ($attrs{'{}name'}->{Value} eq "b") {
+				$self->superblock($data);
+			}
+			if ($attrs{'{}name'}->{Value} eq "B") {
+				$self->blocksize($data);
+			}
+			if ($attrs{'{}name'}->{Value} eq "j") {
+				$self->journal($data);
+			}	
+			if ($attrs{'{}name'}->{Value} eq "l") {
+				$self->addbadblocks($data);
+			}
+			if ($attrs{'{}name'}->{Value} eq "L") {	
+				$self->setbadblocks($data);
+			}
+		}	
 	}
 	$self->SUPER::characters($chars);
 }
@@ -302,6 +290,10 @@ sub filter_map {
 	return \%fcommand;	
 }
 
+sub version {
+	return "1.0";
+}
+
 1;
 
 =head1 NAME
@@ -322,10 +314,12 @@ Fsck 1.32 (09-Nov-2002)
 
 =item Full example
 
-        <amin:command name="fsck">
-                <amin:param>/dev/hda1</amin:param>
+ <amin:profile xmlns:amin='http://projectamin.org/ns/'>
+       <amin:command name="fsck">
+                <amin:param>/dev/hdc1</amin:param>
                 <amin:flag>p</amin:flag>
         </amin:command>
+ </amin:profile>
 
 =back  
 

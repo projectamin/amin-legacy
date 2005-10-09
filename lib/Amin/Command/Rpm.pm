@@ -24,28 +24,24 @@ sub characters {
 	$data = $self->fix_text($data);
 	my $attrs = $self->{"ATTRS"};
 	my $element = $self->{"ELEMENT"};
-
-	if ($element->{LocalName} eq "param") {
-		if ($data ne "") {
+	
+	if ($data ne "") {
+		if ($element->{LocalName} eq "param") {
 			my @things = $data =~ m/([\*\+\.\w=\/-]+|'[^']+')\s*/g;
 			foreach (@things) {
 				$self->param($_);
 			}
 		}
-	}
-	if ($attrs{'{}name'}->{Value} eq "dir") {
-		if ($data ne "") {
-			$self->dir($data);
+		if ($element->{LocalName} eq "shell") {
+			if ($attrs{'{}name'}->{Value} eq "dir") {
+				$self->dir($data);
+			}
+			if ($attrs{'{}name'}->{Value} eq "env") {
+				$self->env_vars($data);
+			}
 		}
-	}
-	if ($attrs{'{}name'}->{Value} eq "env") {
-		if ($data ne "") {
-			$self->env_vars($data);
-		}
-	}
-	if ($element->{LocalName} eq "flag") {
-		if ($attrs{'{}name'}->{Value} eq "") {
-			if ($data ne "") {
+		if ($element->{LocalName} eq "flag") {
+			if ($attrs{'{}name'}->{Value} eq "") {
 				$self->flag(split(/\s+/, $data));
 			}
 		}
@@ -73,7 +69,7 @@ sub end_element {
 				push @flag, $flag;
 			}
 		}
-
+		
 		foreach (@$param) {
 			push @param, glob($_);
 		}
@@ -326,6 +322,10 @@ sub filter_map {
 	return \%fcommand;	
 }
 
+sub version {
+	return "1.0";
+}
+
 1;
 
 =head1 NAME
@@ -346,11 +346,11 @@ Red Hat Software               22 December 1998
 
 =item Full example
 
+ <amin:profile xmlns:amin='http://projectamin.org/ns/'>
         <amin:command name="rpm">
-                <amin:param>somerpm.rpm</amin:param>
-                <amin:flag>i</amin:flag>
-                <amin:shell name="dir">/usr/src/</amin:shell>
+                <amin:param>qa</amin:param>
         </amin:command>
+ </amin:profile>
 
 =back  
 

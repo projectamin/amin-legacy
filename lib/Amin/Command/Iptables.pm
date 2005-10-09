@@ -24,114 +24,78 @@ sub characters {
 	$data = $self->fix_text($data);
 	my $attrs = $self->{"ATTRS"};
 
-
-    if ($attrs{'{}name'}->{Value} eq "action") {
         if ($data ne "") {
-            $self->action($data);
-        }
-    }
-    if ($attrs{'{}name'}->{Value} eq "base") {
-        if ($data ne "") {
-            $self->base($data);
-        }
-    }
-    if ($attrs{'{}name'}->{Value} eq "burst") {
-        if ($data ne "") {
-            $self->burst($data);
-        }
-    }
-    if ($attrs{'{}name'}->{Value} eq "source") {
-        if ($data ne "") {
-            $self->source($data);
-        }
-    }
-    if ($attrs{'{}name'}->{Value} eq "destination") {
-        if ($data ne "") {
-            $self->destination($data);
-        }
-    }
-    if ($attrs{'{}name'}->{Value} eq "append") {
-        if ($data ne "") {
-            $self->append($data);
-        }
-    }
-    if ($attrs{'{}name'}->{Value} eq "chain") {
-        if ($data ne "") {
-            $self->chain($data);
-        }
-    }
-    if ($attrs{'{}name'}->{Value} eq "to") {
-        if ($data ne "") {
-            $self->to($data);
-        }
-    }
-     if ($attrs{'{}name'}->{Value} eq "inface") {
-        if ($data ne "") {
-            $self->inface($data);
-        }
-    }
-    if ($attrs{'{}name'}->{Value} eq "outface") {
-        if ($data ne "") {
-            $self->outface($data);
-        }
-    }
-    if ($attrs{'{}name'}->{Value} eq "protocol") {
-        if ($data ne "") {
-            $self->protocol($data);
-        }
-    }
-    if ($attrs{'{}name'}->{Value} eq "dport") {
-        if ($data ne "") {
-            $self->dport($data);
-        }
-    }
-    if ($attrs{'{}name'}->{Value} eq "string") {
-        if ($data ne "") {
-            $self->string($data);
-        }
-    }
-    if ($attrs{'{}name'}->{Value} eq "sport") {
-        if ($data ne "") {
-            $self->sport($data);
-        }
-    }
-    if ($attrs{'{}name'}->{Value} eq "tcpflags") {
-        if ($data ne "") {
-            $self->tcpflags($data);
-        }
-    }
-    if ($attrs{'{}name'}->{Value} eq "jump") {
-        if ($data ne "") {
-            $self->jump($data);
-        }
-    }
-    if ($attrs{'{}name'}->{Value} eq "rule") {
-        if ($data ne "") {
-            $self->rule($data);
-        }
-    }
-    if ($attrs{'{}name'}->{Value} eq "state") {
-        if ($data ne "") {
-            $self->state($data);
-        }
-    }
-    if ($attrs{'{}name'}->{Value} eq "level") {
-        if ($data ne "") {
-            $self->level($data);
-        }
-    }
-    if ($attrs{'{}name'}->{Value} eq "prefix") {
-        if ($data ne "") {
-            $self->prefix($data);
-        }
-    }
-
+		if ($element->{LocalName} eq "flag") {
+			if ($attrs{'{}name'}->{Value} eq "action") {
+		        	$self->action($data);
+			}
+		}
+		if ($element->{LocalName} eq "flag") {
+			if ($attrs{'{}name'}->{Value} eq "base") {
+				$self->base($data);
+			}
+			if ($attrs{'{}name'}->{Value} eq "burst") {
+			        $self->burst($data);
+    			}
+    			if ($attrs{'{}name'}->{Value} eq "source") {
+    				$self->source($data);
+    			}
+    			if ($attrs{'{}name'}->{Value} eq "destination") {
+    	        		$self->destination($data);
+  			}
+   			if ($attrs{'{}name'}->{Value} eq "append") {
+            			$self->append($data);
+    			}
+    			if ($attrs{'{}name'}->{Value} eq "chain") {
+        			$self->chain($data);
+			}
+			if ($attrs{'{}name'}->{Value} eq "to") {
+        			$self->to($data);
+    			}
+     			if ($attrs{'{}name'}->{Value} eq "inface") {
+      				$self->inface($data);
+    			}
+    			if ($attrs{'{}name'}->{Value} eq "outface") {
+            			$self->outface($data);
+    			}
+    			if ($attrs{'{}name'}->{Value} eq "protocol") {
+            			$self->protocol($data);
+    			}
+    			if ($attrs{'{}name'}->{Value} eq "dport") {
+            			$self->dport($data);
+    			}
+    			if ($attrs{'{}name'}->{Value} eq "string") {
+            			$self->string($data);
+    			}
+   			if ($attrs{'{}name'}->{Value} eq "sport") {
+            			$self->sport($data);
+    			}
+    			if ($attrs{'{}name'}->{Value} eq "tcpflags") {
+            			$self->tcpflags($data);
+    			}
+    			if ($attrs{'{}name'}->{Value} eq "jump") {
+            			$self->jump($data);
+    			}
+    			if ($attrs{'{}name'}->{Value} eq "rule") {
+            			$self->rule($data);
+    			}
+    			if ($attrs{'{}name'}->{Value} eq "state") {
+    			        $self->state($data);
+    			}
+    			if ($attrs{'{}name'}->{Value} eq "level") {
+    			        $self->level($data);
+    			}
+    			if ($attrs{'{}name'}->{Value} eq "prefix") {
+            			$self->prefix($data);
+    			}
+		}
+	}
 }
 
 sub end_element {
 	my ($self, $element) = @_;
 
-	if ($element->{LocalName} eq "security") {
+	if ($element->{LocalName} eq "command") {
 		my $action = $self->{'ACTION'};
 		my $base = $self->{'BASE'};
 		my $burst = $self->{'BURST'};
@@ -382,6 +346,10 @@ sub rule {
 	return $self->{RULE};
 }
 
+sub version {
+	return "1.0";
+}
+
 1;
 
 =head1 NAME
@@ -408,6 +376,8 @@ iptables
 
 =item Full example
 
+ <amin:profile xmlns:amin='http://projectamin.org/ns/'>
+	
 	<!-- Add a new rule to a already existing chain -->
     <amin:command name="iptables">
         <amin:param name="chain">INPUT</amin:param>
@@ -561,7 +531,8 @@ iptables
         <amin:param name="chain">INPUT</amin:param>
         <amin:flag name="action">zero</amin:flag>
     </amin:command>
-    
+ </amin:profile>
+   
 =back  
 
 =cut

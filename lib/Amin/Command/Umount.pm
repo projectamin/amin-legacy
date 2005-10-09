@@ -250,6 +250,10 @@ sub filter_map {
 	return \%fcommand;	
 }
 
+sub version {
+	return "1.0";
+}
+
 1;
 
 =head1 NAME
@@ -270,10 +274,11 @@ Linux 2.0 14 September 1997 umount
 
 =item Full example
 
+ <amin:profile xmlns:amin='http://projectamin.org/ns/'>
         <amin:command name="umount">
-                <amin:flag name="t">ext2</amin:flag>
-                <amin:param name="device">/mnt/chroot</amin:param>
+                <amin:param name="device">/tmp/amin-tests/</amin:param>
         </amin:command>
+ </amin:profile>
 
 =back  
 

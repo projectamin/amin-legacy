@@ -2,10 +2,9 @@ package Amin::Command::Mknod;
 
 use strict;
 use vars qw(@ISA);
-use Amin::Command::Elt;
-use Amin::Dispatcher;
+use Amin::Elt;
 
-@ISA = qw(Amin::Command::Elt Amin::Dispatcher);
+@ISA = qw(Amin::Elt);
 
 my (%attrs, @target);
 
@@ -27,47 +26,39 @@ sub characters {
 	my $attrs = $self->{"ATTRS"};
 	my $element = $self->{"ELEMENT"};
 
-	if ($attrs{'{}name'}->{Value} eq "mode") {
-		if ($data ne "") {
-			$self->mode($data);
-		}
-	}
-	if ($attrs{'{}name'}->{Value} eq "type") {
-		if ($data ne "") {
-			$self->type($data);
-		}
-	}
-	if ($attrs{'{}name'}->{Value} eq "major") {
-		if ($data ne "") {
-			$self->major($data);
-		}
-	}
-	if ($attrs{'{}name'}->{Value} eq "minor") {
-		if ($data ne "") {
-			$self->minor($data);
-		}
-	}
-	if ($attrs{'{}name'}->{Value} eq "target") {
-		if ($data ne "") {
-			my @things = $data =~ m/([\*\+\.\w=\/-]+|'[^']+')\s*/g;
-			foreach (@things) {
-				$self->target($_);
+	if ($data ne "") {
+		if ($element->{LocalName} eq "param") {
+			if ($attrs{'{}name'}->{Value} eq "type") {
+				$self->type($data);
+			}
+			if ($attrs{'{}name'}->{Value} eq "major") {
+				$self->major($data);
+			}
+			if ($attrs{'{}name'}->{Value} eq "minor") {
+				$self->minor($data);
+			}
+			if ($attrs{'{}name'}->{Value} eq "target") {
+				my @things = $data =~ m/([\*\+\.\w=\/-]+|'[^']+')\s*/g;
+				foreach (@things) {
+					$self->target($_);
+				}
 			}
 		}
-	}
-	if ($attrs{'{}name'}->{Value} eq "dir") {
-		if ($data ne "") {
-			$self->dir($data);
+	
+		if ($element->{LocalName} eq "shell") {
+			if ($attrs{'{}name'}->{Value} eq "dir") {
+				$self->dir($data);
+			}
+			if ($attrs{'{}name'}->{Value} eq "env") {
+				$self->env_vars($data);
+			}
 		}
-	}
-	if ($attrs{'{}name'}->{Value} eq "env") {
-		if ($data ne "") {
-			$self->env_vars($data);
-		}
-	}
-	if ($element->{LocalName} eq "flag") {
-		if ($attrs{'{}name'}->{Value} eq "") {
-			if ($data ne "") {
+		
+		if ($element->{LocalName} eq "flag") {
+			if ($attrs{'{}name'}->{Value} eq "mode") {
+				$self->mode($data);
+			}
+			if ($attrs{'{}name'}->{Value} eq "") {
 				$self->flag(split(/\s+/, $data));
 			}
 		}
@@ -305,6 +296,10 @@ sub filter_map {
 	return \%fcommand;	
 }
 
+sub version {
+	return "1.0";
+}
+
 1;
 
 =head1 NAME
@@ -325,6 +320,7 @@ Mknod (coreutils) March 2003
 
 =item Full example
 
+ <amin:profile xmlns:amin='http://projectamin.org/ns/'>
         <amin:command name="mknod">
                 <amin:param name="target">null</amin:param>
                 <amin:param name="type">c</amin:param>
@@ -333,6 +329,7 @@ Mknod (coreutils) March 2003
                 <amin:flag name="mode">0755</amin:flag>
                 <amin:shell name="dir">/dev/</amin:shell>
         </amin:command>
+ </amin:profile>
 
 =back  
 

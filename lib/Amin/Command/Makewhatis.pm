@@ -2,10 +2,9 @@ package Amin::Command::Makewhatis;
 
 use strict;
 use vars qw(@ISA);
-use Amin::Command::Elt;
-use Amin::Dispatcher;
+use Amin::Elt;
 
-@ISA = qw(Amin::Command::Elt Amin::Dispatcher);
+@ISA = qw(Amin::Elt);
 
 my (%attrs, @target);
 
@@ -27,25 +26,19 @@ sub characters {
 	my $attrs = $self->{"ATTRS"};
 	my $element = $self->{"ELEMENT"};
 
-	if ($attrs{'{}name'}->{Value} eq "sections") {
-		if ($data ne "") {
-			$self->sections($data);
-		}
-	}
-	if ($attrs{'{}name'}->{Value} eq "catpath") {
-		if ($data ne "") {
-			$self->catpath($data);
-		}
-	}
-	if ($element->{LocalName} eq "flag") {
-		if ($attrs{'{}name'}->{Value} eq "") {
-			if ($data ne "") {
+	if ($data ne "") {
+		if ($element->{LocalName} eq "flag") {
+			if ($attrs{'{}name'}->{Value} eq "sections") {
+				$self->sections($data);
+			}
+			if ($attrs{'{}name'}->{Value} eq "catpath") {
+				$self->catpath($data);
+			}
+			if ($attrs{'{}name'}->{Value} eq "") {
 				$self->flag(split(/\s+/, $data));
 			}
 		}
-	}
-	if ($element->{LocalName} eq "param") {
-		if ($data ne "") {
+		if ($element->{LocalName} eq "param") {
 			my @things = $data =~ m/([\*\+\.\w=\/-]+|'[^']+')\s*/g;
 			foreach (@things) {
 				$self->param($_);
@@ -63,7 +56,8 @@ sub end_element {
 		my $catpath = $self->{'CATPATH'};
 		my $xflag = $self->{'FLAG'};
 		my $command = $self->{'COMMAND'};
-		my ($flag, @flag);
+		my $xparam = $self->{'PARAM'};
+		my ($flag, @flag, @param);
 		my $log = $self->{Spec}->{Log};
 
 		my $state;
@@ -86,10 +80,14 @@ sub end_element {
 			push @flag, $flag;
 		}
 
+		foreach (@$xparam) {
+			push @param, $_;
+		}
+		
 		my %acmd;
 		$acmd{'CMD'} = $command;
 		$acmd{'FLAG'} = \@flag;
-		$acmd{'PARAM'} = \@target;
+		$acmd{'PARAM'} = \@param;
 		
 		my $cmd = $self->amin_command(\%acmd);
 
@@ -225,6 +223,10 @@ sub filter_map {
 	return \%fcommand;	
 }
 
+sub version {
+	return "1.0";
+}
+
 1;
 
 
@@ -246,10 +248,12 @@ makewhatis (coreutils) 5.0 March 2003
 
 =item Full example
 
+ <amin:profile xmlns:amin='http://projectamin.org/ns/'>
         <amin:command name="makewhatis">
                 <amin:param name="s">5</amin:param>
                 <amin:flag>w</amin:flag>
         </amin:command>
+ </amin:profile>
 
 =back  
 

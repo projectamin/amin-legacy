@@ -105,6 +105,9 @@ sub flag {
 	return $self->{FLAG};
 }
 
+sub version {
+	return "1.0";
+}
 
 1;
 
@@ -126,10 +129,12 @@ Userdel
 
 =item Full example
 
+ <amin:profile xmlns:amin='http://projectamin.org/ns/'>
         <amin:command name="userdel">
                 <amin:param>somename</amin:param>
                 <amin:flag>r</amin:flag>
         </amin:command>
+ </amin:profile>
 
 =back  
 

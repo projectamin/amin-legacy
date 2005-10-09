@@ -2,10 +2,9 @@ package Amin::Command::Kill;
 
 use strict;
 use vars qw(@ISA);
-use Amin::Command::Elt;
-use Amin::Dispatcher;
+use Amin::Elt;
 
-@ISA = qw(Amin::Command::Elt Amin::Dispatcher);
+@ISA = qw(Amin::Elt);
 
 my (%attrs, @target);
 
@@ -27,32 +26,29 @@ sub characters {
 	my $attrs = $self->{"ATTRS"};
 	my $element = $self->{"ELEMENT"};
 
-	if ($attrs{'{}name'}->{Value} eq "signal") {
-		if ($data ne "") {
-			$self->signal($data);
-		}
-	}
-	if ($element->{LocalName} eq "param") {
-		if ($data ne "") {
-			my @things = $data =~ m/([\*\+\.\w=\/-]+|'[^']+')\s*/g;
-			foreach (@things) {
-				$self->param($_);
+	if ($data ne "") {
+		if ($element->{LocalName} eq "param") {
+			
+			if ($attrs{'{}name'}->{Value} eq "signal") {
+				$self->signal($data);
+			} else {
+				my @things = $data =~ m/([\*\+\.\w=\/-]+|'[^']+')\s*/g;
+				foreach (@things) {
+					$self->param($_);
+				}
 			}
 		}
-	}
-	if ($attrs{'{}name'}->{Value} eq "dir") {
-		if ($data ne "") {
-			$self->dir($data);
+		
+		if ($element->{LocalName} eq "shell") {
+			if ($attrs{'{}name'}->{Value} eq "dir") {
+				$self->dir($data);
+			}
+			if ($attrs{'{}name'}->{Value} eq "env") {
+				$self->env_vars($data);
+			}
 		}
-	}
-	if ($attrs{'{}name'}->{Value} eq "env") {
-		if ($data ne "") {
-			$self->env_vars($data);
-		}
-	}
-	if ($element->{LocalName} eq "flag") {
-		if ($attrs{'{}name'}->{Value} eq "") {
-			if ($data ne "") {
+		if ($element->{LocalName} eq "flag") {
+			if ($attrs{'{}name'}->{Value} eq "") {
 				$self->flag(split(/\s+/, $data));
 			}
 		}
@@ -110,7 +106,7 @@ sub end_element {
 		my %acmd;
 		$acmd{'CMD'} = $command;
 		$acmd{'FLAG'} = \@flag;
-		$acmd{'PARAM'} = \@target;
+		$acmd{'PARAM'} = \@param;
 		
 		if ($self->{'ENV_VARS'}) {
 			$acmd{'ENV_VARS'} = $self->{'ENV_VARS'};
@@ -120,7 +116,7 @@ sub end_element {
 
 		if ($cmd->{STATUS} != 0) {
 			$self->{Spec}->{amin_error} = "red";
-			my $text = "Unable to create directory. Reason: $cmd->{ERR}";
+			my $text = "Unable to run kill Reason: $cmd->{ERR}";
 			$self->text($text);
 
 			$log->error_message($text);
@@ -237,6 +233,16 @@ sub filter_map {
 	return \%fcommand;	
 }
 
+sub signal {
+	my $self = shift;
+	$self->{SIGNAL} = shift if @_;
+	return $self->{SIGNAL};
+}
+
+sub version {
+	return "1.0";
+}
+
 1;
 
 
@@ -258,10 +264,12 @@ kill Taken from BSD 4.4.
 
 =item Full example
 
+ <amin:profile xmlns:amin='http://projectamin.org/ns/'>
         <amin:command name="kill">
                 <amin:param name="signal">9</amin:param>
                 <amin:param name="signal">apache</amin:param>
         </amin:command>
+ </amin:profile>
 
 =back  
 
