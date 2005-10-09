@@ -25,41 +25,31 @@ sub characters {
 	my $attrs = $self->{"ATTRS"};
 	my $element = $self->{"ELEMENT"};
 	
-	if ($attrs{'{}name'}->{Value} eq "I") {
-		if ($data ne "") {
-			$self->ignore($data);
+	if ($data ne "") {
+		if ($element->{LocalName} eq "shell") {
+			if ($attrs{'{}name'}->{Value} eq "env") {
+				$self->env_vars($data);
+			}
 		}
-	}
-	if ($attrs{'{}name'}->{Value} eq "k") {
-		if ($data ne "") {
-			$self->block_size($data);
-		}
-	}
-	if ($attrs{'{}name'}->{Value} eq "T") {
-		if ($data ne "") {
-			$self->tab($data);
-		}
-	}
-	if ($attrs{'{}name'}->{Value} eq "w") {
-		if ($data ne "") {
-			$self->width($data);
-		}
-	}
-	if ($attrs{'{}name'}->{Value} eq "env") {
-		if ($data ne "") {
-			$self->env_vars($data);
-		}
-	}
-	if ($element->{LocalName} eq "flag") {
-		if ($attrs{'{}name'}->{Value} eq "") {
-			if ($data ne "") {
+		if ($element->{LocalName} eq "flag") {
+			if ($attrs{'{}name'}->{Value} eq "I") {
+				$self->ignore($data);
+			}
+			if ($attrs{'{}name'}->{Value} eq "k") {
+				$self->block_size($data);
+			}
+			if ($attrs{'{}name'}->{Value} eq "T") {
+				$self->tab($data);
+			}
+			if ($attrs{'{}name'}->{Value} eq "w") {
+				$self->width($data);
+			}
+			if ($attrs{'{}name'}->{Value} eq "") {
 				$self->flag(split(/\s+/, $data));
 			}
 		}
-	}
-	if ($element->{LocalName} eq "param") {
-		if ($attrs{'{}name'}->{Value} eq "") {
-			if ($data ne "") {
+		if ($element->{LocalName} eq "param") {
+			if ($attrs{'{}name'}->{Value} eq "") {
 				$self->param(split(/\s+/, $data));
 			}
 		}
@@ -295,6 +285,10 @@ sub filter_map {
 	return \%fcommand;	
 }
 
+sub version {
+	return "1.0";
+}
+
 1;
 
 =head1 NAME
@@ -315,10 +309,12 @@ ls (coreutils) 5.0 March 2003
 
 =item Full example
 
+ <amin:profile xmlns:amin='http://projectamin.org/ns/'>
        <amin:command name="ls">
                 <amin:flag>lsa</amin:flag>
                 <amin:param>/tmp</amin:param>
         </amin:command>
+ </amin:profile>
 
 =back  
 

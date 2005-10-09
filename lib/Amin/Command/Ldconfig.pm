@@ -25,46 +25,33 @@ sub characters {
 	my $attrs = $self->{"ATTRS"};
 	my $element = $self->{"ELEMENT"};
 
-	if ($element->{LocalName} eq "param") {
-		if ($attrs{'{}name'}->{Value} eq "") {
-			if ($data ne "") {
+	if ($data ne "") {
+		if ($element->{LocalName} eq "param") {
+			if ($attrs{'{}name'}->{Value} eq "") {
 				my @things = $data =~ m/([\*\+\.\w=\/-]+|'[^']+')\s*/g;
 				foreach (@things) {
 					$self->param($_);
 				}
 			}
 		}
-	}
-	if ($element->{LocalName} eq "flag") {
-		if ($attrs{'{}name'}->{Value} eq "") {
-			if ($data ne "") {
+		if ($element->{LocalName} eq "flag") {
+			if ($attrs{'{}name'}->{Value} eq "") {
 				$self->flag($_);
+			}
+			if (($attrs{'{}name'}->{Value} eq "format") || ($attrs{'{}name'}->{Value} eq "c")) {
+				$self->format($data);
+			}
+			if ($attrs{'{}name'}->{Value} eq "C") {
+				$self->cache($data);
+			}
+			if ($attrs{'{}name'}->{Value} eq "f") {
+				$self->conf($data);
+			}
+			if ($attrs{'{}name'}->{Value} eq "r") {
+				$self->root($data);
 			}
 		}
 	}
-	
-	if (($attrs{'{}name'}->{Value} eq "format") || ($attrs{'{}name'}->{Value} eq "c")) {
-		if ($data ne "") {
-			$self->format($data);
-		}
-	}
-	
-	if ($attrs{'{}name'}->{Value} eq "C") {
-		if ($data ne "") {
-			$self->cache($data);
-		}
-	}
-	if ($attrs{'{}name'}->{Value} eq "f") {
-		if ($data ne "") {
-			$self->conf($data);
-		}
-	}
-	if ($attrs{'{}name'}->{Value} eq "r") {
-		if ($data ne "") {
-			$self->root($data);
-		}
-	}
-	
 	$self->SUPER::characters($chars);
 }
 
@@ -296,6 +283,10 @@ sub filter_map {
 	return \%fcommand;	
 }
   
+sub version {
+	return "1.0";
+}
+
 1;
 
 =head1 NAME
@@ -316,10 +307,12 @@ Ldconfig (GNU libc) 2.3.2
 
 =item Full example
 
+ <amin:profile xmlns:amin='http://projectamin.org/ns/'>
         <amin:command name="ldconfig">
 		<amin:flag name="c">compat</amin:flag>
                 <amin:flag>v</amin:flag>
         </amin:command>
+ </amin:profile>
 
 =back  
 

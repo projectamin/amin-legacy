@@ -25,40 +25,33 @@ sub characters {
 	my $attrs = $self->{"ATTRS"};
 	my $element = $self->{"ELEMENT"};
 	
-	if (($attrs{'{}name'}->{Value} eq "block-size") ||
-	    ($attrs{'{}name'}->{Value} eq "B") ||
-	    ($attrs{'{}name'}->{Value} eq "k")) {
-		if ($data ne "") {
-			$self->block_size($data);
-		}
-	}
-	if (($attrs{'{}name'}->{Value} eq "type") ||
-	    ($attrs{'{}name'}->{Value} eq "t")) {
-		if ($data ne "") {
-			$self->type($data);
-		}
-	}
-	if (($attrs{'{}name'}->{Value} eq "exclude-from") ||
-	    ($attrs{'{}name'}->{Value} eq "X")) {
-		if ($data ne "") {
-			$self->exclude_from($data);
-		}
-	}
-	if ($attrs{'{}name'}->{Value} eq "env") {
-		if ($data ne "") {
-			$self->env_vars($data);
-		}
-	}
-	if ($element->{LocalName} eq "flag") {
-		if ($attrs{'{}name'}->{Value} eq "") {
-			if ($data ne "") {
+	if ($data ne "") {
+	
+		if ($element->{LocalName} eq "flag") {
+			if (($attrs{'{}name'}->{Value} eq "block-size") ||
+			    ($attrs{'{}name'}->{Value} eq "B") ||
+			    ($attrs{'{}name'}->{Value} eq "k")) {
+				$self->block_size($data);
+			}
+			if (($attrs{'{}name'}->{Value} eq "type") ||
+			    ($attrs{'{}name'}->{Value} eq "t")) {
+				$self->type($data);
+			}
+			if (($attrs{'{}name'}->{Value} eq "exclude-from") ||
+			    ($attrs{'{}name'}->{Value} eq "X")) {
+				$self->exclude_from($data);
+			}
+			if ($attrs{'{}name'}->{Value} eq "") {
 				$self->flag(split(/\s+/, $data));
 			}
 		}
-	}
-	if ($element->{LocalName} eq "param") {
-		if ($attrs{'{}name'}->{Value} eq "") {
-			if ($data ne "") {
+		if ($element->{LocalName} eq "shell") {
+			if ($attrs{'{}name'}->{Value} eq "env") {
+				$self->env_vars($data);
+			}
+		}
+		if ($element->{LocalName} eq "param") {
+			if ($attrs{'{}name'}->{Value} eq "") {
 				$self->param(split(/\s+/, $data));
 			}
 		}
@@ -280,6 +273,9 @@ sub filter_map {
 	return \%fcommand;	
 }
 
+sub version {
+	return "1.0";
+}
 1;
 
 =head1 NAME
@@ -300,9 +296,11 @@ du (coreutils) 5.0 March 2003
 
 =item Full example
 
+ <amin:profile xmlns:amin='http://projectamin.org/ns/'>
         <amin:command name="du">
                 <amin:flag>a</amin:flag>
         </amin:command>
+ </amin:profile>
 
 =back  
 
