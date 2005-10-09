@@ -1,0 +1,24 @@
+<amin:profile xmlns:amin="http://projectamin.org/ns/">
+	<amin:cond name="os">
+		<amin:darwin>
+			<amin:command name="mkdir">
+				<amin:param>/tmp/darwin</amin:param>
+			</amin:command>
+		</amin:darwin>
+		<amin:freebsd>
+			<amin:command name="mkdir">
+				<amin:param>/tmp/freebsd</amin:param>
+			</amin:command>
+		</amin:freebsd>
+		<amin:openbsd>
+			<amin:command name="mkdir">
+				<amin:param>/tmp/openbsd</amin:param>
+			</amin:command>
+		</amin:openbsd>
+		<amin:linux>
+			<amin:command name="mkdir">
+				<amin:param>/tmp/linux</amin:param>
+			</amin:command>
+		</amin:linux>
+	</amin:cond>
+</amin:profile>
