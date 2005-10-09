@@ -1,0 +1,6 @@
+<amin:profile xmlns:amin='http://projectamin.org/ns/'>
+        <amin:command name="groupdel">
+                <amin:param>mynewgroup</amin:param>
+        </amin:command>
+</amin:profile>
+

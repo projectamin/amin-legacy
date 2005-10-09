@@ -1,0 +1,7 @@
+<amin:profile xmlns:amin='http://projectamin.org/ns/'>
+        <amin:command name="groupadd">
+                <amin:flag name="g">54334</amin:flag>
+                <amin:flag>o</amin:flag>
+                <amin:param>mynewgroup</amin:param>
+        </amin:command>
+</amin:profile>
