@@ -3,4 +3,8 @@
                 <amin:param>/tmp/test_dir5</amin:param>
                 <amin:flag name="mode">0754</amin:flag>
         </amin:command>
+        <amin:command name="mkdir">
+                <amin:param>/tmp/test_dir5_extra</amin:param>
+                <amin:flag name="mode">0754</amin:flag>
+        </amin:command>
 </amin:profile>
