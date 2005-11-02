@@ -6,7 +6,7 @@ use Amin::Elt;
 
 @ISA = qw(Amin::Elt);
 
-my (%attrs, @target);
+my %attrs;
 
 sub start_element {
 	my ($self, $element) = @_;
@@ -27,6 +27,11 @@ sub characters {
 	my $element = $self->{"ELEMENT"};
 
 	if ($data ne "") {
+		if ($element->{LocalName} eq "param") {
+			if ($attrs{'{}name'}->{Value} eq "") {
+				$self->param($data);
+			}
+		}
 		if ($element->{LocalName} eq "flag") {
 			if ($attrs{'{}name'}->{Value} eq "") {
 				$self->flag(split(/\s+/, $data));
@@ -42,7 +47,8 @@ sub end_element {
 	if ($element->{LocalName} eq "command") {
 		my $xflag = $self->{'FLAG'};
 		my $command = $self->{'COMMAND'};
-		my ($flag, @flag, @target);
+		my $param = $self->{'PARAM'};
+		my ($flag, @flag, @param);
 		my $log = $self->{Spec}->{Log};
 
 		my $state;
@@ -56,10 +62,11 @@ sub end_element {
 			push @flag, $flag;
 		}
 
+		push @param, $param;
 		my %acmd;
 		$acmd{'CMD'} = $command;
 		$acmd{'FLAG'} = \@flag;
-		$acmd{'PARAM'} = \@target;
+		$acmd{'PARAM'} = \@param;
 		
 		my $cmd = $self->amin_command(\%acmd);
 
@@ -76,18 +83,39 @@ sub end_element {
 			return;
 		}
 
-		my $text = "Hostname is $cmd->{OUT}";
+		my $text;
+		if ($param) {
+			$text = "Hostname has been set to $param.";
+		} else {
+			$text = "Hostname is $cmd->{OUT}";
+		}
 		$self->text($text);
 
 		$log->success_message($text);
 		if ($cmd->{OUT}) {
 			$log->OUT_message($cmd->{OUT});
 		}
+		#reset this command
+		
+		$self->{DIR} = undef;
+		$self->{FLAG} = [];
+		$self->{PARAM} = undef;
+		$self->{COMMAND} = undef;
+		$self->{ATTRS} = undef;
+		$self->{ENV_VARS} = [];
+		$self->{ELEMENT} = undef;
 		$self->SUPER::end_element($element);
 	} else {
 		$self->SUPER::end_element($element);
 	}
 }
+
+sub param {
+	my $self = shift;
+	$self->{PARAM} = shift if @_;
+	return $self->{PARAM};
+}
+
 
 sub version {
 	return "1.0";
@@ -114,6 +142,15 @@ hostname (coreutils)
 =item Full example
 
  <amin:profile xmlns:amin='http://projectamin.org/ns/'>
+        <amin:command name="hostname"/>
+ </amin:profile>
+
+=item Double example
+ 
+ <amin:profile xmlns:amin='http://projectamin.org/ns/'>
+        <amin:command name="hostname">
+		<amin:param>bbb</amin:param>
+	</amin:command>
         <amin:command name="hostname"/>
  </amin:profile>
 
