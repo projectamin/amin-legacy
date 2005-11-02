@@ -37,6 +37,19 @@ rm (coreutils) 5.0 March 2003
         </amin:command>
  </amin:profile>
 
+=item Double example
+ 
+ <amin:profile xmlns:amin='http://projectamin.org/ns/'>
+        <amin:command name="rm">
+                <amin:param name="target">pass my_new_dir/touchfile</amin:param>
+                <amin:shell name="dir">/tmp/amin-tests/</amin:shell>
+        </amin:command>
+        <amin:command name="rm">
+                <amin:param name="target">pass my_new_dir/touchfile</amin:param>
+                <amin:shell name="dir">/tmp/amin-tests2/</amin:shell>
+        </amin:command>
+ </amin:profile>
+
 =back  
 
 =cut

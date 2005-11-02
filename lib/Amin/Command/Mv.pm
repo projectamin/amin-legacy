@@ -37,6 +37,21 @@ Mv - reader class filter for the move(mv) command.
         </amin:command>
  </amin:profile>
 
+=item Double example
+ 
+ <amin:profile xmlns:amin='http://projectamin.org/ns/'>
+        <amin:command name="mv">
+                <amin:param name="source">limit-new</amin:param>
+                <amin:param name="target">limits</amin:param>
+                <amin:shell name="dir">/tmp/amin-tests/</amin:shell>
+        </amin:command>
+        <amin:command name="mv">
+                <amin:param name="source">limit-new</amin:param>
+                <amin:param name="target">limits</amin:param>
+                <amin:shell name="dir">/tmp/amin-tests2/</amin:shell>
+        </amin:command>
+ </amin:profile>
+
 =back  
 
 =cut
