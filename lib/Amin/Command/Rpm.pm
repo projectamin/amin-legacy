@@ -116,6 +116,16 @@ sub end_element {
 		if ($cmd->{OUT}) {
 			$log->OUT_message($cmd->{OUT});
 		}
+		#reset this command
+		
+		$self->{DIR} = undef;
+		$self->{FLAG} = [];
+		$self->{PARAM} = [];
+		$self->{COMMAND} = undef;
+		$self->{ATTRS} = undef;
+		$self->{ENV_VARS} = [];
+		$self->{ELEMENT} = undef;
+		$self->{MODE} = undef;
 		$self->SUPER::end_element($element);
 	} else {
 		$self->SUPER::end_element($element);
@@ -349,6 +359,18 @@ Red Hat Software               22 December 1998
  <amin:profile xmlns:amin='http://projectamin.org/ns/'>
         <amin:command name="rpm">
                 <amin:param>qa</amin:param>
+        </amin:command>
+ </amin:profile>
+
+=item Double example
+ 
+ <amin:profile xmlns:amin='http://projectamin.org/ns/'>
+        <amin:command name="rpm">
+                <amin:flag>-qa</amin:flag>
+        </amin:command>
+        <amin:command name="rpm">
+                <amin:flag>q</amin:flag>
+                <amin:flag>all</amin:flag>
         </amin:command>
  </amin:profile>
 

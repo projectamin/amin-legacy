@@ -122,6 +122,16 @@ sub end_element {
 		if ($cmd->{OUT}) {
 			$log->OUT_message($cmd->{OUT});
 		}
+		#reset this command
+		
+		$self->{DIR} = undef;
+		$self->{FLAG} = [];
+		$self->{TARGET} = [];
+		$self->{PARAM} = [];
+		$self->{COMMAND} = undef;
+		$self->{ATTRS} = undef;
+		$self->{ENV_VARS} = [];
+		$self->{ELEMENT} = undef;
 		$self->SUPER::end_element($element);
 	} else {
 		$self->SUPER::end_element($element);
@@ -156,6 +166,41 @@ rm (coreutils) 5.0 March 2003
         <amin:command name="remove">
                 <amin:param name="target">limits hg linked_thing touchfile touchfile2</amin:param>
                 <amin:shell name="dir">/tmp/amin-tests/</amin:shell>
+        </amin:command>
+ </amin:profile>
+
+=item Double example
+ 
+ <amin:profile xmlns:amin='http://projectamin.org/ns/'>
+	<!-- used for when zip/unzip works
+        <amin:command name="remove">
+                <amin:param name="target">limits hg linked_thing touchfile touchfile2 amin-file.zip</amin:param>
+                <amin:shell name="dir">/tmp/amin-tests/</amin:shell>
+        </amin:command>
+	<amin:command name="remove">
+		<amin:flag>rf</amin:flag>
+                <amin:param name="target">tmp/</amin:param>
+                <amin:shell name="dir">/tmp/amin-tests/</amin:shell>
+        </amin:command>
+	-->
+        <amin:command name="remove">
+                <amin:param name="target">limits hg linked_thing touchfile touchfile2</amin:param>
+                <amin:shell name="dir">/tmp/amin-tests/</amin:shell>
+        </amin:command>
+	<!-- used for when zip/unzip works
+        <amin:command name="remove">
+                <amin:param name="target">limits hg linked_thing touchfile touchfile2 amin-file.zip</amin:param>
+                <amin:shell name="dir">/tmp/amin-tests/</amin:shell>
+        </amin:command>
+	<amin:command name="remove">
+		<amin:flag>rf</amin:flag>
+                <amin:param name="target">tmp/</amin:param>
+                <amin:shell name="dir">/tmp/amin-tests/</amin:shell>
+        </amin:command>
+	-->
+        <amin:command name="remove">
+                <amin:param name="target">limits hg linked_thing touchfile touchfile2</amin:param>
+                <amin:shell name="dir">/tmp/amin-tests2/</amin:shell>
         </amin:command>
  </amin:profile>
 

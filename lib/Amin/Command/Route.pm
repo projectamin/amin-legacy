@@ -130,6 +130,21 @@ sub end_element {
 		if ($cmd->{OUT}) {
 			$log->OUT_message($cmd->{OUT});
 		}
+		#reset this command
+		
+		$self->{DIR} = undef;
+		$self->{FLAG} = [];
+		$self->{PARAM} = [];
+		$self->{COMMAND} = undef;
+		$self->{ATTRS} = undef;
+		$self->{ENV_VARS} = [];
+		$self->{ELEMENT} = undef;
+		$self->{INTERFACE} = undef;
+		$self->{ADDRESS} = undef;
+		$self->{NETMASK} = undef;
+		$self->{STATE} = undef;
+		$self->{TYPE} = undef;
+		$self->{METRIC} = undef;
 		$self->SUPER::end_element($element);
 	} else {
 		$self->SUPER::end_element($element);
@@ -202,6 +217,35 @@ route 1.98 (2001-04-15)
                 <amin:param name="state">add</amin:param>
                 <amin:param name="type">default gw</amin:param>
                 <amin:param name="address">192.168.0.1</amin:param>
+                <amin:param name="netmask">0.0.0.0</amin:param>
+                <amin:param name="metric">1</amin:param>
+        </amin:command>
+
+        <amin:command name="route">
+                <amin:param name="state">del</amin:param>
+                <amin:param name="type">default</amin:param>
+        </amin:command>
+ </amin:profile>
+
+=item Double example
+ 
+ <amin:profile xmlns:amin='http://projectamin.org/ns/'>
+        <amin:command name="route">
+                <amin:param name="state">add</amin:param>
+                <amin:param name="type">default gw</amin:param>
+                <amin:param name="address">192.168.0.1</amin:param>
+                <amin:param name="netmask">0.0.0.0</amin:param>
+                <amin:param name="metric">1</amin:param>
+        </amin:command>
+
+        <amin:command name="route">
+                <amin:param name="state">del</amin:param>
+                <amin:param name="type">default</amin:param>
+        </amin:command>
+        <amin:command name="route">
+                <amin:param name="state">add</amin:param>
+                <amin:param name="type">default gw</amin:param>
+                <amin:param name="address">192.168.0.2</amin:param>
                 <amin:param name="netmask">0.0.0.0</amin:param>
                 <amin:param name="metric">1</amin:param>
         </amin:command>

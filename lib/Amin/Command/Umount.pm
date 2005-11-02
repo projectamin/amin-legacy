@@ -143,6 +143,18 @@ sub end_element {
 		if ($cmd->{OUT}) {
 			$log->OUT_message($cmd->{OUT});
 		}
+		#reset this command
+		
+		$self->{DIR} = undef;
+		$self->{FLAG} = [];
+		$self->{PARAM} = [];
+		$self->{COMMAND} = undef;
+		$self->{ATTRS} = undef;
+		$self->{ENV_VARS} = [];
+		$self->{ELEMENT} = undef;
+		$self->{TYPE} = undef;
+		$self->{OPTIONS} = undef;
+		$self->{DEVICE} = undef;
 		$self->SUPER::end_element($element);
 	} else {
 		$self->SUPER::end_element($element);
@@ -289,6 +301,17 @@ Linux 2.0 14 September 1997 umount
  <amin:profile xmlns:amin='http://projectamin.org/ns/'>
         <amin:command name="umount">
                 <amin:param name="device">/tmp/amin-tests/</amin:param>
+        </amin:command>
+ </amin:profile>
+
+=item Double example
+ 
+ <amin:profile xmlns:amin='http://projectamin.org/ns/'>
+        <amin:command name="umount">
+                <amin:param name="device">/tmp/amin-tests/</amin:param>
+        </amin:command>
+        <amin:command name="umount">
+                <amin:param name="device">/tmp/amin-tests2/</amin:param>
         </amin:command>
  </amin:profile>
 

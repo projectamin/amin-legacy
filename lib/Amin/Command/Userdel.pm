@@ -115,6 +115,15 @@ sub end_element {
 		if ($cmd->{OUT}) {
 			$log->OUT_message($cmd->{OUT});
 		}
+		#reset this command
+		
+		$self->{DIR} = undef;
+		$self->{FLAG} = undef;
+		$self->{PARAM} = [];
+		$self->{COMMAND} = undef;
+		$self->{ATTRS} = undef;
+		$self->{ENV_VARS} = [];
+		$self->{ELEMENT} = undef;
 		$self->SUPER::end_element($element);
 	} else {
 		$self->SUPER::end_element($element);
@@ -154,6 +163,19 @@ Userdel
  <amin:profile xmlns:amin='http://projectamin.org/ns/'>
         <amin:command name="userdel">
                 <amin:param>somename</amin:param>
+                <amin:flag>r</amin:flag>
+        </amin:command>
+ </amin:profile>
+
+=item Double example
+ 
+ <amin:profile xmlns:amin='http://projectamin.org/ns/'>
+        <amin:command name="userdel">
+                <amin:param>somename</amin:param>
+                <amin:flag>r</amin:flag>
+        </amin:command>
+        <amin:command name="userdel">
+                <amin:param>someothername</amin:param>
                 <amin:flag>r</amin:flag>
         </amin:command>
  </amin:profile>

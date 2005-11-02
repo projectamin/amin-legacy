@@ -168,6 +168,20 @@ sub end_element {
 		if ($cmd->{OUT}) {
 			$log->OUT_message($cmd->{OUT});
 		}
+		#reset this command
+		
+		$self->{DIR} = undef;
+		$self->{SUPERBLOCK} = undef;
+		$self->{BLOCKSIZE} = undef;
+		$self->{JOURNAL} = undef;
+		$self->{ADDBADBLOCKS} = undef;
+		$self->{SETBADBLOCKS} = undef;
+		$self->{FLAG} = [];
+		$self->{PARAM} = [];
+		$self->{COMMAND} = undef;
+		$self->{ATTRS} = undef;
+		$self->{ENV_VARS} = [];
+		$self->{ELEMENT} = undef;
 		$self->SUPER::end_element($element);
 	} else {
 		$self->SUPER::end_element($element);
@@ -342,6 +356,19 @@ Fsck 1.32 (09-Nov-2002)
  <amin:profile xmlns:amin='http://projectamin.org/ns/'>
        <amin:command name="fsck">
                 <amin:param>/dev/hdc1</amin:param>
+                <amin:flag>p</amin:flag>
+        </amin:command>
+ </amin:profile>
+
+=item Double example
+ 
+ <amin:profile xmlns:amin='http://projectamin.org/ns/'>
+       <amin:command name="fsck">
+                <amin:param>/dev/hdc1</amin:param>
+                <amin:flag>p</amin:flag>
+        </amin:command>
+       <amin:command name="fsck">
+                <amin:param>/dev/hdc2</amin:param>
                 <amin:flag>p</amin:flag>
         </amin:command>
  </amin:profile>

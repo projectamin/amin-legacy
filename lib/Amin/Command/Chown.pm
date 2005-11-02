@@ -175,6 +175,16 @@ sub end_element {
 		$log->success_message($text);
 		if ($cmd->{OUT}) {
 			$log->OUT_message($cmd->{OUT});
+		#reset this command
+		$self->{DIR} = undef;
+		$self->{TARGET} = undef;
+		$self->{OGROUP} = undef;
+		$self->{FLAG} = [];
+		$self->{PARAM} = [];
+		$self->{COMMAND} = undef;
+		$self->{ATTRS} = undef;
+		$self->{ENV_VARS} = [];
+		$self->{ELEMENT} = undef;
 		}
 		$self->SUPER::end_element($element);
 	} else {
@@ -305,6 +315,21 @@ chown (coreutils) 5.0 March 2003
  </amin:profile>
 
 	
+=item Double example
+ 
+ <amin:profile xmlns:amin='http://projectamin.org/ns/'>
+        <amin:command name="chown">
+                <amin:flag>c</amin:flag>
+                <amin:param name="ogroup">bin.bin</amin:param>
+                <amin:param name="target">/tmp/amin-tests/limits</amin:param>
+        </amin:command>
+        <amin:command name="chown">
+                <amin:flag>c</amin:flag>
+                <amin:param name="ogroup">bin.bin</amin:param>
+                <amin:param name="target">/tmp/amin-tests2/limits</amin:param>
+        </amin:command>
+ </amin:profile>
+
 =back  
 
 =cut

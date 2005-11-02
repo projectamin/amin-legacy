@@ -123,6 +123,8 @@ sub end_element {
 		
 		my $cmd = $self->amin_command(\%acmd);
 
+		
+		
 		if ($cmd->{STATUS} != 0) {
 			$self->{Spec}->{amin_error} = "red";
 			my $text = "Unable to create directory. Reason: $cmd->{ERR}";
@@ -146,6 +148,21 @@ sub end_element {
 		if ($cmd->{OUT}) {
 			$log->OUT_message($cmd->{OUT});
 		}
+		
+		#reset this command
+		
+		$self->{MODE} = undef;
+		$self->{DIR} = undef;
+		$self->{TARGET} = [];
+		$self->{FLAG} = [];
+		$self->{PARAM} = [];
+		$self->{COMMAND} = undef;
+		$self->{ATTRS} = undef;
+		$self->{ENV_VARS} = [];
+		$self->{NAME} = undef;
+		$self->{ELEMENT} = undef;
+		
+		
 		$self->SUPER::end_element($element);
 	} else {
 		$self->SUPER::end_element($element);
@@ -279,6 +296,19 @@ mkdir (coreutils) 5.0 March 2003
  <amin:profile xmlns:amin='http://projectamin.org/ns/'>
         <amin:command name="mkdir">
                 <amin:param name="target">/tmp/amin-tests/my_new_dir</amin:param>
+                <amin:flag>p</amin:flag>
+        </amin:command>
+ </amin:profile>
+
+=item Double example
+ 
+ <amin:profile xmlns:amin='http://projectamin.org/ns/'>
+        <amin:command name="mkdir">
+                <amin:param name="target">/tmp/amin-tests/my_new_dir</amin:param>
+                <amin:flag>p</amin:flag>
+        </amin:command>
+        <amin:command name="mkdir">
+                <amin:param name="target">/tmp/amin-tests2/my_new_dir</amin:param>
                 <amin:flag>p</amin:flag>
         </amin:command>
  </amin:profile>

@@ -173,6 +173,20 @@ sub end_element {
 		if ($cmd->{OUT}) {
 			$log->OUT_message($cmd->{OUT});
 		}
+		#reset this command
+		
+		$self->{DIR} = undef;
+		$self->{FLAG} = [];
+		$self->{TARGET} = [];
+		$self->{PARAM} = [];
+		$self->{COMMAND} = undef;
+		$self->{ATTRS} = undef;
+		$self->{ENV_VARS} = [];
+		$self->{ELEMENT} = undef;
+		$self->{MODE} = undef;
+		$self->{TYPE} = undef;
+		$self->{MAJOR} = undef;
+		$self->{MINOR} = undef;
 		$self->SUPER::end_element($element);
 	} else {
 		$self->SUPER::end_element($element);
@@ -320,6 +334,19 @@ Mknod (coreutils) March 2003
 
 =item Full example
 
+ <amin:profile xmlns:amin='http://projectamin.org/ns/'>
+        <amin:command name="mknod">
+                <amin:param name="target">null</amin:param>
+                <amin:param name="type">c</amin:param>
+                <amin:param name="major">1</amin:param>
+                <amin:param name="minor">3</amin:param>
+                <amin:flag name="mode">0755</amin:flag>
+                <amin:shell name="dir">/dev/</amin:shell>
+        </amin:command>
+ </amin:profile>
+
+=item Double example
+ 
  <amin:profile xmlns:amin='http://projectamin.org/ns/'>
         <amin:command name="mknod">
                 <amin:param name="target">null</amin:param>

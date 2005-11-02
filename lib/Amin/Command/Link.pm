@@ -125,6 +125,18 @@ sub end_element {
 		if ($cmd->{OUT}) {
 			$log->OUT_message($cmd->{OUT});
 		}
+		#reset this command
+		
+		$self->{DIR} = undef;
+		$self->{FLAG} = [];
+		$self->{PARAM} = [];
+		$self->{COMMAND} = undef;
+		$self->{ATTRS} = undef;
+		$self->{ENV_VARS} = [];
+		$self->{ELEMENT} = undef;
+		$self->{SOURCE} = undef;
+		$self->{TYPE} = undef;
+		$self->{TARGET} = undef;
 		$self->SUPER::end_element($element);
 	} else {
 		$self->SUPER::end_element($element);
@@ -278,6 +290,23 @@ ln (coreutils) 5.0 March 2003
                 <amin:param name="target">linked_thing</amin:param>
                 <amin:flag>sf</amin:flag>
                 <amin:shell name="dir">/tmp/amin-tests/</amin:shell>
+        </amin:command>
+ </amin:profile>
+
+=item Double example
+ 
+ <amin:profile xmlns:amin='http://projectamin.org/ns/'>
+       <amin:command name="link">
+                <amin:param name="source">original_thing</amin:param>
+                <amin:param name="target">linked_thing</amin:param>
+                <amin:flag>sf</amin:flag>
+                <amin:shell name="dir">/tmp/amin-tests/</amin:shell>
+        </amin:command>
+       <amin:command name="link">
+                <amin:param name="source">original_thing</amin:param>
+                <amin:param name="target">linked_thing</amin:param>
+                <amin:flag>sf</amin:flag>
+                <amin:shell name="dir">/tmp/amin-tests2/</amin:shell>
         </amin:command>
  </amin:profile>
 
