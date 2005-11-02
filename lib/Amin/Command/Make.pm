@@ -62,7 +62,6 @@ sub end_element {
 		my $param = $self->{'PARAM'};
 		my $xflag = $self->{'FLAG'};
 		my $command = $self->{'COMMAND'};
-		my $make_env = $self->{'MAKE_ENV'};
 		my $log = $self->{Spec}->{Log};
 
 		my ($flag, @flag, @param);
@@ -74,10 +73,6 @@ sub end_element {
 				$flag = "-" . $ip;
 				push @flag, $flag;
 			}
-		}
-
-		if ($make_env) {
-			push @param, $make_env;
 		}
 
 		foreach my $ip (@$param){
@@ -129,6 +124,15 @@ sub end_element {
 		if ($cmd->{OUT}) {
 			$log->OUT_message($cmd->{OUT});
 		}
+		#reset this command
+		
+		$self->{DIR} = undef;
+		$self->{FLAG} = [];
+		$self->{PARAM} = [];
+		$self->{COMMAND} = undef;
+		$self->{ATTRS} = undef;
+		$self->{ENV_VARS} = [];
+		$self->{ELEMENT} = undef;
 		$self->SUPER::end_element($element);
 	} else {
 		$self->SUPER::end_element($element);
@@ -288,6 +292,25 @@ GNU 22 August 1989
 	<amin:command name="make">
 		<amin:param>install</amin:param>
 		<amin:shell name="dir">/tmp/amin-tests/fake-0.01</amin:shell>
+	</amin:command>
+ </amin:profile>
+
+=item Double example
+ 
+ <amin:profile xmlns:amin='http://projectamin.org/ns/'>
+	<amin:command name="make">
+		<amin:shell name="dir">/tmp/amin-tests/fake-0.01</amin:shell>
+	</amin:command>
+	<amin:command name="make">
+		<amin:param>install</amin:param>
+		<amin:shell name="dir">/tmp/amin-tests/fake-0.01</amin:shell>
+	</amin:command>
+	<amin:command name="make">
+		<amin:shell name="dir">/tmp/amin-tests2/fake-0.01</amin:shell>
+	</amin:command>
+	<amin:command name="make">
+		<amin:param>install</amin:param>
+		<amin:shell name="dir">/tmp/amin-tests2/fake-0.01</amin:shell>
 	</amin:command>
  </amin:profile>
 
