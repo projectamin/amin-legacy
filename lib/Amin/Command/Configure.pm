@@ -129,6 +129,16 @@ sub end_element {
 		if ($cmd->{OUT}) {
 			$log->OUT_message($cmd->{OUT});
 		}
+		#reset this command
+		
+		$self->{DIR} = undef;
+		$self->{CONFIG} = undef;
+		$self->{FLAG} = [];
+		$self->{PARAM} = [];
+		$self->{COMMAND} = undef;
+		$self->{ATTRS} = undef;
+		$self->{ENV_VARS} = [];
+		$self->{ELEMENT} = undef;
 		$self->SUPER::end_element($element);
 	} else {
 		$self->SUPER::end_element($element);
@@ -187,6 +197,19 @@ Configure - reader class filter for the configure command.
 	-->
  </amin:profile>
  
+=item Double example
+ 
+ <amin:profile xmlns:amin='http://projectamin.org/ns/'> 
+	<amin:command name="configure"> 
+		<amin:flag>prefix=/usr</amin:flag> 
+		<amin:shell name="dir">/tmp/amin-tests/fake-0.01</amin:shell> 
+	</amin:command>
+	<amin:command name="configure"> 
+		<amin:flag>prefix=/usr</amin:flag> 
+		<amin:shell name="dir">/tmp/amin-tests2/fake-0.01</amin:shell> 
+	</amin:command>
+ </amin:profile>
+
 =back  
 
 =cut

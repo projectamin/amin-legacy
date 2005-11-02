@@ -125,6 +125,16 @@ sub end_element {
 		if ($cmd->{OUT}) {
 			$log->OUT_message($cmd->{OUT});
 		}
+		#reset this command
+		
+		$self->{DIR} = undef;
+		$self->{FLAG} = [];
+		$self->{PARAM} = [];
+		$self->{COMMAND} = undef;
+		$self->{ATTRS} = undef;
+		$self->{ENV_VARS} = [];
+		$self->{ELEMENT} = undef;
+		$self->{INPUT} = undef;
 		$self->SUPER::end_element($element);
 	} else {
 		$self->SUPER::end_element($element);
@@ -307,6 +317,29 @@ GNU 1998/03/21 PATCH
                 <amin:flag>p1</amin:flag>
                 <amin:flag name="input">/tmp/amin-tests/fake-0.02.patch</amin:flag>
                 <amin:shell name="dir">/tmp/amin-tests/fake-0.01</amin:shell>
+        </amin:command>
+ </amin:profile>
+
+=item Double example
+ 
+ <amin:profile xmlns:amin='http://projectamin.org/ns/'>
+       <amin:download>
+                <amin:param name="uri">http://projectamin.org/apan/tester/command/fake-0.02.patch</amin:param>
+                <amin:param name="file">/tmp/amin-tests/fake-0.02.patch</amin:param>
+        </amin:download>
+        <amin:command name="patch">
+                <amin:flag>p1</amin:flag>
+                <amin:flag name="input">/tmp/amin-tests/fake-0.02.patch</amin:flag>
+                <amin:shell name="dir">/tmp/amin-tests/fake-0.01</amin:shell>
+        </amin:command>
+       <amin:download>
+                <amin:param name="uri">http://projectamin.org/apan/tester/command/fake-0.02.patch</amin:param>
+                <amin:param name="file">/tmp/amin-tests2/fake-0.02.patch</amin:param>
+        </amin:download>
+        <amin:command name="patch">
+                <amin:flag>p1</amin:flag>
+                <amin:flag name="input">/tmp/amin-tests2/fake-0.02.patch</amin:flag>
+                <amin:shell name="dir">/tmp/amin-tests2/fake-0.01</amin:shell>
         </amin:command>
  </amin:profile>
 

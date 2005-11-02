@@ -187,6 +187,22 @@ sub end_element {
 		if ($cmd->{OUT}) {
 			$log->OUT_message($cmd->{OUT});
 		}
+		#reset this command
+		
+		$self->{DIR} = undef;
+		$self->{FLAG} = [];
+		$self->{TARGET} = [];
+		$self->{PARAM} = [];
+		$self->{COMMAND} = undef;
+		$self->{ATTRS} = undef;
+		$self->{ENV_VARS} = [];
+		$self->{ELEMENT} = undef;
+		$self->{SOURCE} = [];
+		$self->{PATH} = undef;
+		$self->{DATE} = undef;
+		$self->{EXCLUDE} = undef;
+		$self->{INCLUDE} = undef;
+		$self->{SUFFIX} = undef;
 		$self->SUPER::end_element($element);
 	} else {
 		$self->SUPER::end_element($element);
@@ -367,6 +383,21 @@ Zip 2.3 (November 29th 1999)
         <amin:command name="zip">
                 <amin:flag name="b">/tmp/amin-tests/*</amin:flag>
                 <amin:param>/tmp/amin-tests/file.zip</amin:param>
+        </amin:command>
+ </amin:profile>
+
+=item Double example
+ 
+ <amin:profile xmlns:amin='http://projectamin.org/ns/'>
+        <amin:command name="zip">
+                <amin:param name="source">/tmp/amin-tests/*</amin:param>
+                <amin:param name="target">/tmp/amin-tests/amin-file.zip</amin:param>
+                <amin:flag>q</amin:flag>
+        </amin:command>
+        <amin:command name="zip">
+                <amin:param name="source">/tmp/amin-tests2/*</amin:param>
+                <amin:param name="target">/tmp/amin-tests2/amin-file.zip</amin:param>
+                <amin:flag>q</amin:flag>
         </amin:command>
  </amin:profile>
 

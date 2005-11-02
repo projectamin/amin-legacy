@@ -148,6 +148,19 @@ sub end_element {
 		if ($cmd->{OUT}) {
 			$log->OUT_message($cmd->{OUT});
 		}
+		#reset this command
+		
+		$self->{DIR} = undef;
+		$self->{FLAG} = [];
+		$self->{PARAM} = [];
+		$self->{COMMAND} = undef;
+		$self->{ATTRS} = undef;
+		$self->{ENV_VARS} = [];
+		$self->{ELEMENT} = undef;
+		$self->{INTERFACE} = undef;
+		$self->{ADDRESS} = undef;
+		$self->{NETMASK} = undef;
+		$self->{STATE} = undef;
 		$self->SUPER::end_element($element);
 	} else {
 		$self->SUPER::end_element($element);
@@ -215,6 +228,35 @@ ifconfig 1.42 (2001-04-13)
                 <amin:param name="interface">eth0:1</amin:param>
                 <amin:param name="state">down</amin:param>
         </amin:command>
+ </amin:profile>
+
+=item Double example
+ 
+ <amin:profile xmlns:amin='http://projectamin.org/ns/'>
+        <amin:command name="ifconfig">
+                <amin:param name="interface">eth0:1000</amin:param>
+                <amin:param name="address">192.168.0.1</amin:param>
+                <amin:param name="netmask">255.255.255.0</amin:param>
+        </amin:command>
+
+	<!--
+        <amin:command name="ifconfig">
+                <amin:param name="interface">eth0:1000</amin:param>
+                <amin:param name="state">down</amin:param>
+        </amin:command>
+	-->
+        <amin:command name="ifconfig">
+                <amin:param name="interface">eth0:1001</amin:param>
+                <amin:param name="address">192.168.0.1</amin:param>
+                <amin:param name="netmask">255.255.255.0</amin:param>
+        </amin:command>
+
+	<!--
+        <amin:command name="ifconfig">
+                <amin:param name="interface">eth0:1001</amin:param>
+                <amin:param name="state">down</amin:param>
+        </amin:command>
+	-->
  </amin:profile>
 
 =back  

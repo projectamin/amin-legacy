@@ -180,6 +180,18 @@ sub end_element {
 		if ($cmd->{OUT}) {
 			$log->OUT_message($cmd->{OUT});
 		}
+		#reset this command
+		
+		$self->{DIR} = undef;
+		$self->{TARGET} = undef;
+		$self->{GROUP} = undef;
+		$self->{REFERENCE} = undef;
+		$self->{FLAG} = [];
+		$self->{PARAM} = [];
+		$self->{COMMAND} = undef;
+		$self->{ATTRS} = undef;
+		$self->{ENV_VARS} = [];
+		$self->{ELEMENT} = undef;
 		$self->SUPER::end_element($element);
 	} else {
 		$self->SUPER::end_element($element);
@@ -310,6 +322,21 @@ chgrp (coreutils) 5.0 March 2003
                 <amin:flag>c</amin:flag>
                 <amin:param name="group">bin</amin:param>
                 <amin:param name="target">/tmp/amin-tests/limits</amin:param>
+        </amin:command>
+ </amin:profile>
+
+=item Double example
+ 
+ <amin:profile xmlns:amin='http://projectamin.org/ns/'>
+        <amin:command name="chgrp">
+                <amin:flag>c</amin:flag>
+                <amin:param name="group">bin</amin:param>
+                <amin:param name="target">/tmp/amin-tests/limits</amin:param>
+        </amin:command>
+        <amin:command name="chgrp">
+                <amin:flag>c</amin:flag>
+                <amin:param name="group">bin</amin:param>
+                <amin:param name="target">/tmp/amin-tests2/limits</amin:param>
         </amin:command>
  </amin:profile>
 

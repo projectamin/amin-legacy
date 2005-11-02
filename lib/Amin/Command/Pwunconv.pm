@@ -51,6 +51,15 @@ sub end_element {
 		if ($cmd->{OUT}) {
 			$log->OUT_message($cmd->{OUT});
 		}
+		#reset this command
+		
+		$self->{DIR} = undef;
+		$self->{FLAG} = [];
+		$self->{PARAM} = [];
+		$self->{COMMAND} = undef;
+		$self->{ATTRS} = undef;
+		$self->{ENV_VARS} = [];
+		$self->{ELEMENT} = undef;
 		$self->SUPER::end_element($element);
 	} else {
 		$self->SUPER::end_element($element);
@@ -80,6 +89,12 @@ Pwunconv 26 Sep 1997
 =over 4
 
 =item Full example
+
+ <amin:profile xmlns:amin='http://projectamin.org/ns/'>
+        <amin:command name="pwunconv" />
+ </amin:profile>
+
+=item Double example
 
  <amin:profile xmlns:amin='http://projectamin.org/ns/'>
         <amin:command name="pwunconv" />

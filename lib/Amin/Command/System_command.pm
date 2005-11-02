@@ -138,6 +138,17 @@ sub end_element {
 		if ($cmd->{OUT}) {
 			$log->OUT_message($cmd->{OUT});
 		}
+		#reset this command
+		
+		$self->{DIR} = undef;
+		$self->{FLAG} = [];
+		$self->{PARAM} = [];
+		$self->{COMMAND} = undef;
+		$self->{ATTRS} = undef;
+		$self->{ENV_VARS} = [];
+		$self->{ELEMENT} = undef;
+		$self->{BASENAME} = undef;
+		$self->{SPECIAL} = undef;
 		$self->SUPER::end_element($element);
 	} else {
 		$self->SUPER::end_element($element);
@@ -269,6 +280,19 @@ amin 0.5.0
         </amin:command>
  	-->
  
+ </amin:profile>
+
+=item Double example
+ 
+ <amin:profile xmlns:amin='http://projectamin.org/ns/'>
+       <amin:command name="system_command">
+                <amin:param name="basename">touch</amin:param>
+                <amin:param>/tmp/amin-tests/limits</amin:param>
+        </amin:command>
+       <amin:command name="system_command">
+                <amin:param name="basename">touch</amin:param>
+                <amin:param>/tmp/amin-tests2/limits</amin:param>
+        </amin:command>
  </amin:profile>
 	
 =back  

@@ -164,6 +164,19 @@ sub end_element {
 		if ($cmd->{OUT}) {
 			$log->OUT_message($cmd->{OUT});
 		}
+		#reset this command
+		
+		$self->{DIR} = undef;
+		$self->{FLAG} = [];
+		$self->{PARAM} = [];
+		$self->{COMMAND} = undef;
+		$self->{ATTRS} = undef;
+		$self->{ENV_VARS} = [];
+		$self->{ELEMENT} = undef;
+		$self->{IGNORE} = undef;
+		$self->{BLOCK_SIZE} = undef;
+		$self->{TAB} = undef;
+		$self->{WIDTH} = undef;
 		$self->SUPER::end_element($element);
 	} else {
 		$self->SUPER::end_element($element);
@@ -329,6 +342,19 @@ ls (coreutils) 5.0 March 2003
        <amin:command name="ls">
                 <amin:flag>lsa</amin:flag>
                 <amin:param>/tmp</amin:param>
+        </amin:command>
+ </amin:profile>
+
+=item Double example
+ 
+ <amin:profile xmlns:amin='http://projectamin.org/ns/'>
+       <amin:command name="ls">
+                <amin:flag>lsa</amin:flag>
+                <amin:param>/boot</amin:param>
+        </amin:command>
+       <amin:command name="ls">
+                <amin:flag>lsa</amin:flag>
+                <amin:param>/var</amin:param>
         </amin:command>
  </amin:profile>
 

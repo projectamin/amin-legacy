@@ -256,6 +256,17 @@ sub end_element {
 		if ($cmd->{OUT}) {
 			$log->OUT_message($cmd->{OUT});
 		}
+		#reset this command
+		
+		$self->{DIR} = undef;
+		$self->{FLAG} = [];
+		$self->{PARAM} = [];
+		$self->{COMMAND} = undef;
+		$self->{ATTRS} = undef;
+		$self->{ENV_VARS} = [];
+		$self->{ELEMENT} = undef;
+		$self->{ARCHIVE} = undef;
+		$self->{TARGET} = undef;
 		$self->SUPER::end_element($element);
 	} else {
 		$self->SUPER::end_element($element);
@@ -363,6 +374,27 @@ amin 0.5.0
         <amin:command name="unpack">
                 <amin:param name="target">/tmp/amin-tests/</amin:param>
                 <amin:param name="archive">/tmp/amin-tests/fake-0.01.tar.bz2</amin:param>
+        </amin:command>
+ </amin:profile>
+
+=item Double example
+ 
+ <amin:profile xmlns:amin='http://projectamin.org/ns/'>
+       <amin:download>
+                <amin:param name="uri">http://projectamin.org/apan/tester/command/fake-0.01.tar.bz2</amin:param>
+                <amin:param name="file">/tmp/amin-tests/fake-0.01.tar.bz2</amin:param>
+        </amin:download>
+        <amin:command name="unpack">
+                <amin:param name="target">/tmp/amin-tests/</amin:param>
+                <amin:param name="archive">/tmp/amin-tests/fake-0.01.tar.bz2</amin:param>
+        </amin:command>
+       <amin:download>
+                <amin:param name="uri">http://projectamin.org/apan/tester/command/fake-0.01.tar.bz2</amin:param>
+                <amin:param name="file">/tmp/amin-tests2/fake-0.01.tar.bz2</amin:param>
+        </amin:download>
+        <amin:command name="unpack">
+                <amin:param name="target">/tmp/amin-tests2/</amin:param>
+                <amin:param name="archive">/tmp/amin-tests2/fake-0.01.tar.bz2</amin:param>
         </amin:command>
  </amin:profile>
 

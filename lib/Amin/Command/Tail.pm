@@ -116,6 +116,15 @@ sub end_element {
 		if ($cmd->{OUT}) {
 			$log->OUT_message($cmd->{OUT});
 		}
+		#reset this command
+		
+		$self->{DIR} = undef;
+		$self->{FLAG} = undef;
+		$self->{PARAM} = [];
+		$self->{COMMAND} = undef;
+		$self->{ATTRS} = undef;
+		$self->{ENV_VARS} = [];
+		$self->{ELEMENT} = undef;
 		$self->SUPER::end_element($element);
 	} else {
 		$self->SUPER::end_element($element);
@@ -157,6 +166,19 @@ Tail
         <amin:command name="tail">
                 <amin:param>hg</amin:param>
 		<amin:shell name="dir">/tmp/amin-tests/</amin:shell>
+        </amin:command>
+ </amin:profile>
+
+=item Double example
+ 
+ <amin:profile xmlns:amin='http://projectamin.org/ns/'>
+        <amin:command name="tail">
+                <amin:param>hg</amin:param>
+		<amin:shell name="dir">/tmp/amin-tests/</amin:shell>
+        </amin:command>
+        <amin:command name="tail">
+                <amin:param>hg</amin:param>
+		<amin:shell name="dir">/tmp/amin-tests2/</amin:shell>
         </amin:command>
  </amin:profile>
 

@@ -89,6 +89,17 @@ sub end_element {
 		$self->text($text);
 		$log->success_message($text);
 		$self->{'CONTENT'} = undef;
+		#reset this command
+		
+		$self->{DIR} = undef;
+		$self->{TARGET} = undef;
+		$self->{CONTENT} = [];
+		$self->{FLAG} = [];
+		$self->{PARAM} = [];
+		$self->{COMMAND} = undef;
+		$self->{ATTRS} = undef;
+		$self->{ENV_VARS} = [];
+		$self->{ELEMENT} = undef;
 		$self->SUPER::end_element($element);
 	} else {
 		$self->SUPER::end_element($element);
@@ -211,9 +222,46 @@ amin 0.5.0
         line
                 up
 right?
-</amin:param>
+		</amin:param>
                 <amin:shell name="dir">/tmp/amin-tests/</amin:shell>
         </amin:command>
+ </amin:profile>
+
+=item Double example
+ 
+ <amin:profile xmlns:amin='http://projectamin.org/ns/'>
+        <amin:command name="textdump">
+                <amin:param name="target">pass</amin:param>
+                <amin:param name="content">root</amin:param>
+                <amin:shell name="dir">/tmp/amin-tests/</amin:shell>
+        </amin:command>
+	<amin:command name="textdump">
+		<amin:param name="target">hg</amin:param>
+		<amin:param name="content">Hello
+				Does This
+			all
+	line
+		up
+right?
+		</amin:param>
+		<amin:shell name="dir">/tmp/amin-tests/</amin:shell>
+	</amin:command>
+        <amin:command name="textdump">
+                <amin:param name="target">pass</amin:param>
+                <amin:param name="content">root</amin:param>
+                <amin:shell name="dir">/tmp/amin-tests2/</amin:shell>
+        </amin:command>
+	<amin:command name="textdump">
+		<amin:param name="target">hg</amin:param>
+		<amin:param name="content">Hello
+				Does This
+			all
+	line
+		up
+right?
+		</amin:param>
+		<amin:shell name="dir">/tmp/amin-tests2/</amin:shell>
+	</amin:command>
  </amin:profile>
 
 =back  

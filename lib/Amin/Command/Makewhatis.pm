@@ -111,6 +111,17 @@ sub end_element {
 		if ($cmd->{OUT}) {
 			$log->OUT_message($cmd->{OUT});
 		}
+		#reset this command
+		
+		$self->{DIR} = undef;
+		$self->{FLAG} = [];
+		$self->{PARAM} = [];
+		$self->{COMMAND} = undef;
+		$self->{ATTRS} = undef;
+		$self->{ENV_VARS} = [];
+		$self->{ELEMENT} = undef;
+		$self->{SECTIONS} = undef;
+		$self->{CATPATH} = undef;
 		$self->SUPER::end_element($element);
 	} else {
 		$self->SUPER::end_element($element);
@@ -251,6 +262,19 @@ makewhatis (coreutils) 5.0 March 2003
  <amin:profile xmlns:amin='http://projectamin.org/ns/'>
         <amin:command name="makewhatis">
                 <amin:param name="s">5</amin:param>
+                <amin:flag>w</amin:flag>
+        </amin:command>
+ </amin:profile>
+
+=item Double example
+ 
+ <amin:profile xmlns:amin='http://projectamin.org/ns/'>
+        <amin:command name="makewhatis">
+                <amin:param name="s">5</amin:param>
+                <amin:flag>w</amin:flag>
+        </amin:command>
+        <amin:command name="makewhatis">
+                <amin:param name="s">3</amin:param>
                 <amin:flag>w</amin:flag>
         </amin:command>
  </amin:profile>

@@ -178,6 +178,18 @@ sub end_element {
 		if ($cmd->{OUT}) {
 			$log->OUT_message($cmd->{OUT});
 		}
+		#reset this command
+		
+		$self->{DIR} = undef;
+		$self->{FLAG} = [];
+		$self->{REFERNCE} = undef;
+		$self->{SET} = undef;
+		$self->{TARGET} = [];
+		$self->{PARAM} = [];
+		$self->{COMMAND} = undef;
+		$self->{ATTRS} = undef;
+		$self->{ENV_VARS} = [];
+		$self->{ELEMENT} = undef;
 		$self->SUPER::end_element($element);
 	} else {
 		$self->SUPER::end_element($element);
@@ -301,6 +313,19 @@ chmod (coreutils) 5.0 March 2003
         <amin:command name="chmod">
                 <amin:param name="target">/tmp/amin-tests/limits</amin:param>
                 <amin:flag name="set">0750</amin:flag>
+        </amin:command>
+ </amin:profile>
+
+=item Double example
+ 
+ <amin:profile xmlns:amin='http://projectamin.org/ns/'>
+        <amin:command name="chmod">
+                <amin:param name="target">/tmp/amin-tests/limits</amin:param>
+                <amin:param name="set">0750</amin:param>
+        </amin:command>
+        <amin:command name="chmod">
+                <amin:param name="target">/tmp/amin-tests2/limits</amin:param>
+                <amin:param name="set">0750</amin:param>
         </amin:command>
  </amin:profile>
 

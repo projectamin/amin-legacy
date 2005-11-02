@@ -162,6 +162,18 @@ sub end_element {
 		if ($cmd->{OUT}) {
 			$log->OUT_message($cmd->{OUT});
 		}
+		#reset this command
+		
+		$self->{DIR} = undef;
+		$self->{BLOCK_SIZE} = undef;
+		$self->{TYPE} = undef;
+		$self->{EXCLUDE_FROM} = undef;
+		$self->{FLAG} = [];
+		$self->{PARAM} = [];
+		$self->{COMMAND} = undef;
+		$self->{ATTRS} = undef;
+		$self->{ENV_VARS} = [];
+		$self->{ELEMENT} = undef;
 		$self->SUPER::end_element($element);
 	} else {
 		$self->SUPER::end_element($element);
@@ -315,6 +327,17 @@ du (coreutils) 5.0 March 2003
  <amin:profile xmlns:amin='http://projectamin.org/ns/'>
         <amin:command name="du">
                 <amin:flag>a</amin:flag>
+        </amin:command>
+ </amin:profile>
+
+=item Double example
+ 
+ <amin:profile xmlns:amin='http://projectamin.org/ns/'>
+        <amin:command name="du">
+                <amin:flag>a</amin:flag>
+        </amin:command>
+        <amin:command name="du">
+                <amin:flag>h</amin:flag>
         </amin:command>
  </amin:profile>
 

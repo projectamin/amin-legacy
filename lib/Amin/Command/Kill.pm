@@ -135,6 +135,16 @@ sub end_element {
 		if ($cmd->{OUT}) {
 			$log->OUT_message($cmd->{OUT});
 		}
+		#reset this command
+		
+		$self->{DIR} = undef;
+		$self->{SIGNAL} = undef;
+		$self->{FLAG} = [];
+		$self->{PARAM} = [];
+		$self->{COMMAND} = undef;
+		$self->{ATTRS} = undef;
+		$self->{ENV_VARS} = [];
+		$self->{ELEMENT} = undef;
 		$self->SUPER::end_element($element);
 	} else {
 		$self->SUPER::end_element($element);
@@ -268,6 +278,19 @@ kill Taken from BSD 4.4.
         <amin:command name="kill">
                 <amin:param name="signal">9</amin:param>
                 <amin:param name="signal">apache</amin:param>
+        </amin:command>
+ </amin:profile>
+
+=item Double example
+ 
+ <amin:profile xmlns:amin='http://projectamin.org/ns/'>
+        <amin:command name="kill">
+                <amin:param name="signal">9</amin:param>
+                <amin:param>apache</amin:param>
+        </amin:command>
+        <amin:command name="kill">
+                <amin:param name="signal">9</amin:param>
+                <amin:param>postfix</amin:param>
         </amin:command>
  </amin:profile>
 

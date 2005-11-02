@@ -145,6 +145,19 @@ sub end_element {
 		if ($cmd->{OUT}) {
 			$log->OUT_message($cmd->{OUT});
 		}
+		#reset this command
+		
+		$self->{DIR} = undef;
+		$self->{FLAG} = [];
+		$self->{PARAM} = [];
+		$self->{COMMAND} = undef;
+		$self->{ATTRS} = undef;
+		$self->{ENV_VARS} = [];
+		$self->{ELEMENT} = undef;
+		$self->{FORMAT} = undef;
+		$self->{CACHE} = undef;
+		$self->{CONF} = undef;
+		$self->{ROOT} = undef;
 		$self->SUPER::end_element($element);
 	} else {
 		$self->SUPER::end_element($element);
@@ -311,6 +324,18 @@ Ldconfig (GNU libc) 2.3.2
         <amin:command name="ldconfig">
 		<amin:flag name="c">compat</amin:flag>
                 <amin:flag>v</amin:flag>
+        </amin:command>
+ </amin:profile>
+
+=item Double example
+ 
+ <amin:profile xmlns:amin='http://projectamin.org/ns/'>
+        <amin:command name="ldconfig">
+		<amin:flag name="c">compat</amin:flag>
+                <amin:flag>v</amin:flag>
+        </amin:command>
+        <amin:command name="ldconfig">
+		<amin:flag>?</amin:flag>
         </amin:command>
  </amin:profile>
 

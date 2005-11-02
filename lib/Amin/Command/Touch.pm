@@ -158,6 +158,17 @@ sub end_element {
 		if ($cmd->{OUT}) {
 			$log->OUT_message($cmd->{OUT});
 		}
+		#reset this command
+		
+		$self->{DIR} = undef;
+		$self->{FLAG} = [];
+		$self->{PARAM} = [];
+		$self->{COMMAND} = undef;
+		$self->{ATTRS} = undef;
+		$self->{ENV_VARS} = [];
+		$self->{ELEMENT} = undef;
+		$self->{DATE} = undef;
+		$self->{REFERENCE} = undef;
 		$self->SUPER::end_element($element);
 	} else {
 		$self->SUPER::end_element($element);
@@ -305,6 +316,23 @@ Linux 2.0 14 September 1997 umount
         </amin:command>
         <amin:command name="touch">
                 <amin:param>/tmp/amin-tests/touchfile2</amin:param>
+        </amin:command>
+ </amin:profile>
+
+=item Double example
+ 
+ <amin:profile xmlns:amin='http://projectamin.org/ns/'>
+        <amin:command name="touch">
+                <amin:param>/tmp/amin-tests/touchfile</amin:param>
+        </amin:command>
+        <amin:command name="touch">
+                <amin:param>/tmp/amin-tests/touchfile2</amin:param>
+        </amin:command>
+        <amin:command name="touch">
+                <amin:param>/tmp/amin-tests2/touchfile</amin:param>
+        </amin:command>
+        <amin:command name="touch">
+                <amin:param>/tmp/amin-tests2/touchfile2</amin:param>
         </amin:command>
  </amin:profile>
 
