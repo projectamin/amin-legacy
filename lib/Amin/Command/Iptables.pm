@@ -241,6 +241,35 @@ sub end_element {
 		my $text = "Executing $command";
 		$self->text($text);
 		$log->success_message($text);
+		#reset this command
+		
+		$self->{DIR} = undef;
+		$self->{FLAG} = [];
+		$self->{PARAM} = [];
+		$self->{COMMAND} = undef;
+		$self->{ATTRS} = undef;
+		$self->{ENV_VARS} = [];
+		$self->{ELEMENT} = undef;
+		$self->{ACTION} = undef;
+		$self->{APPEND} = undef;
+		$self->{BASE} = undef;
+		$self->{BURST} = undef;
+		$self->{SOURCE} = undef;
+		$self->{STATE} = undef;
+		$self->{STRING} = undef;
+		$self->{DESTINATION} = undef;
+		$self->{CHAIN} = undef;
+		$self->{TO} = undef;
+		$self->{INFACE} = undef;
+		$self->{OUTFACE} = undef;
+		$self->{LEVEL} = undef;
+		$self->{PREFIX} = undef;
+		$self->{PROTOCOL} = undef;
+		$self->{SPORT} = undef;
+		$self->{TCPFLAGS} = undef;
+		$self->{DPORT} = undef;
+		$self->{JUMP} = undef;
+		$self->{RULE} = undef;
                 $self->SUPER::end_element($element);
         } else {
                 $self->SUPER::end_element($element);
