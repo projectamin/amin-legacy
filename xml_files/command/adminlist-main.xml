@@ -6,8 +6,11 @@
      <amin:uri>file://amin/xml_files/command/adminlist-fileops.xml</amin:uri>
    </amin:adminlist>
    <amin:adminlist>
-     <amin:uri>file://amin/xml_files/command/adminlist-pacakge.xml</amin:uri>
+     <amin:uri>file://amin/xml_files/command/adminlist-package.xml</amin:uri>
    </amin:adminlist>
+   <amin:profile>
+     <amin:uri>file://amin/xml_files/command/package-combo-test.xml</amin:uri>
+   </amin:profile>
    <!-- use as needed.....   
    <amin:adminlist>
      <amin:uri>file://amin/xml_files/command/adminlist-network.xml</amin:uri>
@@ -19,4 +22,9 @@
      <amin:uri>file://amin/xml_files/command/adminlist-beware.xml</amin:uri>
    </amin:adminlist>
    -->
+
+	<!-- now do the doubles-->
+   <amin:adminlist>
+     <amin:uri>file://amin/xml_files/command/doubles/adminlist-main.xml</amin:uri>
+   </amin:adminlist>
 </amin:adminlist>
