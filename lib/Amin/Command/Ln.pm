@@ -39,6 +39,23 @@ ln (coreutils) 5.0 March 2003
         </amin:command>
  </amin:profile>
 
+=item Double example
+ 
+ <amin:profile xmlns:amin='http://projectamin.org/ns/'>
+       <amin:command name="ln">
+                <amin:param name="source">original_thing</amin:param>
+                <amin:param name="target">linked_thing</amin:param>
+                <amin:flag>sf</amin:flag>
+                <amin:shell name="dir">/tmp/amin-tests/</amin:shell>
+        </amin:command>
+       <amin:command name="ln">
+                <amin:param name="source">original_thing</amin:param>
+                <amin:param name="target">linked_thing</amin:param>
+                <amin:flag>sf</amin:flag>
+                <amin:shell name="dir">/tmp/amin-tests2/</amin:shell>
+        </amin:command>
+ </amin:profile>
+
 =back  
 
 =cut
