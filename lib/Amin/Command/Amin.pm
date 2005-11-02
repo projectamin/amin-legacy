@@ -28,7 +28,7 @@ sub characters {
 	if ($data ne "") {
 		if ($element->{LocalName} eq "param") {
 			if ($attrs{'{}name'}->{Value} eq "version") {
-				$self->version($data);
+				$self->iversion($data);
 			}
 		}
 	}
@@ -40,8 +40,14 @@ sub end_element {
 	my ($self, $element) = @_;
 	if ($element->{LocalName} eq "command") {
 		my $log = $self->{Spec}->{Log};
-		my $version = $self->version;
+		my $version = $self->iversion;
 		chomp $version;
+		
+		#reset this command
+		$self->{IVERSION} = undef;
+		$self->{COMMAND} = undef;
+		$self->{ATTRS} = undef;
+		$self->{ELEMENT} = undef;
 		if ($version eq "") {
 			$self->{Spec}->{amin_error} = "red";
 			my $text = "You must supply version information";
@@ -61,10 +67,10 @@ sub end_element {
 	}
 }
 
-sub version {
+sub iversion {
 	my $self = shift;
-	$self->{VERSION} = shift if @_;
-	return $self->{VERSION};
+	$self->{IVERSION} = shift if @_;
+	return $self->{IVERSION};
 }
 
 
@@ -176,6 +182,17 @@ amin  0.5.0
  <amin:profile xmlns:amin='http://projectamin.org/ns/'>
 	<amin:command name="amin">
                 <amin:param name="version">0.5.0</amin:param>
+        </amin:command>
+ </amin:profile>
+
+=item Double example
+
+ <amin:profile xmlns:amin='http://projectamin.org/ns/'>
+        <amin:command name="amin">
+                <amin:param name="version">0.5.0</amin:param>
+        </amin:command>
+        <amin:command name="amin">
+                <amin:param name="version">0.5.1</amin:param>
         </amin:command>
  </amin:profile>
 
