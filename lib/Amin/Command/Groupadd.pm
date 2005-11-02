@@ -108,6 +108,16 @@ sub end_element {
 		if ($cmd->{OUT}) {
 			$log->OUT_message($cmd->{OUT});
 		}
+		#reset this command
+		
+		$self->{DIR} = undef;
+		$self->{G} = undef;
+		$self->{FLAG} = [];
+		$self->{PARAM} = [];
+		$self->{COMMAND} = undef;
+		$self->{ATTRS} = undef;
+		$self->{ENV_VARS} = [];
+		$self->{ELEMENT} = undef;
 		$self->SUPER::end_element($element);
 	} else {
 		$self->SUPER::end_element($element);
@@ -244,6 +254,21 @@ Groupadd (coreutils)
         <amin:command name="groupadd">
                 <amin:flag name="g">134</amin:param>
                 <amin:param>mynewgroup</amin:param>
+        </amin:command>
+ </amin:profile>
+
+=item Double example
+ 
+ <amin:profile xmlns:amin='http://projectamin.org/ns/'>
+        <amin:command name="groupadd">
+                <amin:flag name="g">54334</amin:flag>
+                <amin:flag>o</amin:flag>
+                <amin:param>mynewgroup</amin:param>
+        </amin:command>
+        <amin:command name="groupadd">
+                <amin:flag name="g">54335</amin:flag>
+                <amin:flag>o</amin:flag>
+                <amin:param>myothernewgroup</amin:param>
         </amin:command>
  </amin:profile>
 

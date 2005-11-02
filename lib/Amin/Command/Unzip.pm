@@ -148,6 +148,17 @@ sub end_element {
 		if ($cmd->{OUT}) {
 			$log->OUT_message($cmd->{OUT});
 		}
+		#reset this command
+		
+		$self->{DIR} = undef;
+		$self->{FLAG} = [];
+		$self->{PARAM} = [];
+		$self->{COMMAND} = undef;
+		$self->{ATTRS} = undef;
+		$self->{ENV_VARS} = [];
+		$self->{ELEMENT} = undef;
+		$self->{EXDIR} = undef;
+		$self->{EXCLUDE} = undef;
 		$self->SUPER::end_element($element);
 	} else {
 		$self->SUPER::end_element($element);
@@ -293,6 +304,19 @@ UnZip 5.50 of 17 February 2002
         <amin:command name="unzip">
                 <amin:param>/my/new/zip/file.zip</amin:param>
         </amin:command>
+ </amin:profile>
+
+=item Double example
+ 
+ <amin:profile xmlns:amin='http://projectamin.org/ns/'>
+        <amin:command name="unzip">
+                <amin:param>/tmp/amin-tests/amin-file.zip</amin:param>
+        	<amin:shell name="dir">/tmp/amin-tests/</amin:shell>
+	</amin:command>
+        <amin:command name="unzip">
+                <amin:param>/tmp/amin-tests/amin-file.zip</amin:param>
+        	<amin:shell name="dir">/tmp/amin-tests2/</amin:shell>
+	</amin:command>
  </amin:profile>
 
 =back  

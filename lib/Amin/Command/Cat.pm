@@ -130,6 +130,15 @@ sub end_element {
 		if ($cmd->{OUT}) {
 			$log->OUT_message($cmd->{OUT});
 		}
+		#reset this command
+		
+		$self->{DIR} = undef;
+		$self->{FLAG} = [];
+		$self->{PARAM} = [];
+		$self->{COMMAND} = undef;
+		$self->{ATTRS} = undef;
+		$self->{ENV_VARS} = [];
+		$self->{ELEMENT} = undef;
 		$self->SUPER::end_element($element);
 	} else {
 		$self->SUPER::end_element($element);
@@ -158,7 +167,7 @@ cat (coreutils) 5.0 March 2003
 
 =over 4
 
-=item Full example
+=item Single example
  
  <amin:profile xmlns:amin='http://projectamin.org/ns/'>
         <amin:command name="cat">
@@ -166,6 +175,20 @@ cat (coreutils) 5.0 March 2003
                 <amin:param>/tmp/amin-tests/hg</amin:param>
         </amin:command>
  </amin:profile>
+
+=item Double example
+ 
+ <amin:profile xmlns:amin='http://projectamin.org/ns/'>
+	<amin:command name="cat">
+        	<amin:flag>A</amin:flag>
+        	<amin:param>/tmp/amin-tests/hg</amin:param>
+	</amin:command>
+	<amin:command name="cat">
+        	<amin:flag>A</amin:flag>
+        	<amin:param>/tmp/amin-tests2/hg</amin:param>
+	</amin:command>
+ </amin:profile>
+
 
 =back  
 
