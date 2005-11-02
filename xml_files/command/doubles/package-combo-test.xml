@@ -1,0 +1,74 @@
+<amin:profile xmlns:amin='http://projectamin.org/ns/'> 
+        <amin:command name="mkdir">
+                <amin:param name="target">/tmp/amin-tests/my_new_dir</amin:param>
+                <amin:flag>p</amin:flag>
+        </amin:command>
+        <amin:command name="mkdir">
+                <amin:param name="target">/tmp/amin-tests2/my_new_dir</amin:param>
+                <amin:flag>p</amin:flag>
+        </amin:command>
+       <amin:download>
+                <amin:param name="uri">http://projectamin.org/apan/tester/command/fake-0.01.tar.bz2</amin:param>
+                <amin:param name="file">/tmp/amin-tests/fake-0.01.tar.bz2</amin:param>
+        </amin:download>
+       <amin:download>
+                <amin:param name="uri">http://projectamin.org/apan/tester/command/fake-0.01.tar.bz2</amin:param>
+                <amin:param name="file">/tmp/amin-tests2/fake-0.01.tar.bz2</amin:param>
+        </amin:download>
+        <amin:command name="unpack">
+                <amin:param name="target">/tmp/amin-tests/</amin:param>
+                <amin:param name="archive">/tmp/amin-tests/fake-0.01.tar.bz2</amin:param>
+        </amin:command>
+        <amin:command name="unpack">
+                <amin:param name="target">/tmp/amin-tests2/</amin:param>
+                <amin:param name="archive">/tmp/amin-tests2/fake-0.01.tar.bz2</amin:param>
+        </amin:command>
+       <amin:download>
+                <amin:param name="uri">http://projectamin.org/apan/tester/command/fake-0.02.patch</amin:param>
+                <amin:param name="file">/tmp/amin-tests/fake-0.02.patch</amin:param>
+        </amin:download>
+       <amin:download>
+                <amin:param name="uri">http://projectamin.org/apan/tester/command/fake-0.02.patch</amin:param>
+                <amin:param name="file">/tmp/amin-tests2/fake-0.02.patch</amin:param>
+        </amin:download>
+        <amin:command name="patch">
+                <amin:flag>p1</amin:flag>
+                <amin:flag name="input">/tmp/amin-tests/fake-0.02.patch</amin:flag>
+                <amin:shell name="dir">/tmp/amin-tests/fake-0.01</amin:shell>
+        </amin:command>
+        <amin:command name="patch">
+                <amin:flag>p1</amin:flag>
+                <amin:flag name="input">/tmp/amin-tests2/fake-0.02.patch</amin:flag>
+                <amin:shell name="dir">/tmp/amin-tests2/fake-0.01</amin:shell>
+        </amin:command>
+	<amin:command name="configure"> 
+		<amin:flag>prefix=/usr</amin:flag> 
+		<amin:shell name="dir">/tmp/amin-tests/fake-0.01</amin:shell> 
+	</amin:command>
+	<amin:command name="configure"> 
+		<amin:flag>prefix=/usr</amin:flag> 
+		<amin:shell name="dir">/tmp/amin-tests2/fake-0.01</amin:shell> 
+	</amin:command>
+	<amin:command name="make">
+		<amin:shell name="dir">/tmp/amin-tests/fake-0.01</amin:shell>
+	</amin:command>
+	<amin:command name="make">
+		<amin:shell name="dir">/tmp/amin-tests2/fake-0.01</amin:shell>
+	</amin:command>
+	<amin:command name="make">
+		<amin:param>install</amin:param>
+		<amin:shell name="dir">/tmp/amin-tests/fake-0.01</amin:shell>
+	</amin:command>
+	<amin:command name="make">
+		<amin:param>install</amin:param>
+		<amin:shell name="dir">/tmp/amin-tests2/fake-0.01</amin:shell>
+	</amin:command>
+        <amin:command name="remove">
+		<amin:flag>rf</amin:flag>
+                <amin:param name="target">/tmp/amin-tests/</amin:param>
+        </amin:command>
+        <amin:command name="remove">
+		<amin:flag>rf</amin:flag>
+                <amin:param name="target">/tmp/amin-tests2/</amin:param>
+        </amin:command>
+</amin:profile>

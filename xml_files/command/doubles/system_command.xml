@@ -1,0 +1,10 @@
+<amin:profile xmlns:amin='http://projectamin.org/ns/'>
+       <amin:command name="system_command">
+                <amin:param name="basename">touch</amin:param>
+                <amin:param>/tmp/amin-tests/limits</amin:param>
+        </amin:command>
+       <amin:command name="system_command">
+                <amin:param name="basename">touch</amin:param>
+                <amin:param>/tmp/amin-tests2/limits</amin:param>
+        </amin:command>
+</amin:profile>

@@ -1,0 +1,14 @@
+<amin:adminlist xmlns:amin="http://projectamin.org/ns/">
+   <amin:profile>
+     <amin:uri>file://amin/xml_files/command/doubles/ifconfig.xml</amin:uri>
+   </amin:profile>
+   <amin:profile>
+     <amin:uri>file://amin/xml_files/command/doubles/route.xml</amin:uri>
+   </amin:profile>
+    <!-- do network map testing here-->
+   <!-- IP tables test
+   <amin:profile>
+     <amin:uri>file://amin/xml_files/command/doubles/iptables.xml</amin:uri>
+   </amin:profile>
+    -->
+</amin:adminlist>

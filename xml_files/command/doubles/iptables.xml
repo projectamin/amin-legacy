@@ -1,0 +1,20 @@
+<amin:profile xmlns:amin='http://projectamin.org/ns/'>
+	<!-- List all the rules of a given chain, if no chain is
+     specified all chains are listed              -->
+    <amin:command name="iptables">
+        <amin:param name="chain">INPUT</amin:param>
+        <amin:flag name="action">list</amin:flag>
+    </amin:command>
+
+	<!-- Basic NULL scan drop  -->
+    <amin:command name="iptables">
+        <amin:param name="chain">nat</amin:param>
+        <amin:flag name="action">type</amin:flag>
+        <amin:param name="append">PREROUTING</amin:param>
+        <amin:param name="protocol">tcp</amin:param>
+        <amin:param name="tcpflags">ALL NONE</amin:param>
+        <amin:param name="jump">DROP</amin:param>
+    </amin:command>
+
+</amin:profile>
+

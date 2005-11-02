@@ -1,0 +1,26 @@
+<amin:adminlist xmlns:amin="http://projectamin.org/ns/">
+   <amin:profile>
+     <amin:uri>file://amin/xml_files/command/doubles/amin.xml</amin:uri>
+   </amin:profile>
+   <amin:profile>
+     <amin:uri>file://amin/xml_files/command/doubles/df.xml</amin:uri>
+   </amin:profile>
+   <amin:profile>
+     <amin:uri>file://amin/xml_files/command/doubles/du.xml</amin:uri>
+   </amin:profile>
+   <amin:profile>
+     <amin:uri>file://amin/xml_files/command/doubles/echo.xml</amin:uri>
+   </amin:profile>
+   <!--not included as double test would set hostname and this has moved
+   to adminlist-beware.xml
+   <amin:profile>
+     <amin:uri>file://amin/xml_files/command/doubles/hostname.xml</amin:uri>
+   </amin:profile>
+   -->
+   <amin:profile>
+     <amin:uri>file://amin/xml_files/command/doubles/ls.xml</amin:uri>
+   </amin:profile>
+   <amin:profile>
+     <amin:uri>file://amin/xml_files/command/doubles/ldconfig.xml</amin:uri>
+   </amin:profile>
+</amin:adminlist>

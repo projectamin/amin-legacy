@@ -1,0 +1,6 @@
+<amin:profile xmlns:amin='http://projectamin.org/ns/'>
+        <amin:command name="hostname">
+		<amin:param>bbb</amin:param>
+	</amin:command>
+        <amin:command name="hostname"/>
+</amin:profile>

@@ -1,0 +1,10 @@
+<amin:profile xmlns:amin='http://projectamin.org/ns/'>
+        <amin:command name="makewhatis">
+                <amin:param name="s">5</amin:param>
+                <amin:flag>w</amin:flag>
+        </amin:command>
+        <amin:command name="makewhatis">
+                <amin:param name="s">3</amin:param>
+                <amin:flag>w</amin:flag>
+        </amin:command>
+</amin:profile>

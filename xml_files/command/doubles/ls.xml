@@ -1,0 +1,10 @@
+<amin:profile xmlns:amin='http://projectamin.org/ns/'>
+       <amin:command name="ls">
+                <amin:flag>lsa</amin:flag>
+                <amin:param>/boot</amin:param>
+        </amin:command>
+       <amin:command name="ls">
+                <amin:flag>lsa</amin:flag>
+                <amin:param>/var</amin:param>
+        </amin:command>
+</amin:profile>

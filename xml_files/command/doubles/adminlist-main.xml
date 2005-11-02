@@ -1,0 +1,25 @@
+<amin:adminlist xmlns:amin="http://projectamin.org/ns/">
+   <amin:adminlist>
+     <amin:uri>file://amin/xml_files/command/doubles/adminlist-generic.xml</amin:uri>
+   </amin:adminlist>
+   <amin:adminlist>
+     <amin:uri>file://amin/xml_files/command/doubles/adminlist-fileops.xml</amin:uri>
+   </amin:adminlist>
+   <amin:adminlist>
+     <amin:uri>file://amin/xml_files/command/doubles/adminlist-package.xml</amin:uri>
+   </amin:adminlist>
+   <amin:profile>
+     <amin:uri>file://amin/xml_files/command/doubles/package-combo-test.xml</amin:uri>
+   </amin:profile>
+   <!-- use as needed.....   
+   <amin:adminlist>
+     <amin:uri>file://amin/xml_files/command/adminlist-network.xml</amin:uri>
+   </amin:adminlist>
+   <amin:adminlist>
+     <amin:uri>file://amin/xml_files/command/adminlist-usergroup.xml</amin:uri>
+   </amin:adminlist>
+   <amin:adminlist>
+     <amin:uri>file://amin/xml_files/command/adminlist-beware.xml</amin:uri>
+   </amin:adminlist>
+   -->
+</amin:adminlist>

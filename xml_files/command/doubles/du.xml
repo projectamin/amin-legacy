@@ -1,0 +1,8 @@
+<amin:profile xmlns:amin='http://projectamin.org/ns/'>
+        <amin:command name="du">
+                <amin:flag>a</amin:flag>
+        </amin:command>
+        <amin:command name="du">
+                <amin:flag>h</amin:flag>
+        </amin:command>
+</amin:profile>

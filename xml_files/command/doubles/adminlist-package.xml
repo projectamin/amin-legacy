@@ -1,0 +1,20 @@
+<amin:adminlist xmlns:amin="http://projectamin.org/ns/">
+   <amin:profile>
+     <amin:uri>file://amin/xml_files/command/doubles/mkdir.xml</amin:uri>
+   </amin:profile>
+   <amin:profile>
+     <amin:uri>file://amin/xml_files/command/doubles/unpack.xml</amin:uri>
+   </amin:profile>
+   <amin:profile>
+     <amin:uri>file://amin/xml_files/command/doubles/patch.xml</amin:uri>
+   </amin:profile>
+   <amin:profile>
+     <amin:uri>file://amin/xml_files/command/doubles/configure.xml</amin:uri>
+   </amin:profile>
+   <amin:profile>
+     <amin:uri>file://amin/xml_files/command/doubles/make.xml</amin:uri>
+   </amin:profile>
+   <amin:profile>
+     <amin:uri>file://amin/xml_files/command/doubles/remove-tests.xml</amin:uri>
+   </amin:profile>
+</amin:adminlist>

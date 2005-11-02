@@ -1,0 +1,11 @@
+<amin:profile xmlns:amin='http://projectamin.org/ns/'>
+        <amin:command name="userdel">
+                <amin:param>somename</amin:param>
+                <amin:flag>r</amin:flag>
+        </amin:command>
+        <amin:command name="userdel">
+                <amin:param>someothername</amin:param>
+                <amin:flag>r</amin:flag>
+        </amin:command>
+</amin:profile>
+

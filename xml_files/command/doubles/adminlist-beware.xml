@@ -1,0 +1,41 @@
+<amin:adminlist xmlns:amin="http://projectamin.org/ns/">
+   <amin:profile>
+     <amin:uri>file://amin/xml_files/command/doubles/mkdir.xml</amin:uri>
+   </amin:profile>
+   <amin:profile>
+     <amin:uri>file://amin/xml_files/command/doubles/makewhatis.xml</amin:uri>
+   </amin:profile>
+   <!-- don't want to test, someone will expose the problem with any 
+        custom build
+   <amin:profile>
+     <amin:uri>file://amin/xml_files/command/doubles/mknod.xml</amin:uri>
+   </amin:profile>
+   -->
+   <amin:profile>
+     <amin:uri>file://amin/xml_files/command/doubles/mount.xml</amin:uri>
+   </amin:profile>
+   <amin:profile>
+     <amin:uri>file://amin/xml_files/command/doubles/umount.xml</amin:uri>
+   </amin:profile>
+   <amin:profile>
+     <amin:uri>file://amin/xml_files/command/doubles/rsync.xml</amin:uri>
+   </amin:profile>
+   <amin:profile>
+     <amin:uri>file://amin/xml_files/command/doubles/kill.xml</amin:uri>
+   </amin:profile>
+   <amin:profile>
+     <amin:uri>file://amin/xml_files/command/doubles/fsck.xml</amin:uri>
+   </amin:profile>
+   <amin:profile>
+     <amin:uri>file://amin/xml_files/command/doubles/userdel.xml</amin:uri>
+   </amin:profile>
+   <amin:profile>
+     <amin:uri>file://amin/xml_files/command/doubles/rpm.xml</amin:uri>
+   </amin:profile>
+   <amin:profile>
+     <amin:uri>file://amin/xml_files/command/doubles/hostname.xml</amin:uri>
+   </amin:profile>
+   <amin:profile>
+     <amin:uri>file://amin/xml_files/command/doubles/remove-tests.xml</amin:uri>
+   </amin:profile>
+</amin:adminlist>

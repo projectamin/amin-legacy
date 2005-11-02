@@ -1,0 +1,10 @@
+<amin:profile xmlns:amin='http://projectamin.org/ns/'> 
+	<amin:command name="configure"> 
+		<amin:flag>prefix=/usr</amin:flag> 
+		<amin:shell name="dir">/tmp/amin-tests/fake-0.01</amin:shell> 
+	</amin:command>
+	<amin:command name="configure"> 
+		<amin:flag>prefix=/usr</amin:flag> 
+		<amin:shell name="dir">/tmp/amin-tests2/fake-0.01</amin:shell> 
+	</amin:command>
+</amin:profile>
