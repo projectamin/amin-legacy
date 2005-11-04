@@ -63,10 +63,7 @@ sub end_element {
 			$protocol = $self->protocol;
 			eval "require $protocol"; 
 			if ($@) {
-			#	my $log = $self->{Spec}->{Log};
-			#	$self->{Spec}->{amin_error} = "red";
 				die "Protocol loading failed. Reason $@";
-			#	$log->error_message($text);
 			}				
 			$protocol = $protocol->new();
 		} else {
