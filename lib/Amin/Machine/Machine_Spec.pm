@@ -8,9 +8,9 @@ use XML::Filter::XInclude;
 use XML::SAX::PurePerl;
 use IPC::Run qw( run );
 use File::Basename qw(dirname);
-use Data::Dumper;
+use Amin::Elt;
 
-@ISA = qw(XML::SAX::Base);
+@ISA = qw(XML::SAX::Base Amin::Elt);
 
 
 my $spec;
@@ -23,9 +23,12 @@ my $spec;
 
 my $home = $ENV{'HOME'};
 my $configfile = "$home/.amin/machine_spec.xml";
-my @machine_filters;
-my @machine_bundle;
+my %machine_filters;
 my %control;
+my $begin = 0;
+my $stage = 0;
+my @parent;
+my %attrs;
 
 sub start_document {
 	my $self = shift;
@@ -79,155 +82,143 @@ sub start_document {
 
 sub start_element {
 	my ($self, $element) = @_;
-	my %attrs = %{$element->{Attributes}};
+	%attrs = %{$element->{Attributes}};
+	$self->attrs(%attrs);
+	
 	#need to process this element
 	my $stuff = $spec->{Filter};
 	foreach (keys %$stuff) {
+		if ($_ eq "") { next; }
 		#check if there is a machine_filters element 
 		#corresponding with this start_element
-		
-
-		if ($_ eq "") { next; }
-
 		if ($stuff->{$_}->{'element'} eq $element->{'LocalName'}) {
 		if (($stuff->{$_}->{'name'} eq $attrs{'{}name'}->{'Value'}) 
 		|| ($stuff->{$_}->{'name'} eq $element->{'LocalName'} )) {
 		if ($stuff->{$_}->{namespace} eq $element->{Prefix}) {
-
-		#logic to add new element to @machine_filters or not
-		my $x = 0;
-		if (@machine_filters) {
-			#we already have some machine_filters
-			foreach my $filter (@machine_filters) {
-				if ($stuff->{$_}->{module} eq $filter->{module}) {
-					#found a match
-					$x = 1;
-					next;
+			if ($stuff->{$_}->{position} eq "begin") {
+				#begin and reset the parent
+				$begin = 1;
+				@parent = ();
+				$stuff->{$_}->{parent_name} = $stuff->{$_}->{element};
+			}
+			if ($begin == 1) {
+				my $same = 0;
+				foreach my $lkids(@parent) {
+					#do a same filter check
+					if (($lkids eq $element->{'LocalName'}) || 
+					   ($lkids eq $attrs{'{}name'}->{'Value'})) {
+						$same = 1;
+					}
+				}
+				if ($same != 1) {
+					if ($stuff->{$_}->{'element'} ne $stuff->{$_}->{'parent_name'}) {
+						push @parent, $stuff->{$_}->{'name'};
+					}
 				}
 			}
-			if ($x != 1) {
-				#no match so far
-				#so add it to the @machine_filters list
-				push @machine_filters, $stuff->{$_};
-			}
-		} else {
-			#first filter
-			if ($stuff->{$_} eq "") { next; }
-			push @machine_filters, $stuff->{$_};
-		}
-
-		}
-		}
-		}
-
-	}
-	#now do the bundles
-	my $bstuff = $spec->{Bundle};
-	foreach (keys %$bstuff) {
-		#check if there is a machine_bundle element 
-		#corresponding with this start_element
-		if ($bstuff->{$_}->{element} eq $element->{LocalName}) {
-		#logic to add new element to @machine_bundle or not
-		my $x;
-		if (@machine_bundle) {
-			#we already have some machine_bundle(s)
-			foreach (@machine_bundle) {
-				if ($bstuff->{$_}->{element} eq $element->{Name}) {
-					#found a match
-					$x = 1;
-					next;
+			#logic to add new element to %machine_filters or not
+			my $x = 0;
+			if (%machine_filters) {
+				#we already have some machine_filters
+				foreach my $filter (keys %machine_filters) {
+					if ($stuff->{$_}->{module} eq $machine_filters{$filter}->{module}) {
+						#found a match
+						$x = 1;
+						next;
+					}
 				}
+				if ($x != 1) {
+					#no match so far
+					#so add it to the %machine_filters list
+					#add in the stage
+					if ($begin != 1) {
+						$stage++;
+					} else {
+						$stage = $stage . "-" . $stuff->{$_}->{name};
+					}
+					$stuff->{$_}->{stage} = $stage;
+					$machine_filters{$stage} = $stuff->{$_};
+				}
+			} else {
+				#first filter
+				#add in the stage
+				$stage++;
+				$stuff->{$_}->{stage} = $stage;
+				$machine_filters{$stage} = $stuff->{$_};
 			}
-			if ($x != 1) {
-				#no match so far
-				#so add it to the @machine_bundle list
-				push @machine_bundle, $bstuff->{$_};
-			}
-		} else {
-			#first bundle
-			push @machine_bundle, $bstuff->{$_};
 		}
 		}
-
+		}
 	}
 }
 
-
+sub end_element {
+	my ($self, $element) = @_;
+	my $attrs = $self->{"ATTRS"};
+	my $stuff = $spec->{Filter};
+	foreach (keys %$stuff) {
+		if ($_ eq "") { next; }
+		if ($stuff->{$_}->{namespace} eq $element->{Prefix}) {
+		if ($stuff->{$_}->{parent_name} eq $element->{LocalName}) {
+			if ($stuff->{$_}->{'name'} eq $attrs{'{}name'}->{'Value'}) {
+				#reset parent name to be name="" not element
+				$stuff->{$_}->{parent_name} = $attrs{'{}name'}->{'Value'}; 
+			}
+			$begin = 0;
+			#this is right filter to add 
+			#the @parent to
+			$stuff->{$_}->{parent} = \@parent;
+		}
+		}
+	}
+}
 
 sub end_document {
 	my $self = shift;
-	my (@beg, @mid, @end);
-
-	#sort the filters into their pipeline positions
-	foreach (@machine_filters) {
-		#autoload modules
-		if ($_ eq "")  {
-			next;
-		}
+	foreach (keys %machine_filters) {
+		#autoload module check
 		no strict 'refs';
-		eval "require $_->{module}";
-		if ($@) {
-			if ($_->{'download'}) {
-				my @cmd = ($0, '-u', $_->{'download'});
+		eval "require $machine_filters{$_}->{module}";
+		#version check
+		my $lv;
+		unless ($@) {
+			$lv = $machine_filters{$_}->{module}->version;
+		}	
+		my $version;
+		if ($lv ne $machine_filters{$_}->{version}) {
+			$version = "bad";
+		}
+		
+		if (($@) || ($version eq "bad")) {
+			if ($machine_filters{$_}->{'download'}) {
+				my @cmd = ($0, '-u', $machine_filters{$_}->{'download'});
 				run \@cmd;
-				eval "require $_->{module}";
+				eval "require $machine_filters{$_}->{module}";
 				if ($@) {
 					#$self->{Spec}->{amin_error} = "red";
-					#my $text = "Machine_Spec failed could not load $_->{module}. Reason $@";
-					#$log->error_message($text);
 					die "Machine_Spec failed could not load $_->{module}. Reason $@";
 				}
 			} else {
 				#so amin isn't installed at all
 				eval "require PAR";
 				if ($@) {
-					#$self->{Spec}->{amin_error} = "red";
-					#my $text = "If PAR was installed, we might be able to fix the problem. can not load the PAR module";
-					#$log->error_message($text);
 					die "If PAR was installed, we might be able to fix the problem. can not load the PAR module";
 				} else {
 					use lib 'http://projectamin.org/amin-latest.par';
 					use lib 'http://projectamin.org/lwp.par';
 			
-					eval "require $_->{module}";
+					eval "require $machine_filters{$_}->{module}";
 					if ($@) {
 						#$self->{Spec}->{amin_error} = "red";
-						#my $text = "Machine_Spec failed could not load $_->{module}. Reason $@";
-						#$log->error_message($text);
 						die "Machine_Spec failed could not load $_->{module}. Reason $@";
 					}
 				}
 			}
-		} else {
-		
-			if ($_->{position} eq "begin") {
-				push @beg, $_;
-			} elsif ($_->{position} eq "middle") {
-				push @mid, $_;
-			} elsif ($_->{position} eq "end") {
-				push @end, $_;
-			}
 		}
 	}
 	
-	foreach (@machine_bundle) {
-		#machine bundle processing
-		
-	}
-	
-	#push our filters onto the new stack in reverse
-	my @newfilters;
-	push (@newfilters, @end);
-	push (@newfilters, @mid);
-	push (@newfilters, @beg);
-	
-	
-	@machine_filters = ();
-	@machine_bundle = ();
-	
-	
 	my %spec;
-	$spec{Filter_List} = \@newfilters;
+	$spec{Filter_List} = \%machine_filters;
 	#Handler has to be special to ignore X:S:B 
 	if ($self->{FHandler}) { $spec{Handler} = $self->{FHandler}; }
 	
@@ -235,6 +226,7 @@ sub end_document {
 	if ($self->{Log}) { $spec{Log} = $self->{Log}; }
 	if ($self->{Filter_Param}) { $spec{Filter_Param} = $self->{Filter_Param}; }
 	if ($self->{Generator}) { $spec{Generator} = $self->{Generator}; }
+	
 	return \%spec;
 }
 

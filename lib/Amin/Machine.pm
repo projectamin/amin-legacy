@@ -13,50 +13,68 @@ sub new {
 
 sub run {
 	my ($self, $profile, $type) = @_;
-	
 	#build the machine
 	my $spec = $self->{Spec};
-	my ($lfl, $flf, $last);
 	
 	#deal with the filter_list
 	my $fl = $spec->{Filter_List};
-	my $prev;
-	my $first;
-	my $machine_name;
-	my $handler;
-	my $next;
 	
-	foreach (@$fl) {	
-		if (!$next) {
-			$next = $_->{module}->new(Handler => $spec->{Handler}, Spec => $spec);
-		} else {
-			#$next = $_->{module}->new(Handler => $next);
-			$next = $_->{module}->new(Handler => $next, Spec => $spec);
+	#deal with the end first
+	my $end;
+	foreach (keys %$fl) {
+		if ($fl->{$_}->{position} eq "end") {
+			if (!$end) {
+				$end = $fl->{$_}->{module}->new(Handler => $spec->{Handler}, Spec => $spec);
+			} else {
+				$end = $fl->{$_}->{module}->new(Handler => $end, Spec => $spec);
+			}
 		}
 	}
-					
-	$machine_name = $spec->{Machine_Name}->new(Handler => $next);
-
-		
-	$spec->{Machine_Handler} = $machine_name;	
-	#	if ($_ eq $reverse[-1]) {
-			
-			#this is the first module of the sax chain
-	#		if ($_ eq $reverse[0]) {
-				#this is also the last module of the sax chain
-	#			$next = $_->{module}->new(Handler => $spec->{Handler}, Spec => $spec);
-	#		} else {
-	#			$next = $_->{module}->new(Handler => $next, Spec => $spec);
-	#		}
-			
-	#	} elsif ($_ eq $reverse[0]) {
-			#this is the last module of the sax chain
-	#	} else {
-	#		$next = $_->{module}->new(Handler => $next, Spec => $spec);
-	#	}
-	#}
 	
+	#deal with the middle	
+	foreach (keys %$fl) {
+		if ($fl->{$_}->{position} eq "middle") {
+			my $middle;
+			if ($end) {
+				$middle = $fl->{$_}->{module}->new(Handler => $end, Spec => $spec);
+			} else {
+				$middle = $fl->{$_}->{module}->new(Handler => $spec->{Handler}, Spec => $spec);
+			}
+			$fl->{$_}->{chain} = $middle; 
+		}
+	}
 	
+	#deal with the beginning	
+	foreach (keys %$fl) {
+		if ($fl->{$_}->{parent}) {
+			my $parent = $fl->{$_}->{parent};
+			my $begin;
+			foreach my $child (@$parent) {
+				foreach my $filter (keys %$fl) {
+					my ($num, $lname) = split (/-/, $fl->{$filter}->{stage});
+					if (!$lname) {
+						next;
+					}
+					if ($lname eq $child) {
+					if ($num eq $_) {
+						#here is our kid
+						$begin = $fl->{$_}->{module}->new(
+						Handler =>$fl->{$filter}->{chain}, Spec =>$spec);
+					}
+					}
+					delete $fl->{$filter};
+					$fl->{$_}->{chain} = $begin; 
+				}
+			}
+		}
+	}
+	
+	#put our new wierd filter list back as the spec's Filter_List
+	$spec->{Filter_List} = $fl;
+	
+	#add in the machine itself
+	my $machine_name = $spec->{Machine_Name}->new(Handler => $spec->{Handler}, Spec => $spec);
+	$spec->{Machine_Handler} = $machine_name;
 	my $p = $spec->{Generator}->new(Handler => $machine_name, Spec => $spec);
 	
 	if ($type eq "uri") {

@@ -15,22 +15,23 @@ sub start_element {
 	my $log = $self->{Spec}->{Log};
 	
 	my $fl = $spec->{Filter_List};
-	foreach (@ $fl) {
-		if ($element->{LocalName} eq $_->{element})  {
-		if (($attrs{'{}name'}->{Value} eq $_->{name}) || 
-		($element->{LocalName} eq $_->{name})) {
+	foreach (keys %$fl) {
+		if ($element->{LocalName} eq $fl->{$_}->{element})  {
+		if (($attrs{'{}name'}->{Value} eq $fl->{$_}->{name}) || 
+		($element->{LocalName} eq $fl->{$_}->{name})) {
 			
 			if ($self->{Spec}->{amin_error}) {
 				#if there is an error reset handler to Empty
 				$self->set_handler( Amin::Machine::Handler::Empty->new(Handler => $spec->{Handler}, Spec => $spec) );
 			} else {
-				eval "require $_->{module}"; 
+				eval "require $fl->{$_}->{module}"; 
 				if ($@) {
 					$self->{Spec}->{amin_error} = "red";
 					my $text = "Dispatcher failed could not load $_->{module}. Reason $@";
 					$log->error_message($text);
 				} else {
-					$self->set_handler( $_->{module}->new(Handler => $spec->{Handler}, Spec => $spec) );
+					my $schain = $fl->{$_}->{chain};
+					$self->set_handler($schain);
 				}
 			}	
 		}
