@@ -12,11 +12,14 @@ use Sys::Hostname;
 my $local_hostname = hostname();
 my $state = 0;
 
+sub version {
+	return "1.0";
+}
 #log = 1 Super = 0
 sub start_element {
 	my ($self, $element) = @_;
 	my %attrs = %{$element->{Attributes}};
-	my $log = $self->{Handler}->{Spec}->{Log};
+	my $log = $self->{Spec}->{Log};
 	
 	if ($element->{LocalName} eq "cond"){
 		$log->driver_start_element($element->{Name}, %attrs);
@@ -42,7 +45,7 @@ sub start_element {
 sub characters {
 	my ($self, $chars) = @_;
 	my $data = $chars->{Data};
-	my $log = $self->{Handler}->{Spec}->{Log};
+	my $log = $self->{Spec}->{Log};
 	$data = $self->fix_text($data);
 	if ($data ne "") {
 		if ($state == 1) {
@@ -55,7 +58,7 @@ sub characters {
 
 sub end_element {
 	my ($self, $element) = @_;
-	my $log = $self->{Handler}->{Spec}->{Log};
+	my $log = $self->{Spec}->{Log};
 	
 	if ($element->{LocalName} eq "cond"){
 		$state = 0;
