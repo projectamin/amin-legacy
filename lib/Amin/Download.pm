@@ -87,6 +87,10 @@ sub end_element {
 	}
 }
 
+sub version {
+	return "1.0";
+}
+
 sub uri {
 	my $self = shift;
 	$self->{URI} = shift if @_;
