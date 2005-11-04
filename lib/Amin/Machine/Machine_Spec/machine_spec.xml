@@ -17,20 +17,20 @@
 		<download>http://projectamin.org/filters/command/chroot.xml</download>
 		<version>1.0</version>
 	</filter>
-	<filter name="Amin::Download">
-		<element>download</element>
-		<namespace>amin</namespace>
-		<name>download</name>
-		<position>begin</position>
-		<download>http://projectamin.org/filters/command/download.xml</download>
-		<version>1.0</version>
-	</filter>
 	<filter name="Amin::Depend">
 		<element>depend</element>
 		<namespace>amin</namespace>
 		<name>depend</name>
 		<position>begin</position>
 		<download>http://projectamin.org/filters/command/depend.xml</download>
+		<version>1.0</version>
+	</filter>
+	<filter name="Amin::Download">
+		<element>download</element>
+		<namespace>amin</namespace>
+		<name>download</name>
+		<position>middle</position>
+		<download>http://projectamin.org/filters/command/download.xml</download>
 		<version>1.0</version>
 	</filter>
 	
