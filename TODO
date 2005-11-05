@@ -1,0 +1,11 @@
+swishy -051104 
+
+Chmod - errors with a non ARRAY ref when calling Empty.pm line 15 . with valid XML as follows 
+
+        <amin:command name="chmod">
+                <amin:param name="target">Users/Administrator</amin:param>
+                <amin:flag name="set">0750</amin:flag>
+                <amin:shell name="dir">/opt/adistro/bootstrap</amin:shell>
+        </amin:command>
+
+
