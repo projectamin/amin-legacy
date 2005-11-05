@@ -133,6 +133,7 @@ Arch version 1.0
 
 =item Full example
 
+ <amin:profile xmlns:amin='http://projectamin.org/ns/'>
   <amin:cond name="arch">
     <amin:ppc32>
       <amin:command name="mkdir">
@@ -165,6 +166,7 @@ Arch version 1.0
       </amin:command>
     </amin:ia32>
   </amin:cond>
+ </amin:profile>
 
 =back  
 

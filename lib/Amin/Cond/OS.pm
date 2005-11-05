@@ -120,6 +120,7 @@ OS version 1.0
 
 =item Full example
 
+ <amin:profile xmlns:amin='http://projectamin.org/ns/'>
   <amin:cond name="os">
     <amin:darwin>
       <amin:command name="mkdir">
@@ -142,6 +143,7 @@ OS version 1.0
       </amin:command>
     </amin:linux>
   </amin:cond>
+ </amin:profile>
 
 =back  
 

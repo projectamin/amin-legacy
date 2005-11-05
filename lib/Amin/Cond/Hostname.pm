@@ -104,6 +104,7 @@ Hostname version 1.0
 
   <!-- hostnames named after members of the grateful dead -->
 
+ <amin:profile xmlns:amin='http://projectamin.org/ns/'>
   <amin:cond name="hostname">
     <amin:jerry>
       <amin:command name="mkdir">
@@ -136,6 +137,7 @@ Hostname version 1.0
       </amin:command>
     </amin:keyboardist>
   </amin:cond>
+ </amin:profile>
 
 =back  
 

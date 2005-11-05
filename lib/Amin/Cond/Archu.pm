@@ -124,6 +124,7 @@ Archu version 1.0
 
 =item Full example
 
+ <amin:profile xmlns:amin='http://projectamin.org/ns/'>
 	<!-- in this example, only run the mkdir command if 
 	     the arch ran on is an ia64 arch. Otherwise don't
 	     do anything-->
@@ -135,6 +136,7 @@ Archu version 1.0
                         </amin:command>
                 </amin:ia64>
         </amin:cond>
+ </amin:profile>
 
 =back  
 
