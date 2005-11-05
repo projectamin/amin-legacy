@@ -4,7 +4,7 @@ use strict;
 my $return = 0;
 sub start_element {
 	my ($self, $element) = @_;
-	%attrs = %{$element->{Attributes}};
+	my %attrs = %{$element->{Attributes}};
 	if ($attrs{'{}type'}->{Value} eq "error") {
 		$return = 1;
 	}
