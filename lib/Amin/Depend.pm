@@ -1,16 +1,16 @@
 package Amin::Depend;
 
 #Amin Depend
-
 use strict;
 use vars qw(@ISA);
 use XML::SAX::Base;
 use Amin;
 use Amin::Elt;
+use Amin::Profile::Checker;
+
 use XML::SAX::Writer;
 use XML::Generator::PerlData;
 use XML::SAX::PurePerl;
-
 @ISA = qw(Amin::Elt XML::SAX::Base);
 
 my $state = 0;
@@ -19,18 +19,11 @@ my $fail = 0;
 my $machine = 0;
 my ($p, $pd, $h, $xmldoc);
 
-my ($spec, $shandler, $vm);
-
+#log = 1 Super = 0
 sub start_element {
 	my ($self, $element) = @_;
 	my %attrs = %{$element->{Attributes}};
-	$spec = $self->{Spec};
-	#get the machine handler for voodoo magic
-	$shandler = $spec->{Handler};
-	#perform voodoo magic
-	$vm = XML::SAX::PurePerl->new(Handler => $shandler);
-	#use voodoo magic throughout muhahaha....
-	
+	my $log = $self->{Spec}->{Log};
 	
 	if ($element->{LocalName} eq "depend") {
 		$self->SUPER::start_element($element);
@@ -48,65 +41,64 @@ sub start_element {
 			($element->{LocalName} eq "test")) {
 		#so parse a chunk 
 		$pd->parse_chunk($element);	
+		$log->driver_start_element($element->{Name}, %attrs);
 		}
-	}
-	#} elsif ($element->{LocalName} eq "pass") {
-	#	if ($pass == 1) { 
+	} elsif ($element->{LocalName} eq "pass") {
+		if ($pass == 1) { 
 			#pass passed
 			#send it on to the machine for processing
-	#		$self->SUPER::start_element($element);
-			#turn on the machine for other element processing
-	#		$machine = 1;
-	#	} else {
-			#pass failed
-			#reset the handler before sending with more
-			#voodoo magic
-	#		$self->set_handler( $shandler->new(Spec => $spec) );
-	#		$self->SUPER::start_element($element);
-	#	}
-		 
-	#} elsif ($element->{LocalName} eq "fail") {
-	#	if ($fail == 1) { 
+			$self->SUPER::start_element($element);
+			$machine = 1;
+		} else {
+			$log->driver_start_element($element->{Name}, %attrs);
+		}	
+	} elsif ($element->{LocalName} eq "fail") {
+		if ($fail == 1) { 
 			#fail passed
 			#send it on to the machine for processing
-	#		$self->SUPER::start_element($element);
-			#turn on the machine for other element processing
-	#		$machine = 1;
-	#	} else {
+			$self->SUPER::start_element($element);
+			$machine = 1;
+		} else {
 			#fail failed
-			#reset the handler before sending with more
-			#voodoo magic
-	#		$self->set_handler( $shandler->new(Spec => $spec) );
-	#		$self->SUPER::start_element($element);
-	#	}
-	#} else { 
+			$log->driver_start_element($element->{Name}, %attrs);
+	} else { 
 		#this is where pass, or fail do their thing
-	#	if ($machine == 1) {
-			#sending to machine
-	#		$self->SUPER::start_element($element);
-	#	} else {
-			#reset the handler before sending with more
-			#voodoo magic
-	#		$self->set_handler( $shandler->new(Spec => $spec) );
-	#		$self->SUPER::start_element($element);
-		
-	#	}
-	#}
-	
-	
+		unless (($element->{LocalName} eq "depend") ||
+			($element->{LocalName} eq "test") ||
+			($element->{LocalName} eq "pass") ||
+			($element->{LocalName} eq "fail")) {
+			if ($machine == 1) {
+				#sending to machine
+				$self->SUPER::start_element($element);
+			} else {
+				$log->driver_start_element($element->{Name}, %attrs);
+			}
+		}
+	}
 }
 
 sub characters {
 	my ($self, $chars) = @_;
-	if ($state == 1) {
-		#we are parsing test xml
-		#so parse a chunk
-		$pd->parse_chunk($chars);	
+	my $data = $chars->{Data};
+	my $log = $self->{Spec}->{Log};
+	$data = $self->fix_text($data);
+	if ($data ne "") {
+		if ($state == 1) {
+			#we are parsing test xml
+			#so parse a chunk
+			$pd->parse_chunk($chars);	
+			$log->driver_characters($data);
+		} elsif (($pass == 1) || ($fail == 1) || ($machine == 1)) {
+			$self->SUPER::characters($chars);
+		} else {
+			$log->driver_characters($data);
+		}
 	}
 }
 
 sub end_element {
 	my ($self, $element) = @_;
+	my $log = $self->{Spec}->{Log};
 	
 	if ($state == 1) {
 		unless (($element->{LocalName} eq "depend") ||
@@ -114,6 +106,7 @@ sub end_element {
 			#we are parsing test xml
 			#so parse a chunk
 			$pd->parse_chunk($element);	
+			$log->driver_end_element($element->{Name});
 		}
 	} elsif ($element->{LocalName} eq "test") {
 		#we are done parsing test xml
@@ -139,49 +132,40 @@ sub end_element {
 		#just checks for errors, if so it returns fail,
 		#if everything passes it returns pass.
 		
-		$h = Amin::Depend::Checker->new();
+		$h = Amin::Profile::Checker->new();
 		$p = XML::SAX::PurePerl->new(Handler => $h);
 		my $test = $p->parse_string($results);	
-		if ($test eq "pass") {
-			$pass = 1;
-		} else {
+		if ($test) {
 			$fail = 1;
+		} else {
+			$pass = 1;
 		}
-		
-		#send our collected $xmldoc, to our machine handler
-		#with some voodoo magic
-		$vm->parse_string($xmldoc);
-		
 		#clean up test stuff
 		$state = 0;
 		$self->SUPER::start_element($element);
 	} elsif ($element->{LocalName} eq "depend") {
 		$self->SUPER::end_element($element);
-	}
-	#} elsif ($element->{LocalName} eq "fail") {
-	#	if ($fail == 1) {
+	} elsif ($element->{LocalName} eq "fail") {
+		if ($fail == 1) {
 			#the machine is on turn it off
 			$machine = 0;
 			$self->SUPER::end_element($element);
-	#	} else {
-			#reset the handler before sending with more
-			#voodoo magic
-	#		$self->set_handler( $shandler->new(Spec => $spec) );
-	#		$self->SUPER::start_element($element);
-	#	}
-	#} elsif ($element->{LocalName} eq "pass") {
-	#	if ($pass == 1) {
+		} else {
+			$log->driver_end_element($element->{Name});
+		}
+	} elsif ($element->{LocalName} eq "pass") {
+		if ($pass == 1) {
 			#the machine is on turn it off
-	#		$machine = 0;
-	#		$self->SUPER::end_element($element);
-	#	} else {
-			#reset the handler before sending with more
-			#voodoo magic
-	#		$self->set_handler( $shandler->new(Spec => $spec) );
-	#		$self->SUPER::start_element($element);
-	#	}
-	#}
-	
+			$machine = 0;
+			$self->SUPER::end_element($element);
+		} else {
+			$log->driver_end_element($element->{Name});
+		}
+	}
+}
+
+sub version {
+	return "1.0";
 }
 
 1;
@@ -240,29 +224,32 @@ amin 0.5.0
 
 =item Full example
 
- <amin:depend>
-   <amin:test>
-     <amin:command name="mkdir">
-       <amin:param>/tmp/depend_test</amin:param>
-     </amin:command>
-   </amin:test>
-   <amin:pass>
-     <amin:command name="remove">
-       <amin:param>/tmp/fail</amin:param>
-     </amin:command>
-     <amin:command name="touch">
-       <amin:param>/tmp/pass</amin:param>
-     </amin:command>
-   </amin:pass>
-   <amin:fail>
-     <amin:command name="remove">
-       <amin:param>/tmp/pass</amin:param>
-     </amin:command>
-     <amin:command name="touch">
-       <amin:param>/tmp/fail</amin:param>
-     </amin:command>
-   </amin:fail>
- </amin:depend> 
+ <amin:profile xmlns:amin='http://projectamin.org/ns/'>
+	<amin:depend>
+		<amin:test>
+			<amin:command name="mkdir">
+				<amin:param>/tmp/depend_test</amin:param>
+			</amin:command>
+		</amin:test>
+		<amin:pass>
+			<amin:command name="remove">
+				<amin:param>/tmp/fail</amin:param>
+			</amin:command>
+			<amin:command name="touch">
+				<amin:param>/tmp/pass</amin:param>
+			</amin:command>
+		</amin:pass>
+		<amin:fail>
+			<amin:command name="remove">
+				<amin:param>/tmp/pass</amin:param>
+			</amin:command>
+			<amin:command name="touch">
+				<amin:param>/tmp/fail</amin:param>
+			</amin:command>
+		</amin:fail>
+	</amin:depend> 
+ </amin:profile>
+
 =back  
 
 =cut
