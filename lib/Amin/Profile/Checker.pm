@@ -1,12 +1,19 @@
 package Amin::Profile::Checker;
 
+#LICENSE:
+
+#Please see the LICENSE file included with this distribution 
+#or see the following website http://projectamin.org.
+
 use strict;
 my $return = 0;
 sub start_element {
 	my ($self, $element) = @_;
 	my %attrs = %{$element->{Attributes}};
-	if ($attrs{'{}type'}->{Value} eq "error") {
-		$return = 1;
+	if ($element->{Name} eq "amin:message") {
+		if ($attrs{'{}type'}->{Value} eq "error") {
+			$return = 1;
+		}
 	}
 }
 
