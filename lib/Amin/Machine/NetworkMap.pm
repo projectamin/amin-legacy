@@ -1,12 +1,16 @@
 package Amin::Machine::NetworkMap;
 
+#LICENSE:
+
+#Please see the LICENSE file included with this distribution 
+#or see the following website http://projectamin.org.
+
 use strict;
 use vars qw(@ISA);
-use XML::SAX::Base;
 use Amin::Elt;
 use Amin::Protocol::Standard;
 
-@ISA = qw(XML::SAX::Base Amin::Elt);
+@ISA = qw(Amin::Elt);
 
 my (%maps, %attrs);
 
