@@ -1,11 +1,16 @@
 package Amin::Protocol::Blowfish_SimpleAuth;
 
+#LICENSE:
+
+#Please see the LICENSE file included with this distribution 
+#or see the following website http://projectamin.org.
+
 use strict;
 use Net::Daemon;
 use POSIX;
 use IPC::Run qw( run );
 use XML::SAX::ParserFactory;
-use Amin::CLI::Login;
+#use Amin::CLI::Login;
 use XML::SAX::Writer;
 use Crypt::Blowfish_PP;
 use IPC::Shareable (':lock');

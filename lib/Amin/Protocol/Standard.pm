@@ -1,5 +1,10 @@
 package Amin::Protocol::Standard;
 
+#LICENSE:
+
+#Please see the LICENSE file included with this distribution 
+#or see the following website http://projectamin.org.
+
 use strict;
 
 
