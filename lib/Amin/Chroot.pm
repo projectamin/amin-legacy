@@ -1,5 +1,10 @@
 package Amin::Chroot;
 
+#LICENSE:
+
+#Please see the LICENSE file included with this distribution 
+#or see the following website http://projectamin.org.
+
 #amin Chroot
 use strict;
 use vars qw(@ISA);
@@ -10,76 +15,9 @@ use Amin::Elt;
 my $pid = 1;
 my $state = 0;
 
-#sub start_element {
-#	my ($self, $element) = @_;
-#	my %attrs = %{$element->{Attributes}};
-#	my $dir = $attrs{'{}dir'}->{Value};
-#	my $log = $self->{Spec}->{Log};
-	
-#	if ($element->{LocalName} eq "chroot") {
-#		$state = 1;
-#		$pid = fork;
-#		if (! chroot $dir) {
-#			$self->{Spec}->{amin_error} = "red";
-#			my $text = "Could not chroot to $dir";
-#			$log->error_message($text);
-#		}
-#		$self->SUPER::start_element($element);
-#	} 
-	
-#	unless ($element->{LocalName} eq "chroot") {
-#		$self->SUPER::start_element($element);
-#	}
-	
-		
-#	if ($pid == 0) {
-	#	unless ($element->{LocalName} eq "chroot") {
-#		$self->SUPER::start_element($element);
-	#		print "debug $element->{LocalName}\n";
-	#	}
-#	}
-#	if ($state = 0) {
-#		$self->SUPER::start_element($element);
-#	}
-
-#	wait;
-#}
-
-#sub characters {
-#	my ($self, $chars) = @_;
-#	if (($pid == 0) || ($state = 0)) {
-#		$self->SUPER::characters($chars);
-#	} 
-#	wait;
-#}
-
-#sub end_element {
-#	my ($self, $element) = @_;
-
-#	if ($pid == 0) {
-#		unless ($element->{LocalName} eq "chroot") {
-#			$self->SUPER::end_element($element);
-#			print "debug $element->{LocalName}\n";
-#		}
-#	}
-#	if ($element->{LocalName} eq "chroot") {
-		#get out of chroot
-#		$self->SUPER::end_element($element);
-#		print "debugch $element->{LocalName}\n";
-#		exit;
-#		$state = 0;
-#		$self->SUPER::start_element($element);
-#	} 
-	#else {
-#	if ($state = 0) {
-#	unless ($element->{LocalName} eq "chroot") {
-#		$self->SUPER::start_element($element);
-#	}
-#	wait;
-#}
-#1;
-
-
+sub version {
+	return "1.0";
+}
 
 sub start_element {
         my ($self, $element) = @_;
@@ -129,14 +67,6 @@ sub end_element {
 }
 1;
 
-
-
-
-
-
-
-
-
 =head1 NAME
 
 Chroot - reader class filter for the chroot command.
@@ -148,7 +78,9 @@ Chroot - perl version
 =head1 DESCRIPTION
 
   A reader class for the chroot command. This is the
-  shell equivalent of chroot, just in perl.
+  shell equivalent of chroot, just in perl. This only 
+  works as described in the full example below. If you
+  want to fix and or improve this problem, please do so...
   
 =head1 XML
 
@@ -156,12 +88,16 @@ Chroot - perl version
 
 =item Full example
 
- <amin:chroot dir="/mnt/chroot">
-        <amin:command name="mkdir">
-                <amin:param>/tmp/inside_chroot</amin:param>
-        </amin:command>
- </amin:chroot>
-
+ <amin:profile xmlns:amin="http://projectamin.org/ns/amin">
+ 	<!-- chroot must be first and last child of profile, so 
+	     everything in this profile is in chroot -->
+	     
+ 	<amin:chroot dir="/mnt/chroot">
+        	<amin:command name="mkdir">
+        	        <amin:param>/tmp/inside_chroot</amin:param>
+        	</amin:command>
+ 	</amin:chroot>
+ </amin:profile>
 =back  
 
 =cut
