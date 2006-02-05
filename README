@@ -6,15 +6,16 @@ svn is available at
 
 svn co svn://projectamin.org/amin
 
+or
+
+http://projectamin.org/svn.doc (web version)
+
 Check the website for current branch information.
 
 Profiles for testing are at APAN.
 
-http://apan.projectamin.org
+http://apan.projectamin.org/
  
-Each section contains information that describes 
-those profiles.
-
 Installation instructions are in the INSTALL document
 
 License information can be found in the LICENSE document
@@ -28,6 +29,6 @@ of the documentation
 
 All of the documentation is available at http://docs.projectamin.org
 
-Have Fun
+Have Fun.
 
 Amin Group
