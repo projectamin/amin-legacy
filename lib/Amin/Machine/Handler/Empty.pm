@@ -1,5 +1,10 @@
 package Amin::Machine::Handler::Empty;
 
+#LICENSE:
+
+#Please see the LICENSE file included with this distribution 
+#or see the following website http://projectamin.org.
+
 use strict;
 use vars qw(@ISA);
 use Amin::Elt;
@@ -12,11 +17,11 @@ sub start_element {
 	%attrs = %{$element->{Attributes}};
 	
 	my $fl = $self->{Spec}->{Filter_List};
-	foreach (@$fl) {
-		if ($element->{LocalName} eq $_->{element})  {
-			if (($attrs{'{}name'}->{Value} eq $_->{name}) || 
-				($element->{LocalName} eq $_->{name})) {
-				$self->eattrs($_->{name});
+	foreach (keys %$fl) {
+		if ($element->{LocalName} eq $fl->{$_}->{element})  {
+			if (($attrs{'{}name'}->{Value} eq $fl->{$_}->{name}) || 
+				($element->{LocalName} eq $fl->{$_}->{name})) {
+				$self->eattrs($fl->{$_}->{name});
 			}
 		}
 	}
@@ -35,9 +40,9 @@ sub end_element {
 	my $spec = $self->{Spec};
 	my $log = $self->{Spec}->{Log};
 	my $list = $spec->{Filter_List};
-	foreach (@$list) {
-		if ($element->{LocalName} eq $_->{element})  {
-			if ($attrs eq $_->{name}) {
+	foreach (keys %$list) {
+		if ($element->{LocalName} eq $list->{$_}->{element})  {
+			if ($attrs eq $list->{$_}->{name}) {
 			my $text = "This element was not processed";
 			my %attrs;
 			my %att;
@@ -103,8 +108,8 @@ message to the remaining elements to be processed... ex.
 	my $spec = $self->{Spec};
 	my $log = $self->{Spec}->{Log};
 	my $list = $spec->{Filter_List};
-	foreach (@$list) {
-		if ($element->{LocalName} eq $_->{element})  {
+	foreach (keys %$list) {
+		if ($element->{LocalName} eq $list->{$_}->{element})  {
 		
 =head1 XML
 
