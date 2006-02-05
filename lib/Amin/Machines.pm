@@ -1,14 +1,17 @@
 package Amin::Machines;
 
+#LICENSE:
+
+#Please see the LICENSE file included with this distribution 
+#or see the following website http://projectamin.org.
+
 use strict;
 use Amin::Machine::Machine_Spec;
 
-
-my $DefaultSAXHandler ||= 'XML::SAX::Writer';
+my $DefaultSAXHandler ||= 'Amin::Machine::Handler::Writer';
 my $DefaultSAXGenerator	||= 'XML::SAX::PurePerl';
 my $DefaultLog	||= 'Amin::Machine::Log::Standard';
 my $DefaultMachine ||= 'Amin::Machine::Dispatcher';
-my $mout;
 
 sub new {
 	my $class = shift;
@@ -23,7 +26,7 @@ sub new {
 		}
 	} else {
 		eval "require $DefaultSAXHandler";
-        	$args{Handler} = $DefaultSAXHandler->new(Output => \$mout);
+        	$args{Handler} = $DefaultSAXHandler->new();
 	}
 	
 	if ( defined $args{Generator} ) {
@@ -38,7 +41,7 @@ sub new {
 	}
 	
 	if (!defined $args{Machine_Name} ) {
-		$args{SMachine_Name} = $DefaultMachine;
+		$args{Machine_Name} = $DefaultMachine;
 	}	
 	
 	
@@ -50,7 +53,7 @@ sub new {
 		}
 	} else {
 	       	eval "use $DefaultLog";
-		$args{Log} = $DefaultLog->new();
+		$args{Log} = $DefaultLog->new(Handler => $args{Handler});
 	}
 	
 	$args{FILTERLIST} ||= [];
@@ -61,7 +64,6 @@ sub new {
 sub parse_uri {
 	my ($self, $profile) = @_;
 	
-	#parse and add the machine spec
 	my $spec;
 	if ($self->{Machine_Spec}) {
 		$spec = $self->machine_spec($profile, $self->{Machine_Spec})
@@ -69,21 +71,24 @@ sub parse_uri {
 		$spec = $self->machine_spec($profile)
 	}
 
-	#prep the spec	
-	if (!$spec->{Handler}) { $spec->{Handler} = $self->{Handler}; }
-	if (!$spec->{Filter_Param}) { $spec->{Filter_Param} = $self->{Filter_Param}; }
-	if (!$spec->{Generator}) { $spec->{Generator} = $self->{Generator}; }
-
+	#load modules from the new $spec
+	$spec = $self->load_spec($spec);
 	
-	if (!$spec->{Log}) { $spec->{Log} = $self->{Log}; }
-
-		
 	#build the machine and run it
 	eval "require $self->{Machine_Name}";
 	my $m = $self->{Machine_Name}->new($spec);
-	$m->parse_uri( $profile );
-	
-	return \$mout;
+	while ($m->parse_uri( $profile )) {
+		if ($spec->{Handler}->{Spec}->{Buffer_End}) {
+			return $spec->{Handler}->{Spec}->{Buffer};
+			#$self->{Buffer} = $spec->{Handler}->{Spec}->{Buffer};
+			#$spec->{Handler}->{Spec}->{Buffer} = ();
+			#$self->{Buffer_End} = $spec->{Handler}->{Spec}->{Buffer_End};
+			#last;
+		}# elsif ($spec->{Handler}->{Spec}->{Buffer}) {
+		#	$self->{Buffer} = $spec->{Handler}->{Spec}->{Buffer};
+		#	$spec->{Handler}->{Spec}->{Buffer} = ();
+		#}
+	}
 }
 
 sub parse_string {
@@ -97,17 +102,24 @@ sub parse_string {
 		$spec = $self->machine_spec($profile)
 	}
 
-	#prep the spec	
-	if (!$spec->{Handler}) { $spec->{Handler} = $self->{Handler}; }
-	if (!$spec->{Log}) { $spec->{Log} = $self->{Log}; }
-	if (!$spec->{Filter_Param}) { $spec->{Filter_Param} = $self->{Filter_Param}; }
-	if (!$spec->{Generator}) { $spec->{Generator} = $self->{Generator}; }
+	#load modules from the new $spec
+	#my $spec = $self->load_spec($spec);
 	
 	#build the machine and run it
 	eval "require $self->{Machine_Name}";
 	my $m = $self->{Machine_Name}->new($spec);
-	$m->parse_string( $profile );
-	return \$mout;
+	while ($m->parse_string( $profile )) {
+		if ($spec->{Handler}->{Spec}->{Buffer_End}) {
+			return $spec->{Handler}->{Spec}->{Buffer};
+			#$self->{Buffer} = $spec->{Handler}->{Spec}->{Buffer};
+			#$spec->{Handler}->{Spec}->{Buffer} = ();
+			#$self->{Buffer_End} = $spec->{Handler}->{Spec}->{Buffer_End};
+			#last;
+		}# elsif ($spec->{Handler}->{Spec}->{Buffer}) {
+		#	$self->{Buffer} = $spec->{Handler}->{Spec}->{Buffer};
+		#	$spec->{Handler}->{Spec}->{Buffer} = ();
+		#}
+	}
 }
 
 sub machine_spec {
@@ -132,8 +144,80 @@ sub machine_spec {
 	unless ($spec) {
 		$spec = {};
 	}
+	
+
 	return $spec;
 }
+
+
+
+sub load_spec {
+	my ($self, $spec) = @_;
+
+	#stick in our filter params
+	if (!$spec->{Filter_Param}) { $spec->{Filter_Param} = $self->{Filter_Param}; }
+	
+	#load up the generator, handler and the log mechanisms if not already loaded
+	#ie they came from the spec. 
+	
+	if ($spec->{Generator}->{name}) {
+		#there was a generator in the spec use it
+		no strict 'refs';
+		eval "require $spec->{Generator}";
+		$spec->{Generator} = $spec->{Generator}->new();
+		if ($@) {
+			my $text = "Machines failed. Could not load a generator named $spec->{Generator}. Reason $@";
+			die $text;
+		}
+		
+	} else { 
+		#there was no generator in the spec use the default loaded
+		$spec->{Generator} = $self->{Generator}; 
+	}
+	
+	if ($spec->{FHandler}->{name}) {
+		#there was a Handler in the spec use it
+		no strict 'refs';
+		eval "require $spec->{FHandler}->{name}";
+		
+		if ($spec->{FHandler}->{out}) {
+			$spec->{Handler} = $spec->{FHandler}->{name}->new(Output => $spec->{FHandler}->{out});
+		} else {		
+			$spec->{Handler} = $spec->{FHandler}->{name}->new();
+		}
+		
+		if ($@) {
+			my $text = "Machines failed. Could not load a handler named $spec->{FHandler}. Reason $@";
+			die $text;
+		}
+		
+	} else { 
+		#there was no Handler in the spec use the default loaded
+		$spec->{Handler} = $self->{Handler};
+	}
+	
+	if ($spec->{Log}->{name}) {
+		#there was a log in the spec use it
+		no strict 'refs';
+		eval "require $spec->{Log}";
+		$spec->{Log} = $spec->{Log}->new(Handler => $spec->{Handler} );
+		if ($@) {
+			my $text = "Machines failed. Could not load a log named $spec->{Log}. Reason $@";
+			die $text;
+		}
+		
+	} else { 
+		#there was no log in the spec use the default loaded
+		$spec->{Log} = $self->{Log};
+	}
+	
+	return $spec;
+	
+}
+
+
+
+
 
 1;
 
