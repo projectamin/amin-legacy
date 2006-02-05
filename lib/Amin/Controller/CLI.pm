@@ -1,5 +1,10 @@
 package Amin::Controller::CLI;
 
+#LICENSE:
+
+#Please see the LICENSE file included with this distribution 
+#or see the following website http://projectamin.org.
+
 use strict;
 use LWP::UserAgent;
 
@@ -106,6 +111,12 @@ sub adminlist {
 	my $self = shift;
 	if (@_) { $self->{ADMINLIST} = shift;}
 	return $self->{ADMINLIST};
+}
+
+sub adminlist_map {
+	my $self = shift;
+	if (@_) { $self->{ADMINLIST_MAP} = shift;}
+	return $self->{ADMINLIST_MAP};
 }
 
 1;
