@@ -2,7 +2,7 @@ use inc::Module::Install;
 name		('Amin');
 abstract	('Amin XML Administration');
 author		('Project Amin http://projectamin.org');
-include		('ExtUtils::AutoInstall');
+include		('Module::AutoInstall');
 license		('perl');
 version_from	('lib/Amin.pm');
 
