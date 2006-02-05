@@ -1,11 +1,15 @@
 package Amin::Machine::AdminList;
 
+#LICENSE:
+
+#Please see the LICENSE file included with this distribution 
+#or see the following website http://projectamin.org.
+
 use strict;
 use vars qw(@ISA);
-use XML::SAX::Base;
 use Amin::Elt;
 
-@ISA = qw(XML::SAX::Base Amin::Elt);
+@ISA = qw(Amin::Elt);
 
 my %attrs;
 my (%adminlist, $x, $y, $z);
@@ -51,6 +55,7 @@ sub end_element {
 			#reset stuff
 			$self->{URI} = "";
 			$self->{NAME} = "";
+			$self->{TYPE} = "map";
 		}
 	}
 	if ($element->{LocalName} eq "profile") {
@@ -67,6 +72,7 @@ sub end_element {
 			#reset stuff
 			$self->{URI} = "";
 			$self->{NAME} = "";
+			$self->{TYPE} = "profile";
 		}
 	}
 	if ($element->{LocalName} eq "adminlist") {
@@ -84,6 +90,7 @@ sub end_element {
 			#reset stuff
 			$self->{URI} = "";
 			$self->{NAME} = "";
+			$self->{TYPE} = "adminlist";
 		}
 	}
 }
