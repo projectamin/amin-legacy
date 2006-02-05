@@ -1,12 +1,17 @@
 package Amin::Machine::Filter::Dispatcher;
 
+#LICENSE:
+
+#Please see the LICENSE file included with this distribution 
+#or see the following website http://projectamin.org.
+
 #Amin Dispatcher
 use strict;
 use vars qw(@ISA);
-use XML::SAX::Base;
 use Amin::Machine::Handler::Empty;
+use Amin::Elt;
 
-@ISA = qw(XML::SAX::Base);
+@ISA = qw(Amin::Elt);
 
 sub start_element {
 	my ($self, $element) = @_;
@@ -75,8 +80,3 @@ next appropriate sax filter in this machine spec's filterlist.
 
  
 =cut
-
-
-
-
-
