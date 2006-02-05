@@ -1,12 +1,16 @@
 package Amin::Download;
 
+#LICENSE:
+
+#Please see the LICENSE file included with this distribution 
+#or see the following website http://projectamin.org.
+
 use strict;
 use vars qw(@ISA);
-use XML::SAX::Base;
 use LWP::UserAgent;
 use Amin::Elt;
 
-@ISA = qw(Amin::Elt XML::SAX::Base);
+@ISA = qw(Amin::Elt);
 
 my (%attrs);
 
