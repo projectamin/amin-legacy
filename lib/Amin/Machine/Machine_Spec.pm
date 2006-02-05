@@ -1,8 +1,12 @@
 package Amin::Machine::Machine_Spec;
 
+#LICENSE:
+
+#Please see the LICENSE file included with this distribution 
+#or see the following website http://projectamin.org.
+
 use strict;
 use vars qw(@ISA);
-use XML::SAX::Base;
 use Amin::Machine::Machine_Spec::Document;
 use XML::Filter::XInclude;
 use XML::SAX::PurePerl;
@@ -10,7 +14,7 @@ use IPC::Run qw( run );
 use File::Basename qw(dirname);
 use Amin::Elt;
 
-@ISA = qw(XML::SAX::Base Amin::Elt);
+@ISA = qw(Amin::Elt);
 
 
 my $spec;
@@ -181,14 +185,24 @@ sub end_document {
 		eval "require $machine_filters{$_}->{module}";
 		#version check
 		my $lv;
+		my $lh = $machine_filters{$_}->{module};
 		unless ($@) {
-			$lv = $machine_filters{$_}->{module}->version;
+			if ($lh->can("version")) {
+				$lv = $lh->version;
+			} else {
+				#tsk tsk no version sub
+				$lv = "noneamin";
+			}
 		}	
 		my $version;
+		if (!$lv) {
 		if ($lv ne $machine_filters{$_}->{version}) {
 			$version = "bad";
 		}
-		
+		}
+		if ($lv eq "noneamin") {
+			die "Your filter $machine_filters{$_}->{module} does not have a version subroutine. Please add one...";
+		}
 		if (($@) || ($version eq "bad")) {
 			if ($machine_filters{$_}->{'download'}) {
 				my @cmd = ($0, '-u', $machine_filters{$_}->{'download'});
@@ -198,38 +212,30 @@ sub end_document {
 					#$self->{Spec}->{amin_error} = "red";
 					die "Machine_Spec failed could not load $_->{module}. Reason $@";
 				}
-			} else {
-				#so amin isn't installed at all
-				eval "require PAR";
-				if ($@) {
-					die "If PAR was installed, we might be able to fix the problem. can not load the PAR module";
-				} else {
-					use lib 'http://projectamin.org/amin-latest.par';
-					use lib 'http://projectamin.org/lwp.par';
-			
-					eval "require $machine_filters{$_}->{module}";
-					if ($@) {
-						#$self->{Spec}->{amin_error} = "red";
-						die "Machine_Spec failed could not load $_->{module}. Reason $@";
-					}
-				}
-			}
+			} #else {
+			#	#so amin isn't installed at all
+			#	eval "require PAR";
+			#	if ($@) {
+			#		die "If PAR was installed, we might be able to fix the problem. can not load the PAR module";
+			#	} else {
+			#		use lib 'http://projectamin.org/amin-latest.par';
+			#		use lib 'http://projectamin.org/lwp.par';
+			#
+			#		eval "require $machine_filters{$_}->{module}";
+			#		if ($@) {
+			#			#$self->{Spec}->{amin_error} = "red";
+			#			die "Machine_Spec failed could not load $_->{module}. Reason $@";
+			#		}
+			#	}
+			#}
 		}
+		
 	}
 	
-	my %spec;
-	$spec{Filter_List} = \%machine_filters;
-	#Handler has to be special to ignore X:S:B 
-	if ($self->{FHandler}) { $spec{Handler} = $self->{FHandler}; }
 	
-	#if these are defined from the machine spec then set them up
-	if ($self->{Log}) { $spec{Log} = $self->{Log}; }
-	if ($self->{Filter_Param}) { $spec{Filter_Param} = $self->{Filter_Param}; }
-	if ($self->{Generator}) { $spec{Generator} = $self->{Generator}; }
-	
-	return \%spec;
+	$spec->{Filter_List} = \%machine_filters;
+	return $spec;
 }
-
 
 
 =head1 NAME
