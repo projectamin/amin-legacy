@@ -1,10 +1,14 @@
 package Amin::Machine::Log::Standard;
 
+#LICENSE:
+
+#Please see the LICENSE file included with this distribution 
+#or see the following website http://projectamin.org.
+
 use strict;
 use vars qw(@ISA);
-use XML::SAX::Base;
-
-@ISA = qw(XML::SAX::Base);
+use Amin::Elt;
+@ISA = qw(Amin::Elt);
 
 #standard logging subroutines
 
@@ -129,6 +133,10 @@ Amin::Machine::Log::Standard - basic Log subroutine class for Amin machines
   #error message
   my $text = "Something went wrong";
   $log->error_message($text); 
+
+  #warn message
+  my $text = "Warning this is not good";
+  $log->warn_message($text); 
    
   #the following deal with the $cmd's messages
   #ex. my $cmd = $self->amin_command(\%acmd);
@@ -178,6 +186,10 @@ will become
   
   $log->error_message($text);
 
+=item *warn_message
+  
+  $log->warn_message($text);
+
 =item *IN_message
   
   $log->IN_message($text);
@@ -203,6 +215,10 @@ will become
 =item *error_message
 
   <amin:message type="error">There was a problem</amin:message>
+
+=item *warn_message
+
+  <amin:message type="warn">Warning this is not good</amin:message>
 
 =item *IN_message
 
