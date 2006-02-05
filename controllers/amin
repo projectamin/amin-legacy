@@ -1,5 +1,10 @@
 #!/usr/bin/perl
 
+#LICENSE:
+
+#Please see the LICENSE file included with this distribution 
+#or see the following website http://projectamin.org.
+
 use Amin;
 use Amin::Controller::CLI;
 use Getopt::Long;
@@ -20,14 +25,16 @@ full details.
 The controller accepts the -u uri profile option 
 with any uri ie http://example.com/profile.xml. 
 
-The controller accepts the -p option
-with the profile as STDIN
-
 The controller accepts the -a adminlist option
 with any uri ie http://example.com/adminlist.xml
 
+The controller accepts the -p option
+with the profile as STDIN, this is usually used
+by other scripts. 
+
 The controller accepts the -n networkmap option
 with any uri ie http://example.com/networkmap.xml
+
 The networkmap option will apply to any adminlist
 or profile(either uri or STDIN). Networkmaps inside
 of an adminlist will be processed in addition to 
@@ -41,13 +48,8 @@ details.
 
 The controller accepts the -t machine type option
 with one of the available machine types. By default 
-Amin has three machine types. Dispatcher, ByRecord
-and Tap. You call these by using their full module
-names, ie.
-
-Amin::Machine::Dispatcher
-Amin::Machine::ByRecord
-Amin::Machine::Tap
+Amin has uses the Dispatcher machine type. Please 
+see Amin::Machines for more details. 
 
 You may also design your own machines and supply 
 their full module names. Please see Amin::Machine 
@@ -59,19 +61,6 @@ by various machine filters
 
 Please perldoc the various Amin modules or visit
 the website at http://projectamin.org/ for more information.
-
-As strange as it may seem this works....
-
-amin -u http://projectamin.org/apan/tests/command/mkdir.xml \
--a http://projectamin.org/apan/tests/adminlist/mkdir.xml \
--n http://projectamin.org/apan/tests/networkmap.xml/mkdir.xml \
--m http://projectamin.org/apan/tests/machines/mkdir.xml \
--t Dispatcher -x Kewl_Stuff \
--p <command name="mkdir"><param >/tmp/mkdir/ya</param></command>
-
-And yes -p options will also get the -t -x options applied
-to it. The -p option was put at the end as not to confuse
-anyone over the STDIN. 
 
 In terms of processing order, an adminlist is processed
 first, then a profile by uri and finally a profile by STDIN.
@@ -121,14 +110,28 @@ if (defined $cli->networkmap) {
 	$amin->set_machine_type($cli->machine_type);
 } elsif (defined $cli->filter_param) {
 	$amin->set_filter_param($cli->filter_param);
+} elsif (defined $cli->adminlist_map) {
+	$amin->set_adminlist_map($cli->adminlist_map);
 }
 
 if (defined $cli->adminlist) {
 	$amin->parse_adminlist($cli->adminlist);
+	my $results = $amin->results;
+	foreach (@$results) {
+		print "$_\n";
+	}
 } elsif (defined $cli->uri) {
-        $amin->parse_uri($cli->uri);
+	$amin->parse_uri($cli->uri); 
+	my $results = $amin->results;
+	foreach (@$results) {
+		print "$_\n";
+	}
 } elsif (defined $cli->profile) {
 	$amin->parse_string($cli->profile);
+	my $results = $amin->results;
+	foreach (@$results) {
+		print "$_\n";
+	}
 } else {
 	print "nothing to parse\n";
 }
@@ -136,11 +139,12 @@ if (defined $cli->adminlist) {
 sub get_profile {
 	my $cli = shift;
         my ($help, $uri, $profile, $adminlist, $networkmap, 
-	    $machine_spec, $machine_type, $filter_param, $version, $type);
+	    $machine_spec, $machine_type, $filter_param, $version, $type, $adminlist_map);
 	my $opts_ok = &GetOptions( "h|help"    => \$help,
 				   "u|uri=s"     => \$uri,
 				   "p|profile=s" => \$profile,
 				   "a|adminlist=s" => \$adminlist,
+				   "b|adminlist_map=s" => \$adminlist_map,
 				   "n|networkmap=s" => \$networkmap,
 				   "m|machine_spec=s" => \$machine_spec,
 				   "x|filter_param=s" => \$filter_param,
@@ -159,6 +163,9 @@ sub get_profile {
 	} 
 	if ($adminlist) {
 		$cli->adminlist($adminlist);
+	} 
+	if ($adminlist_map) {
+		$cli->adminlist_map($adminlist_map);
 	} 
 	if ($networkmap) {
 		$cli->networkmap($networkmap);
@@ -188,3 +195,4 @@ sub get_profile {
 }
 
 1;
+
