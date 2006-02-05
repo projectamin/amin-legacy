@@ -1,12 +1,19 @@
 package Amin::Machine::Machine_Spec::Document;
 
+#LICENSE:
+
+#Please see the LICENSE file included with this distribution 
+#or see the following website http://projectamin.org.
+
 use strict;
 use vars qw(@ISA);
-use XML::SAX::Base;
+use Amin::Elt;
+@ISA = qw(Amin::Elt);
 
-@ISA = qw(XML::SAX::Base);
+#use XML::SAX::Base;
+#@ISA = qw(XML::SAX::Base);
 
-my %filter;
+my %document;
 my @filters;
 my @bundle;
 my %filters;
@@ -19,6 +26,17 @@ sub start_element {
 	if (($element->{LocalName} eq "filter") || ($element->{LocalName} eq "bundle")) {
 		$self->module($attrs{'{}name'}->{Value});	
 	}
+	if ($element->{LocalName} eq "generator") {
+		$self->generator($attrs{'{}name'}->{'Value'});
+	}
+	if ($element->{LocalName} eq "handler") {
+		$self->han_name($attrs{'{}name'}->{'Value'});
+		$self->han_out($attrs{'{}output'}->{'Value'});
+	}
+	if ($element->{LocalName} eq "log") {
+		$self->log($attrs{'{}name'}->{'Value'});
+	}
+
 }
 sub characters {
 	my ($self, $chars) = @_;
@@ -26,34 +44,31 @@ sub characters {
 	$data =~ s/(^\s+|\s+$)//gm;
 	my $element = $self->{"ELEMENT"};
 
-	if ($element->{LocalName} eq "element") {
-		if ($data ne "") {
+	if ($data ne "") {
+	
+		if ($element->{LocalName} eq "element") {
 			$self->element_name($data);
 		}
-	}
-	if ($element->{LocalName} eq "namespace") {
-		if ($data ne "") {
+		if ($element->{LocalName} eq "namespace") {
 			$self->namespace($data);
 		}
-	}
-	if ($element->{LocalName} eq "name") {
-		if ($data ne "") {
+		if ($element->{LocalName} eq "name") {
 			$self->name($data);
 		}
-	}
-	if ($element->{LocalName} eq "position") {
-		if ($data ne "") {
+		if ($element->{LocalName} eq "position") {
 			$self->position($data);
 		}
-	}
-	if ($element->{LocalName} eq "download") {
-		if ($data ne "") {
+		if ($element->{LocalName} eq "download") {
 			$self->download($data);
 		}
-	}
-	if ($element->{LocalName} eq "version") {
-		if ($data ne "") {
+		if ($element->{LocalName} eq "version") {
 			$self->version($data);
+		}
+		if ($element->{LocalName} eq "filter_param") {
+			my @things = $data =~ m/([\*\+\.\w=\/-]+|'[^']+')\s*/g;
+			foreach (@things) {
+				$self->filter_param($_);
+			}
 		}
 	}
 }
@@ -86,14 +101,32 @@ sub end_element {
 		$filters{$mparent{module}} = \%mparent;
 	}
 	if ($element->{LocalName} eq "machine") {
-		$filter{Filter} = \%filters;
-		$filter{Bundle} = \%bundle;
+		$document{Filter} = \%filters;
+		$document{Bundle} = \%bundle;
 	}
 }
 
 sub end_document {
 	my $self = shift;
-	return \%filter;
+	
+	if ($self->{HAN_NAME}) {
+		my %han;
+		$han{name} = $self->han_name;
+		$han{out} = $self->han_out;
+		$document{FHandler} = \%han;
+	}
+	if ($self->{LOG}) {
+		$document{Log} = $self->log;
+	}
+	if ($self->{GENERATOR}) {
+		$document{Generator} = $self->generator;
+	}
+	if ($self->{FILTER_PARAM}) {
+		my @params = $self->filter_param;
+		$document{Filter_Param} = \@params;
+	}
+	
+	return \%document;
 }
 
 sub element {
@@ -113,6 +146,20 @@ sub name {
 	$self->{NAME} = shift if @_;
 	return $self->{NAME};
 }
+
+
+sub log {
+	my $self = shift;
+	$self->{LOG} = shift if @_;
+	return $self->{LOG};
+}
+
+sub filter_param {
+	my $self = shift;
+	if (@_) {push @{$self->{FILTER_PARAM}}, @_; }
+	return @{ $self->{FILTER_PARAM} };
+}
+
 
 sub position {
 	my $self = shift;
@@ -150,7 +197,23 @@ sub version {
 	return $self->{VERSION};
 }
 
+sub generator {
+        my $self = shift;
+        $self->{GENERATOR} = shift if @_;
+        return $self->{GENERATOR};
+}
 
+sub han_name {
+        my $self = shift;
+        $self->{HAN_NAME} = shift if @_;
+        return $self->{HAN_NAME};
+}
+
+sub han_out {
+        my $self = shift;
+        $self->{HAN_OUT} = shift if @_;
+        return $self->{HAN_OUT};
+}
 
 =head1 NAME
 
