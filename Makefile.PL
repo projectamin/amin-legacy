@@ -3,7 +3,7 @@ name		('Amin');
 abstract	('Amin XML Administration');
 author		('Project Amin http://projectamin.org');
 include		('Module::AutoInstall');
-license		('perl');
+license		('bsd');
 version_from	('lib/Amin.pm');
 
 requires        ('Cwd');
@@ -33,3 +33,4 @@ auto_install	();
 
 print "\nCopying controllers/amin to /usr/bin\n";
 system("cp controllers/amin /usr/bin/");
+print "Have Fun!\n";
