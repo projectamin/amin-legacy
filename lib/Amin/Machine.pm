@@ -1,5 +1,10 @@
 package Amin::Machine;
 
+#LICENSE:
+
+#Please see the LICENSE file included with this distribution 
+#or see the following website http://projectamin.org.
+
 use strict;
 
 sub new {
@@ -15,7 +20,6 @@ sub run {
 	my ($self, $profile, $type) = @_;
 	#build the machine
 	my $spec = $self->{Spec};
-	
 	#deal with the filter_list
 	my $fl = $spec->{Filter_List};
 	
@@ -72,10 +76,12 @@ sub run {
 	#put our new wierd filter list back as the spec's Filter_List
 	$spec->{Filter_List} = $fl;
 	
+	
 	#add in the machine itself
-	my $machine_name = $spec->{Machine_Name}->new(Handler => $spec->{Handler}, Spec => $spec);
-	$spec->{Machine_Handler} = $machine_name;
-	my $p = $spec->{Generator}->new(Handler => $machine_name, Spec => $spec);
+	my $machine = $spec->{Machine_Name}->new(Handler => $spec->{Handler}, Spec => $spec);
+	$spec->{Machine_Handler} = $machine;
+	#grab a new sax parser and parse this sucker
+	my $p = $spec->{Generator}->new(Handler => $machine, Spec => $spec);
 	
 	if ($type eq "uri") {
 		$p->parse_uri( $profile );
@@ -168,7 +174,8 @@ as explained in Amin::Machine::Machine_Spec
 	
 otherwise all this method does is run the appropriate
 parse_uri or parse_string methods on the sax generator
-and get's the party started.
+and get's the party started. Just use this method or 
+rewrite it if you don't like our party music.... :)
    
 =back
 
