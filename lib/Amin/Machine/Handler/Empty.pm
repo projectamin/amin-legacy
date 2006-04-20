@@ -15,7 +15,10 @@ my %attrs;
 sub start_element {
 	my($self, $element) = @_;
 	%attrs = %{$element->{Attributes}};
-	
+	if (!$attrs{'{}name'}->{'Value'}) {
+		$attrs{'{}name'}->{'Value'} = "";
+	}
+
 	my $fl = $self->{Spec}->{Filter_List};
 	foreach (keys %$fl) {
 		if ($element->{LocalName} eq $fl->{$_}->{element})  {
