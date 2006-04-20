@@ -6,6 +6,7 @@ package Amin::Command::Mount;
 #or see the following website http://projectamin.org.
 
 use strict;
+use warnings;
 use vars qw(@ISA);
 use Amin::Elt;
 
@@ -15,8 +16,11 @@ my %attrs;
 sub start_element {
 	my ($self, $element) = @_;
 	%attrs = %{$element->{Attributes}};
+	if (!$attrs{'{}name'}->{'Value'}) {
+		$attrs{'{}name'}->{'Value'} = "";
+	}
 	$self->attrs(%attrs);
-	if ($element->{LocalName} eq "command") {
+	if (($element->{Prefix} eq "amin") && ($element->{LocalName} eq "command") && ($attrs{'{}name'}->{Value} eq "mount")) {
 		$self->command($attrs{'{}name'}->{Value});
 	}
 	$self->element($element);
@@ -29,8 +33,8 @@ sub characters {
 	$data = $self->fix_text($data);
 	my $attrs = $self->{"ATTRS"};
 	my $element = $self->{"ELEMENT"};
-	
-	if ($data ne "") {
+	my $command = $self->command;
+	if (($command eq "mount") && ($data ne "")) {
 		if ($element->{LocalName} eq "shell") {
 			if ($attrs{'{}name'}->{Value} eq "env") {
 				$self->env_vars($data);
@@ -65,7 +69,7 @@ sub characters {
 sub end_element {
 	my ($self, $element) = @_;
 
-	if ($element->{LocalName} eq "command") {
+	if (($element->{LocalName} eq "command") && ($self->command eq "mount")) {
 
 		my $dir = $self->{'DIR'};
 		my $type = $self->{'TYPE'};
@@ -89,8 +93,9 @@ sub end_element {
 			}
 		}
 		
-		my $state;
+		my $state = 0;
 		foreach my $ip (@$xflag){
+			if (!$ip) {next;};
 			if (($ip =~ /^-/) || ($ip =~ /^--/)) {
 				push @flag, $ip;
 			} else {	

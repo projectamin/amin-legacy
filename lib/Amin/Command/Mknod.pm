@@ -6,6 +6,7 @@ package Amin::Command::Mknod;
 #or see the following website http://projectamin.org.
 
 use strict;
+use warnings;
 use vars qw(@ISA);
 use Amin::Elt;
 
@@ -16,8 +17,11 @@ my (%attrs, @target);
 sub start_element {
 	my ($self, $element) = @_;
 	%attrs = %{$element->{Attributes}};
+	if (!$attrs{'{}name'}->{'Value'}) {
+		$attrs{'{}name'}->{'Value'} = "";
+	}
 	$self->attrs(%attrs);
-	if ($element->{LocalName} eq "command") {
+	if (($element->{Prefix} eq "amin") && ($element->{LocalName} eq "command") && ($attrs{'{}name'}->{Value} eq "mknod")) {
 		$self->command($attrs{'{}name'}->{Value});
 	}
 	$self->element($element);
@@ -30,8 +34,8 @@ sub characters {
 	$data = $self->fix_text($data);
 	my $attrs = $self->{"ATTRS"};
 	my $element = $self->{"ELEMENT"};
-
-	if ($data ne "") {
+	my $command = $self->command;
+	if (($command eq "mknod") && ($data ne "")) {
 		if ($element->{LocalName} eq "param") {
 			if ($attrs{'{}name'}->{Value} eq "type") {
 				$self->type($data);
@@ -84,7 +88,7 @@ sub characters {
 sub end_element {
 	my ($self, $element) = @_;
 
-	if ($element->{LocalName} eq "command") {
+	if (($element->{LocalName} eq "command") && ($self->command eq "mknod")) {
 		my $mode = $self->{'MODE'};
 		my $dir = $self->{'DIR'};
 		my $target = $self->{'TARGET'};
@@ -97,8 +101,9 @@ sub end_element {
 		my $log = $self->{Spec}->{Log};
 		my ($flag, @flag, @target);
 
-		my $state;
+		my $state = 0;
 		foreach my $ip (@$xflag){
+			if (!$ip) {next;};
 			if (($ip =~ /^-/) || ($ip =~ /^--/)) {
 				push @flag, $ip;
 			} else {	

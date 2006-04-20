@@ -6,6 +6,7 @@ package Amin::Command::Grpunconv;
 #or see the following website http://projectamin.org.
 
 use strict;
+use warnings;
 use vars qw(@ISA);
 use Amin::Elt;
 
@@ -16,8 +17,11 @@ my (%attrs, @target);
 sub start_element {
 	my ($self, $element) = @_;
 	%attrs = %{$element->{Attributes}};
+	if (!$attrs{'{}name'}->{'Value'}) {
+		$attrs{'{}name'}->{'Value'} = "";
+	}
 	$self->attrs(%attrs);
-	if ($element->{LocalName} eq "command") {
+	if (($element->{Prefix} eq "amin") && ($element->{LocalName} eq "command") && ($attrs{'{}name'}->{Value} eq "grpunconv")) {
 		$self->command($attrs{'{}name'}->{Value});
 	}
 	$self->element($element);
@@ -27,7 +31,7 @@ sub start_element {
 sub end_element {
 	my ($self, $element) = @_;
 
-	if ($element->{LocalName} eq "command") {
+	if (($element->{LocalName} eq "command") && ($self->command eq "grpunconv")) {
 		my $command = $self->{'COMMAND'};
 
 		my %acmd;

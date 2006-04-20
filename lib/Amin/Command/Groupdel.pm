@@ -6,6 +6,7 @@ package Amin::Command::Groupdel;
 #or see the following website http://projectamin.org.
 
 use strict;
+use warnings;
 use vars qw(@ISA);
 use Amin::Elt;
 
@@ -16,8 +17,11 @@ my (%attrs, @target);
 sub start_element {
 	my ($self, $element) = @_;
 	%attrs = %{$element->{Attributes}};
+	if (!$attrs{'{}name'}->{'Value'}) {
+		$attrs{'{}name'}->{'Value'} = "";
+	}
 	$self->attrs(%attrs);
-	if ($element->{LocalName} eq "command") {
+	if (($element->{Prefix} eq "amin") && ($element->{LocalName} eq "command") && ($attrs{'{}name'}->{Value} eq "groupdel")) {
 		$self->command($attrs{'{}name'}->{Value});
 	}
 	$self->element($element);
@@ -30,8 +34,8 @@ sub characters {
 	$data = $self->fix_text($data);
 	my $attrs = $self->{"ATTRS"};
 	my $element = $self->{"ELEMENT"};
-
-	if ($data ne "") {
+	my $command = $self->command;
+	if (($command eq "groupdel") && ($data ne "")) {
 		if ($element->{LocalName} eq "param") {
 			if ($attrs{'{}name'}->{Value} eq "") {
 				my @things = $data =~ m/([\*\+\.\w=\/-]+|'[^']+')\s*/g;
@@ -47,14 +51,15 @@ sub characters {
 sub end_element {
 	my ($self, $element) = @_;
 
-	if ($element->{LocalName} eq "command") {
+	if (($element->{LocalName} eq "command") && ($self->command eq "groupdel")) {
 		my $xparam = $self->{'PARAM'};
 		my $command = $self->{'COMMAND'};
 		my (@param, @flag, $flag);
 		my $log = $self->{Spec}->{Log};
 		my $xflag = $self->{'FLAG'};
-		my $state;
+		my $state = 0;
 		foreach my $ip (@$xflag){
+			if (!$ip) {next;};
 			if ($state == 0) {
 				$flag = "-" . $ip;
 				$state = 1;

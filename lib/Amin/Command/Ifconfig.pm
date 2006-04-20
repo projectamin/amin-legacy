@@ -1,5 +1,10 @@
 package Amin::Command::Ifconfig;
 
+#LICENSE:
+
+#Please see the LICENSE file included with this distribution 
+#or see the following website http://projectamin.org.
+
 use strict;
 use vars qw(@ISA);
 use Amin::Elt;
@@ -10,8 +15,11 @@ my %attrs;
 sub start_element {
 	my ($self, $element) = @_;
 	%attrs = %{$element->{Attributes}};
+	if (!$attrs{'{}name'}->{'Value'}) {
+		$attrs{'{}name'}->{'Value'} = "";
+	}
 	$self->attrs(%attrs);
-	if ($element->{LocalName} eq "command") {
+	if (($element->{Prefix} eq "amin") && ($element->{LocalName} eq "command") && ($attrs{'{}name'}->{Value} eq "ifconfig")) {
 		$self->command($attrs{'{}name'}->{Value});
 	}
 	$self->element($element);
@@ -24,8 +32,8 @@ sub characters {
 	$data = $self->fix_text($data);
 	my $attrs = $self->{"ATTRS"};
 	my $element = $self->{"ELEMENT"};
-	
-	if ($data ne "") {
+	my $command = $self->command;
+	if (($command eq "ifconfig") && ($data ne "")) {
 		if ($element->{LocalName} eq "shell") {
 			if ($attrs{'{}name'}->{Value} eq "env") {
 				$self->env_vars($data);
@@ -69,7 +77,7 @@ sub characters {
 sub end_element {
 	my ($self, $element) = @_;
 
-	if ($element->{LocalName} eq "command") {
+	if (($element->{LocalName} eq "command") && ($self->command eq "ifconfig")) {
 
 		my $dir = $self->{'DIR'};
 		my $interface = $self->{'INTERFACE'};
@@ -77,7 +85,8 @@ sub end_element {
 		my $netmask = $self->{'NETMASK'};
 	        my $state = $self->{'STATE'};
 		my $xflag = $self->{'FLAG'};
-		
+		my $xparam = $self->{'PARAM'};
+				
 		my (%acmd, @param, @flag, $flag);
 		
 		my $log = $self->{Spec}->{Log};
@@ -95,6 +104,7 @@ sub end_element {
 		}
 		
 		foreach my $ip (@$xflag){
+			if (!$ip) {next;};
 			if (($ip =~ /^-/) || ($ip =~ /^--/)) {
 				push @flag, $ip;
 			} else {	
@@ -115,11 +125,22 @@ sub end_element {
 				push @flag, $flag;
 			}
 		}
-	
-		push @param, "$interface";
-		push @param, "$address";
-	        push @param, "$netmask";
-	        push @param, "$state";
+		
+		if ($interface) {
+			push @param, "$interface";
+		}
+		if ($address) {
+			push @param, "$address";
+	        }
+		if ($address) {
+			push @param, "$netmask";
+		}
+		if ($address) {
+	        	push @param, "$state";
+		}
+		foreach my $ip (@$xparam) {
+			push @param, $ip;
+		}
 
 		$acmd{'CMD'} = "ifconfig";
 		$acmd{'FLAG'} = \@flag;
@@ -128,7 +149,7 @@ sub end_element {
 			$acmd{'ENV_VARS'} = $self->{'ENV_VARS'};
 		}
 		my $cmd = $self->amin_command(\%acmd);
-	        # die Dumper(@param);
+		
 		if ($cmd->{STATUS} != 1) {
 			$self->{Spec}->{amin_error} = "red";
 			my $text = "Could not set $address on $interface. Reason: $cmd->{ERR}";

@@ -6,10 +6,12 @@ package Amin::Command::Mv;
 #or see the following website http://projectamin.org.
 
 use strict;
+use warnings;
 use vars qw(@ISA);
 use Amin::Command::Move;
 
 @ISA = qw(Amin::Command::Move);
+
 
 sub version {
 	return "1.0";

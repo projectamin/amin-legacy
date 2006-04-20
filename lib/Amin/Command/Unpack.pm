@@ -1,9 +1,14 @@
 package Amin::Command::Unpack;
 
+#LICENSE:
+
+#Please see the LICENSE file included with this distribution 
+#or see the following website http://projectamin.org.
+
 use strict;
+use warnings;
 use vars qw(@ISA);
 use Amin::Elt;
-use Cwd;
 
 @ISA = qw(Amin::Elt);
 
@@ -12,8 +17,11 @@ my (%attrs, $cmd, $OUT);
 sub start_element {
 	my ($self, $element) = @_;
 	%attrs = %{$element->{Attributes}};
+	if (!$attrs{'{}name'}->{'Value'}) {
+		$attrs{'{}name'}->{'Value'} = "";
+	}
 	$self->attrs(%attrs);
-	if ($element->{LocalName} eq "command") {
+	if (($element->{Prefix} eq "amin") && ($element->{LocalName} eq "command") && ($attrs{'{}name'}->{Value} eq "unpack")) {
 		$self->command($attrs{'{}name'}->{Value});
 	}
 	$self->element($element);
@@ -26,8 +34,8 @@ sub characters {
 	$data = $self->fix_text($data);
 	my $attrs = $self->{"ATTRS"};
 	my $element = $self->{"ELEMENT"};
-
-	if ($data ne "") {
+	my $command = $self->command;
+	if (($command eq "unpack") && ($data ne "")) {
 		if ($element->{LocalName} eq "param") {
 			if ($attrs{'{}name'}->{Value} eq "archive") {
 				$self->archive($data);
@@ -43,13 +51,23 @@ sub characters {
 sub end_element {
 	my ($self, $element) = @_;
 
-	if ($element->{LocalName} eq "command") {
+	if (($element->{LocalName} eq "command") && ($self->command eq "unpack")) {
 	
 	my $log = $self->{Spec}->{Log};
 	my $archive = $self->{'ARCHIVE'};
 	my $target = $self->{'TARGET'};
 	my $dir;
-        if (! -f $archive) {
+        
+	my (@aparam, @aflag, %archive);
+	$archive{'CMD'} = "pwd";
+	$archive{'PARAM'} = \@aparam;
+	push @aflag, "-L";
+	$archive{'FLAG'} = \@aflag;
+	my $arcmd = $self->amin_command(\%archive);
+	my $ardir = $arcmd->{OUT};
+	
+	
+	if (! -f $archive) {
 		$self->{Spec}->{amin_error} = "red";
 		my $text = "Unable to unpack $archive. Reason: No such file";
 		$self->text($text);
@@ -58,10 +76,8 @@ sub end_element {
 		return;
         }
 	if (($archive =~ /\.tar\.gz$/) || ($archive =~ /\.tgz$/)) {
-
 		if ($archive =~ /^.\//) {
-			$dir = cwd();
-			$archive = $dir . "/" . $archive;
+			$archive = $ardir . "/" . $archive;
 		}
 		if (! chdir $target) {
 			$self->{Spec}->{amin_error} = "red";
@@ -75,7 +91,7 @@ sub end_element {
 
 		my (%acmd, @flag, @param);
 
-		push @flag, "-xvzf";
+		push @flag, "-xzf";
 		push @param, $archive;
 
 		$acmd{'CMD'} = "tar";
@@ -98,10 +114,8 @@ sub end_element {
 		}
 		
 	} elsif ($archive =~ /\.tar\.bz2$/) {
-
 		if ($archive =~ /^.\//) {
-			$dir = cwd();
-			$archive = $dir . "/" . $archive;
+			$archive = $ardir . "/" . $archive;
 		}
 		if (! chdir $target) {
 			$self->{Spec}->{amin_error} = "red";
@@ -122,7 +136,7 @@ sub end_element {
 		$acmd{'FLAG'} = "";
 
 		my %bcmd;
-		push @flag, "xv";
+		push @flag, "-x";
 		$bcmd{'CMD'} = "tar";
 		$bcmd{'FLAG'} = \@flag;
 		$bcmd{'PARAM'} = "";
@@ -147,14 +161,12 @@ sub end_element {
 
 
         } elsif ($archive =~ /\.gz$/) {
-
-                my $basename = $archive;
+		my $basename = $archive;
                 $basename =~ s/\.gz$//;
                 $basename =~ s/.*\///;
 
 		if ($archive =~ /^.\//) {
-			$dir = cwd();
-			$archive = $dir . "/" . $archive;
+			$archive = $ardir . "/" . $archive;
 		}
 		if (! chdir $target) {
 			$self->{Spec}->{amin_error} = "red";
@@ -195,14 +207,12 @@ sub end_element {
 		}
 
         } elsif ($archive =~ /\.bz2$/) {
-
-                my $basename = $archive;
+		my $basename = $archive;
                 $basename =~ s/\.bz2$//;
                 $basename =~ s/.*\///;
 
 		if ($archive =~ /^.\//) {
-			$dir = cwd();
-			$archive = $dir . "/" . $archive;
+			$archive = $ardir . "/" . $archive;
 		}
 		if (! chdir $target) {
 			$self->{Spec}->{amin_error} = "red";

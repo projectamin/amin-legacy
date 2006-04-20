@@ -6,6 +6,7 @@ package Amin::Command::Move;
 #or see the following website http://projectamin.org.
 
 use strict;
+use warnings;
 use vars qw(@ISA);
 use Amin::Elt;
 
@@ -15,9 +16,14 @@ my %attrs;
 sub start_element {
 	my ($self, $element) = @_;
 	%attrs = %{$element->{Attributes}};
+	if (!$attrs{'{}name'}->{'Value'}) {
+		$attrs{'{}name'}->{'Value'} = "";
+	}
 	$self->attrs(%attrs);
-	if ($element->{LocalName} eq "command") {
+	if (($element->{Prefix} eq "amin") && ($element->{LocalName} eq "command")) {
+		if (($attrs{'{}name'}->{Value} eq "move") || ($attrs{'{}name'}->{Value} eq "mv")) {
 		$self->command($attrs{'{}name'}->{Value});
+	}
 	}
 	$self->element($element);
 	$self->SUPER::start_element($element);
@@ -29,7 +35,8 @@ sub characters {
 	$data = $self->fix_text($data);
 	my $attrs = $self->{"ATTRS"};
 	my $element = $self->{"ELEMENT"};
-
+	my $command = $self->command;
+	if (($command eq "move") || ($command eq "mv")) {
 	if ($data ne "") {
 		if ($element->{LocalName} eq "shell") {
 			if ($attrs{'{}name'}->{Value} eq "dir") {
@@ -56,13 +63,18 @@ sub characters {
 			}
 		}
 	}
+	}
 	$self->SUPER::characters($chars);
 }
 
 sub end_element {
 	my ($self, $element) = @_;
-
+	my $command = $self->command;
+	if (!$command) {
+		$command = "";
+	}
 	if ($element->{LocalName} eq "command") {
+	if (($command eq "mv") || ($command eq "move")) {
 		my $dir = $self->{'DIR'};
 		my $source = $self->{'SOURCE'};
 		my $target = $self->{'TARGET'};
@@ -74,6 +86,7 @@ sub end_element {
 		my $log = $self->{Spec}->{Log};
 
 		foreach my $ip (@$xflag){
+			if (!$ip) {next;};
 			if (($ip =~ /^-/) || ($ip =~ /^--/)) {
 				push @flag, $ip;
 			} else {	
@@ -142,6 +155,9 @@ sub end_element {
 		$self->{TARGET} = undef;
 		$self->{SOURCE} = [];
 		$self->SUPER::end_element($element);
+	} else {
+		$self->SUPER::end_element($element);
+	}
 	} else {
 		$self->SUPER::end_element($element);
 	}

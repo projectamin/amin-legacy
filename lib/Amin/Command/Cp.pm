@@ -6,10 +6,12 @@ package Amin::Command::Cp;
 #or see the following website http://projectamin.org.
 
 use strict;
+use warnings;
 use vars qw(@ISA);
 use Amin::Command::Copy;
 
 @ISA = qw(Amin::Command::Copy);
+
 
 sub version {
 	return "1.0";

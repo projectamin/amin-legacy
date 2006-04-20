@@ -6,6 +6,7 @@ package Amin::Command::Mkdir;
 #or see the following website http://projectamin.org.
 
 use strict;
+use warnings;
 use vars qw(@ISA);
 use Amin::Elt;
 
@@ -15,8 +16,11 @@ my (%attrs, @target);
 sub start_element {
 	my ($self, $element) = @_;
 	%attrs = %{$element->{Attributes}};
+	if (!$attrs{'{}name'}->{'Value'}) {
+		$attrs{'{}name'}->{'Value'} = "";
+	}
 	$self->attrs(%attrs);
-	if ($element->{LocalName} eq "command") {
+	if (($element->{Prefix} eq "amin") && ($element->{LocalName} eq "command") && ($attrs{'{}name'}->{Value} eq "mkdir")) {
 		$self->command($attrs{'{}name'}->{Value});
 	}
 	$self->element($element);
@@ -30,8 +34,8 @@ sub characters {
 	$data = $self->fix_text($data);
 	my $attrs = $self->{"ATTRS"};
 	my $element = $self->{"ELEMENT"};
-
-	if ($data ne "") {
+	my $command = $self->command;
+	if (($command eq "mkdir") && ($data ne "")) {
 		if ($element->{LocalName} eq "param") {
 			my @things = $data =~ m/([\*\+\.\w=\/-]+|'[^']+')\s*/g;
 			foreach (@things) {
@@ -52,12 +56,11 @@ sub characters {
 			}
 		}
 		if ($element->{LocalName} eq "flag") {
-			if (($attrs{'{}name'}->{Value} eq "mode") || 
-			($attrs{'{}name'}->{Value} eq "m")) {
-				$self->mode($data);
-			}
 			if ($attrs{'{}name'}->{Value} eq "") {
 				$self->flag(split(/\s+/, $data));
+			} elsif (($attrs{'{}name'}->{Value} eq "mode") || 
+			($attrs{'{}name'}->{Value} eq "m")) {
+				$self->mode($data);
 			}
 		}
 	}
@@ -67,7 +70,7 @@ sub characters {
 sub end_element {
 	my ($self, $element) = @_;
 
-	if ($element->{LocalName} eq "command") {
+	if (($element->{LocalName} eq "command") && ($self->command eq "mkdir")) {
 		my $mode = $self->{'MODE'};
 		my $dir = $self->{'DIR'};
 		my $target = $self->{'TARGET'};
@@ -79,10 +82,11 @@ sub end_element {
 		
 		my $log = $self->{Spec}->{Log};
 		
-		my $state;
+		my $state = 0;
 		foreach my $ip (@$xflag){
+			if (!$ip) {next;};
 			if (($ip =~ /-/) || ($ip =~ /--/)) {
-				push @flag, $flag;
+				push @flag, $ip;
 			} else {	
 				if ($state == 0) {
 					$flag = "-" . $ip;
@@ -143,8 +147,17 @@ sub end_element {
 			return;
 		}
 
-		my $text = "Making directories in $dir (perm: =";
-		$text .= "$mode" || "default";
+		my $text;
+		if ($dir) {
+			$text = "Making directories in $dir (perm: =";
+		} else {
+			$text = "Making directories (perm: =";
+		}
+		if ($mode) {
+			$text .= "$mode" 
+		} else {
+			$text .= "default";
+		}
 	        $text .= "):";
 	        $text .= join (", ", @target);
 		$self->text($text);

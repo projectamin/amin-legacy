@@ -6,6 +6,7 @@ package Amin::Command::System_command;
 #or see the following website http://projectamin.org.
 
 use strict;
+use warnings;
 use vars qw(@ISA);
 use Amin::Elt;
 
@@ -15,8 +16,11 @@ my %attrs;
 sub start_element {
 	my ($self, $element) = @_;
 	%attrs = %{$element->{Attributes}};
+	if (!$attrs{'{}name'}->{'Value'}) {
+		$attrs{'{}name'}->{'Value'} = "";
+	}
 	$self->attrs(%attrs);
-	if ($element->{LocalName} eq "command") {
+	if (($element->{Prefix} eq "amin") && ($element->{LocalName} eq "command") && ($attrs{'{}name'}->{Value} eq "system_command")) {
 		$self->command($attrs{'{}name'}->{Value});
 	}
 	$self->element($element);
@@ -27,10 +31,13 @@ sub characters {
 	my ($self, $chars) = @_;
 	my $data = $chars->{Data};
 	$data = $self->fix_text($data);
-	my $attrs = $self->{"ATTRS"};
+	my $attrs = $self->attrs;
 	my $element = $self->{"ELEMENT"};
-	
-	if ($data ne "") {
+	my $command = $self->command;
+	if (!$command) {
+		$command = "";
+	}
+	if (($command eq "system_command") && ($data ne "")) {
 		if ($element->{LocalName} eq "param") {
 			if ($attrs{'{}name'}->{Value} eq "basename") {
 				$self->basename($data);
@@ -68,8 +75,9 @@ sub characters {
 sub end_element {
 	my ($self, $element) = @_;
 
-	if ($element->{LocalName} eq "command") {
-
+	if (($element->{LocalName} eq "command") && ($self->command eq "system_command")) {
+		#reset the command
+		#$self->command("");
 		my $basename = $self->{'BASENAME'};
 		my $dir = $self->{'DIR'};
 		my $xparam = $self->{'PARAM'};
@@ -79,6 +87,7 @@ sub end_element {
 		my $log = $self->{Spec}->{Log};
 
 		foreach my $ip (@$xflag){
+			if (!$ip) {next;};
 			if (($ip =~ /^-/) || ($ip =~ /^--/)) {
 				push @flag, $ip;
 			} else {	
@@ -91,6 +100,7 @@ sub end_element {
 			push @param, $ip;
 		}
 
+		if ($dir) {
 		if (! chdir $dir) {
 			$self->{Spec}->{amin_error} = "red";
 			my $text = "Unable to change directory to $dir. Reason: $!";
@@ -100,7 +110,7 @@ sub end_element {
 			$self->SUPER::end_element($element);
 			return;
 		}
-
+		}
 
 		my (%acmd, %bcmd, $cmd);
 		if ($special) {
@@ -124,6 +134,8 @@ sub end_element {
 			}
 			$cmd = $self->amin_command(\%acmd);
 		}
+		
+		
 		if ($cmd->{STATUS} != 0) {
 			$self->{Spec}->{amin_error} = "red";
 			my $text = "Unable to execute $basename in $dir. Reason: $cmd->{ERR}";
@@ -137,7 +149,12 @@ sub end_element {
 			return;
 		}
 
-		my $text = "Executing $basename in $dir";
+		my $text;
+		if ($dir) {
+			$text = "Executing $basename in $dir";
+		} else {
+			$text = "Executing $basename";
+		}
 		$self->text($text);
 		$log->success_message($text);
 		if ($cmd->{OUT}) {

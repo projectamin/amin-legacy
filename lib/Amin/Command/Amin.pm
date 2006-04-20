@@ -6,6 +6,7 @@ package Amin::Command::Amin;
 #or see the following website http://projectamin.org.
 
 use strict;
+use warnings;
 use vars qw(@ISA);
 use Amin::Elt;
 
@@ -16,7 +17,7 @@ sub start_element {
 	my ($self, $element) = @_;
 	%attrs = %{$element->{Attributes}};
 	$self->attrs(%attrs);
-	if ($element->{LocalName} eq "command") {
+	if (($element->{Prefix} eq "amin") && ($element->{LocalName} eq "command") && ($attrs{'{}name'}->{Value} eq "amin")) {
 		$self->command($attrs{'{}name'}->{Value});
 	}
 	$self->element($element);
@@ -29,8 +30,8 @@ sub characters {
 	my $element = $self->element;
 	my $attrs = $self->{"ATTRS"};
 	$data = $self->fix_text($data);
-
-	if ($data ne "") {
+	my $command = $self->command;
+	if (($command eq "amin") && ($data ne "")) {
 		if ($element->{LocalName} eq "param") {
 			if ($attrs{'{}name'}->{Value} eq "version") {
 				$self->iversion($data);
@@ -43,7 +44,7 @@ sub characters {
 
 sub end_element {
 	my ($self, $element) = @_;
-	if ($element->{LocalName} eq "command") {
+	if (($element->{LocalName} eq "command") && ($self->command eq "amin")) {
 		my $log = $self->{Spec}->{Log};
 		my $version = $self->iversion;
 		chomp $version;

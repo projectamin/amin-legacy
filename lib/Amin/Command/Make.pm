@@ -6,6 +6,7 @@ package Amin::Command::Make;
 #or see the following website http://projectamin.org.
 
 use strict;
+use warnings;
 use vars qw(@ISA);
 use Amin::Elt;
 
@@ -15,8 +16,11 @@ my %attrs;
 sub start_element {
 	my ($self, $element) = @_;
 	%attrs = %{$element->{Attributes}};
+	if (!$attrs{'{}name'}->{'Value'}) {
+		$attrs{'{}name'}->{'Value'} = "";
+	}
 	$self->attrs(%attrs);
-	if ($element->{LocalName} eq "command") {
+	if (($element->{Prefix} eq "amin") && ($element->{LocalName} eq "command") && ($attrs{'{}name'}->{Value} eq "make")) {
 		$self->command($attrs{'{}name'}->{Value});
 	}
 	$self->element($element);
@@ -27,10 +31,10 @@ sub characters {
 	my ($self, $chars) = @_;
 	my $data = $chars->{Data};
 	$data = $self->fix_text($data);
-	my $attrs = $self->{"ATTRS"};
+	my $attrs = $self->attrs;
 	my $element = $self->{"ELEMENT"};
-
-	if ($data ne "") {
+	my $command = $self->command;
+	if (($command eq "make") && ($data ne "")) {
 		if ($element->{LocalName} eq "shell") {
 			if ($attrs{'{}name'}->{Value} eq "dir") {
 				$self->dir($data);
@@ -62,7 +66,7 @@ sub characters {
 sub end_element {
 	my ($self, $element) = @_;
 
-	if ($element->{LocalName} eq "command") {
+	if (($element->{LocalName} eq "command") &&  ($self->command eq "make")) {
 		my $dir = $self->{'DIR'};
 		my $param = $self->{'PARAM'};
 		my $xflag = $self->{'FLAG'};
@@ -72,6 +76,7 @@ sub end_element {
 		my ($flag, @flag, @param);
 
 		foreach my $ip (@$xflag){
+			if (!$ip) {next;};
 			if (($ip =~ /^-/) || ($ip =~ /^--/)) {
 				push @flag, $ip;
 			} else {	

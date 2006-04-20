@@ -6,8 +6,10 @@ package Amin::Command::Route;
 #or see the following website http://projectamin.org.
 
 use strict;
+use warnings;
 use vars qw(@ISA);
 use Amin::Elt;
+
 
 @ISA = qw(Amin::Elt);
 my %attrs;
@@ -15,8 +17,11 @@ my %attrs;
 sub start_element {
 	my ($self, $element) = @_;
 	%attrs = %{$element->{Attributes}};
+	if (!$attrs{'{}name'}->{'Value'}) {
+		$attrs{'{}name'}->{'Value'} = "";
+	}
 	$self->attrs(%attrs);
-	if ($element->{LocalName} eq "command") {
+	if (($element->{Prefix} eq "amin") && ($element->{LocalName} eq "command") && ($attrs{'{}name'}->{Value} eq "route")) {
 		$self->command($attrs{'{}name'}->{Value});
 	}
 	$self->element($element);
@@ -29,8 +34,11 @@ sub characters {
 	$data = $self->fix_text($data);
 	my $attrs = $self->{"ATTRS"};
 	my $element = $self->{"ELEMENT"};
-	
-	if ($data ne "") {
+	my $command = $self->command;
+	if (!$command) {
+		$command = "";
+	}
+	if (($command eq "route") && ($data ne "")) {
 		if ($element->{LocalName} eq "shell") {
 			if ($attrs{'{}name'}->{Value} eq "env") {
 				$self->env_vars($data);
@@ -75,15 +83,15 @@ sub characters {
 sub end_element {
 	my ($self, $element) = @_;
 
-	if ($element->{LocalName} eq "command") {
+	if (($element->{LocalName} eq "command") && ($self->command eq "route")) {
 
 		my $dir = $self->{'DIR'};
-		my $interface = $self->{'INTERFACE'};
-		my $address = $self->{'ADDRESS'};
-		my $netmask = $self->{'NETMASK'};
-	        my $state = $self->{'STATE'};
-	        my $metric = $self->{'METRIC'};
-	        my $type = $self->{'TYPE'};
+		my $interface = $self->{'INTERFACE'} || "";
+		my $address = $self->{'ADDRESS'} || "";
+		my $netmask = $self->{'NETMASK'} || "";
+	        my $state = $self->{'STATE'} || "";
+	        my $metric = $self->{'METRIC'} || "";
+	        my $type = $self->{'TYPE'} || "";
 		my $flag = $self->{'FLAG'};
 		
 		my (%acmd, @flag, @param);

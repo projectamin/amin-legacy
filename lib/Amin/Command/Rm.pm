@@ -6,6 +6,7 @@ package Amin::Command::Rm;
 #or see the following website http://projectamin.org.
 
 use strict;
+use warnings;
 use vars qw(@ISA);
 use Amin::Command::Remove;
 

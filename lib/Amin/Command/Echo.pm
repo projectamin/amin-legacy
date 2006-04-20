@@ -6,6 +6,7 @@ package Amin::Command::Echo;
 #or see the following website http://projectamin.org.
 
 use strict;
+use warnings;
 use vars qw(@ISA);
 use Amin::Elt;
 
@@ -16,8 +17,11 @@ sub start_element {
 	my ($self, $element) = @_;
 	%attrs = %{$element->{Attributes}};
 	$self->attrs(%attrs);
-	if ($element->{LocalName} eq "command") {
-		$self->command($attrs{'{}name'}->{Value});
+	if (($element->{Prefix} eq "amin") && ($element->{LocalName} eq "command") && ($attrs{'{}name'}->{Value} eq "echo")) {
+			$self->command($attrs{'{}name'}->{Value});
+	}
+	if (!$attrs{'{}name'}->{'Value'}) {
+		$attrs{'{}name'}->{'Value'} = "";
 	}
 	$self->element($element);
 	$self->SUPER::start_element($element);
@@ -27,10 +31,10 @@ sub characters {
 	my ($self, $chars) = @_;
 	my $data = $chars->{Data};
 	$data = $self->fix_text($data);
-	my $attrs = $self->{"ATTRS"};
+	my $attrs = $self->{ATTRS};
 	my $element = $self->{"ELEMENT"};
-	
-	if ($data ne "") {
+	my $command = $self->command;
+	if (($command eq "echo") && ($data ne "")) {
 		if ($element->{LocalName} eq "shell") {
 			if ($attrs{'{}name'}->{Value} eq "env") {
 				$self->env_vars($data);
@@ -55,9 +59,8 @@ sub characters {
 
 sub end_element {
 	my ($self, $element) = @_;
-
-	if ($element->{LocalName} eq "command") {
-
+	
+	if (($element->{LocalName} eq "command") && ($self->command eq "echo")) {
 		my $dir = $self->{'DIR'};
 		my $xflag = $self->{'FLAG'};
 		my $xparam = $self->{'PARAM'};
@@ -78,8 +81,9 @@ sub end_element {
 			}
 		}
 		
-		my $state;
+		my $state = 0;
 		foreach my $ip (@$xflag){
+			if (!$ip) {next;};
 			if (($ip =~ /^-/) || ($ip =~ /^--/)) {
 				push @flag, $ip;
 			} else {	
@@ -140,7 +144,7 @@ sub end_element {
 		
 		$self->{DIR} = undef;
 		$self->{FLAG} = [];
-		$self->{PARAM} = [];
+		$self->{PARAM} = ();
 		$self->{COMMAND} = undef;
 		$self->{ATTRS} = undef;
 		$self->{ENV_VARS} = [];
@@ -149,6 +153,12 @@ sub end_element {
 	} else {
 		$self->SUPER::end_element($element);
 	}
+}
+
+sub eattrs {
+	my $self = shift;
+	$self->{EATTRS} = shift if @_;
+	return $self->{EATTRS};
 }
 
 sub version {
