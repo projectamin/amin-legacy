@@ -80,7 +80,7 @@ sub end_document {
 			$line = "end";
 			last;
 		} else {
-			$line .= $_;
+			$line .= "$_";
 		}
 	}
 	$self->{Spec}->{Buffer_End} = $line;
