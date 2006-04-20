@@ -42,7 +42,7 @@ sub start_element {
 	my %attrs = %{$element->{Attributes}};
 	my $log = $self->{Spec}->{Log};
 	
-	if ($element->{LocalName} eq "cond") {
+	if (($element->{Prefix} eq "amin") && ($element->{LocalName} eq "cond") && ($attrs{'{}name'}->{Value} eq "arch")) {
 		$state = 1;
 		$log->driver_start_element($element->{Name}, %attrs);
 	}
@@ -69,7 +69,7 @@ sub characters {
 	my $data = $chars->{Data};
 	my $log = $self->{Spec}->{Log};
 	$data = $self->fix_text($data);
-	if ($data ne "") {
+	if (($self->command eq "arch") && ($data ne "")) {
 		if ($state == 1) {
 			$log->driver_characters($data);
 		} else {
@@ -83,7 +83,7 @@ sub end_element {
 	my ($self, $element) = @_;
 	my $log = $self->{Spec}->{Log};
 	
-	if ($element->{LocalName} eq "cond") {
+	if (($element->{LocalName} eq "cond") && ($self->command eq "arch")) {
 		$state = 0;
 		$self->SUPER::end_element($element);
 	}
