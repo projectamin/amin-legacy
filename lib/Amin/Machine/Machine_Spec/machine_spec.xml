@@ -531,4 +531,28 @@
 		<download>http://adistro.com/filters/ainit/stage.xml</download>
 		<version>1.0</version>
 	</filter>
+	<filter name="Ainit::Command::Kill">
+		<element>command</element>
+		<namespace>ainit</namespace>
+		<name>kill</name>
+		<position>middle</position>
+		<download>http://adistro.com/filters/ainit/command/kill.xml</download>
+		<version>1.0</version>
+	</filter>
+	<filter name="Ainit::Command::Killall">
+		<element>command</element>
+		<namespace>ainit</namespace>
+		<name>killall</name>
+		<position>middle</position>
+		<download>http://adistro.com/filters/ainit/command/killall.xml</download>
+		<version>1.0</version>
+	</filter>
+	<filter name="Ainit::Command::Status">
+		<element>command</element>
+		<namespace>ainit</namespace>
+		<name>status</name>
+		<position>middle</position>
+		<download>http://adistro.com/filters/ainit/command/status.xml</download>
+		<version>1.0</version>
+	</filter>
 </machine>
