@@ -11,6 +11,7 @@ use vars qw(@ISA);
 use Amin::Machine::Handler::Empty;
 use Amin::Elt;
 
+
 @ISA = qw(Amin::Elt);
 
 sub start_element {
@@ -18,18 +19,23 @@ sub start_element {
 	my $spec = $self->{Spec};
 	my %attrs = %{$element->{Attributes}};
 	my $log = $self->{Spec}->{Log};
+	if (!$attrs{'{}name'}->{'Value'}) {
+		$attrs{'{}name'}->{'Value'} = "";
+	}
 	
 	my $fl = $spec->{Filter_List};
 	foreach (keys %$fl) {
 		if ($element->{LocalName} eq $fl->{$_}->{element})  {
 		if (($attrs{'{}name'}->{Value} eq $fl->{$_}->{name}) || 
 		($element->{LocalName} eq $fl->{$_}->{name})) {
-			
+		if ($fl->{$_}->{namespace} eq $element->{Prefix}) {
 			if ($self->{Spec}->{amin_error}) {
 				#if there is an error reset handler to Empty
 				$self->set_handler( Amin::Machine::Handler::Empty->new(Handler => $spec->{Handler}, Spec => $spec) );
 			} else {
-				eval "require $fl->{$_}->{module}"; 
+				my $module = $fl->{$_}->{module};
+				eval "require $module"; 
+				
 				if ($@) {
 					$self->{Spec}->{amin_error} = "red";
 					my $text = "Dispatcher failed could not load $_->{module}. Reason $@";
@@ -39,6 +45,7 @@ sub start_element {
 					$self->set_handler($schain);
 				}
 			}	
+		}
 		}
 		}
 	}
