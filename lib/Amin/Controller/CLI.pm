@@ -192,6 +192,8 @@ item.
 
 =item *adminlist
 
+=item *adminlist_map
+
 =back
 
 =back
