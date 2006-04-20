@@ -30,7 +30,6 @@ sub characters {
 	my $data = $chars->{Data};
 	my $element = $self->{"ELEMENT"};
 	$data = $self->fix_text($data);
-	my $element = $self->{"ELEMENT"};
 	
 	if ($element->{LocalName} eq "uri") {
 		if ($data ne "") {
