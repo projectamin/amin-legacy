@@ -6,6 +6,11 @@ package Amin::Machine::Profile::Checker;
 #or see the following website http://projectamin.org.
 
 use strict;
+use vars qw(@ISA);
+use Amin::Elt;
+
+@ISA = qw(Amin::Elt);
+
 my $return = 0;
 sub start_element {
 	my ($self, $element) = @_;
@@ -19,7 +24,7 @@ sub start_element {
 
 sub end_document {
 	my $self = shift;
-	return \$return;
+	return $return;
 }
 
 1;
