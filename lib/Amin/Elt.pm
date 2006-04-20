@@ -4,6 +4,7 @@ use strict;
 use IPC::Run qw( run harness);
 use XML::SAX::Base;
 use vars qw(@ISA);
+use warnings;
 
 @ISA = qw(XML::SAX::Base);
 
@@ -18,7 +19,10 @@ sub attrs {
 sub command {
         my $self = shift;
         $self->{COMMAND} = shift if @_;
-        return $self->{COMMAND};
+       	if (!$self->{COMMAND}) {
+		$self->{COMMAND} = "";
+	}
+	return $self->{COMMAND};
 }
 
 #default <amin:param>
@@ -90,16 +94,20 @@ sub text {
 
 sub amin_command {
 
-	my ($self, $cmd, $special, $cmd2) = @_;
-	my $debug = $self->{Spec}->{Filter_Param};
+	my $self = shift;
+	my $cmd = shift;
+	my $special = shift || "";
+	my $cmd2 = shift || ();
+	my $debug = $self->{Spec}->{Filter_Param} || "";
+	
 	my ($in, $out, $err, $status, $command, $flag, $param, @cmd2, $flag2, $param2, @cmd);
 	if ($special ne "shell") {
 		$command = $cmd->{'CMD'};
-		$flag = $cmd->{'FLAG'};
-		$param = $cmd->{'PARAM'};
-		@cmd2 = $cmd2->{'CMD'};
-		$flag2 = $cmd2->{'FLAG'};
-		$param2 = $cmd2->{'PARAM'};
+		$flag = $cmd->{'FLAG'} || "";
+		$param = $cmd->{'PARAM'} || "";
+		@cmd2 = $cmd2->{'CMD'} || [];
+		$flag2 = $cmd2->{'FLAG'} || "";
+		$param2 = $cmd2->{'PARAM'} || "";
 
 		push @cmd, $command;
 		if ($flag ne "") {
@@ -120,7 +128,7 @@ sub amin_command {
 			}
 		}
 
-		if ($cmd2) {
+		if ($cmd2 ne "") {
 
 			if ($flag2 ne "") {
 				foreach (@$flag2) {
@@ -151,19 +159,19 @@ sub amin_command {
 	}
 
 	if ($special eq "|") {
-		my $h = harness (\@cmd, $special, \@cmd2), \$in, \$out, \$err;
+		my $h = harness \@cmd, $special, \@cmd2, \$in, \$out, \$err;
 		run $h ;
 		$status = $h->result;
 	} elsif ($special eq ">") {
 		#this should be changed cause its not right for
 		#@cmd > @cmd2
 		my $file = shift @cmd2;
-		my $h = harness (\@cmd, $special, $file), \$in, \$out, \$err;
+		my $h = harness \@cmd, $special, $file, \$in, \$out, \$err;
 		run $h ;
 		$status = $h->result;
 
 	} elsif ($special eq "shell") {
-		my $h = harness ([ "sh", "-c", $cmd ]), \$in, \$out, \$err;
+		my $h = harness [ "sh", "-c", $cmd ], \$in, \$out, \$err;
 		run $h ;
 		$status = $h->result;
 	} else {
