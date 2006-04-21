@@ -31,8 +31,11 @@ my %machine_filters;
 my %control;
 my $begin = 0;
 my $stage = 0;
+my $p = 0;
 my @parent;
 my %attrs;
+my $pname;
+my $pstage;
 
 sub start_document {
 	my $self = shift;
@@ -89,67 +92,43 @@ sub start_element {
 	%attrs = %{$element->{Attributes}};
 	$self->attrs(%attrs);
 	
-	#need to process this element
+	#let's process this element
 	my $stuff = $spec->{Filter};
 	foreach (keys %$stuff) {
 		if ($_ eq "") { next; }
+		if (!$attrs{'{}name'}->{'Value'}) {
+			$attrs{'{}name'}->{'Value'} = "";
+		}
 		#check if there is a machine_filters element 
 		#corresponding with this start_element
 		if ($stuff->{$_}->{'element'} eq $element->{'LocalName'}) {
+		
 		if (($stuff->{$_}->{'name'} eq $attrs{'{}name'}->{'Value'}) 
 		|| ($stuff->{$_}->{'name'} eq $element->{'LocalName'} )) {
+		
 		if ($stuff->{$_}->{namespace} eq $element->{Prefix}) {
+		
+			#up the stage
+			$stage++;
+			
+			my %new;
+			#we found something, is it a begin filter?
 			if ($stuff->{$_}->{position} eq "begin") {
 				#begin and reset the parent
 				$begin = 1;
-				@parent = ();
-				$stuff->{$_}->{parent_name} = $stuff->{$_}->{element};
+				$new{parent_name} = $stuff->{$_}->{module};
+				$pname = $stuff->{$_}->{module};
+				$pstage = $stage;
 			}
 			if ($begin == 1) {
-				my $same = 0;
-				foreach my $lkids(@parent) {
-					#do a same filter check
-					if (($lkids eq $element->{'LocalName'}) || 
-					   ($lkids eq $attrs{'{}name'}->{'Value'})) {
-						$same = 1;
-					}
-				}
-				if ($same != 1) {
-					if ($stuff->{$_}->{'element'} ne $stuff->{$_}->{'parent_name'}) {
-						push @parent, $stuff->{$_}->{'name'};
-					}
-				}
+				$new{parent_name} = $pname;
+				$new{parent_stage} = $pstage;
 			}
-			#logic to add new element to %machine_filters or not
-			my $x = 0;
-			if (%machine_filters) {
-				#we already have some machine_filters
-				foreach my $filter (keys %machine_filters) {
-					if ($stuff->{$_}->{module} eq $machine_filters{$filter}->{module}) {
-						#found a match
-						$x = 1;
-						next;
-					}
-				}
-				if ($x != 1) {
-					#no match so far
-					#so add it to the %machine_filters list
-					#add in the stage
-					if ($begin != 1) {
-						$stage++;
-					} else {
-						$stage = $stage . "-" . $stuff->{$_}->{name};
-					}
-					$stuff->{$_}->{stage} = $stage;
-					$machine_filters{$stage} = $stuff->{$_};
-				}
-			} else {
-				#first filter
-				#add in the stage
-				$stage++;
-				$stuff->{$_}->{stage} = $stage;
-				$machine_filters{$stage} = $stuff->{$_};
+			my $hash = $stuff->{$_};
+			foreach my $keys (keys %$hash) {
+				$new{$keys} = $stuff->{$_}->{$keys};
 			}
+			$machine_filters{$stage} = \%new;
 		}
 		}
 		}
@@ -158,20 +137,16 @@ sub start_element {
 
 sub end_element {
 	my ($self, $element) = @_;
-	my $attrs = $self->{"ATTRS"};
+	#all this just to reset some stuff *sigh* :)
 	my $stuff = $spec->{Filter};
 	foreach (keys %$stuff) {
 		if ($_ eq "") { next; }
 		if ($stuff->{$_}->{namespace} eq $element->{Prefix}) {
+		if ($stuff->{$_}->{parent_name}) {
 		if ($stuff->{$_}->{parent_name} eq $element->{LocalName}) {
-			if ($stuff->{$_}->{'name'} eq $attrs{'{}name'}->{'Value'}) {
-				#reset parent name to be name="" not element
-				$stuff->{$_}->{parent_name} = $attrs{'{}name'}->{'Value'}; 
-			}
-			$begin = 0;
-			#this is right filter to add 
-			#the @parent to
-			$stuff->{$_}->{parent} = \@parent;
+			$pname = "";
+			$pstage = "";
+		}
 		}
 		}
 	}
@@ -194,14 +169,14 @@ sub end_document {
 				$lv = "noneamin";
 			}
 		}	
-		my $version;
-		if (!$lv) {
+		my $version = "";
+		if ($lv) {
 		if ($lv ne $machine_filters{$_}->{version}) {
 			$version = "bad";
 		}
-		}
 		if ($lv eq "noneamin") {
 			die "Your filter $machine_filters{$_}->{module} does not have a version subroutine. Please add one...";
+		}
 		}
 		if (($@) || ($version eq "bad")) {
 			if ($machine_filters{$_}->{'download'}) {
@@ -291,14 +266,25 @@ The spec is defined in one of four ways
 Example machine_spec.xml is shown in the XML section.
 
 After the $spec is defined, several things are done 
-with the resulting $spec. The machine_spec.xml may 
-have more or less filters available than what the 
-current profile.xml has inside. So we prune excess
-machine_spec filters and happily ignore profile filter
-requests this machine knows nothing about. This has
-the pleasant side effect, that you can control filter
-usage per Amin machine, by a xml file called machine_spec.xml
-at this uri over here. Think about it for a bit. 
+with the resulting $spec. 
+
+1. The machine_spec.xml may have more or less filters available 
+   than what the current profile.xml has inside. 
+   
+2. We prune the excess machine_spec.xml filters that are not in
+   the current profile being processed. 
+   
+3. Each filter presented in the profile, is added to the filterlist.
+   Each filter added also adds any special relationships, ie begin->middle
+   filters and those parent->child relationships in the xml. This allows 
+   for machine designers to customize the spec/relationships as they see
+   fit in their machines. :)
+   
+All this pruning etc. also has a pleasant side effect, that you can 
+control filter usage per Amin machine, by a xml file called 
+machine_spec.xml at this uri over here. Think about it for a bit. 
+Think about reconfiguring your xml admin app each time your machine
+processes......
 
 Don't want anyone to use 
 
@@ -335,11 +321,11 @@ will ignore all
  <amin:command name="mkdir"> 
 
 filter requests. Even if the Mkdir.pm filter is 
-installed on said system....
+installed on said system and present in the profile.
 
-After first round of $spec manipulation, we move 
+After the first round of $spec manipulation, we move 
 onto phase two. Phase two involves loading each 
-individual filter listed in the $spec. If the filter
+individual filter listed in the pruned $spec. If the filter
 is not available, this module looks at the filter's
 "download" setting and runs this as a new amin machine
 that tries to process the filter's download profile.
@@ -352,11 +338,12 @@ A bundle on the other hand is just a fancy package for
 a complete set of filters. Ex. Amin Command filters
 This allows you to have installation, and control on 
 two levels. One more generic(<bundle>) and one more 
-fine grained(<filter>).
+fine grained(<filter>). ***not implemented yet***
 
 If for some reason <download> is not available in 
 the machine_spec, we use some PAR tricks and see if
 Amin filter sets will provide the needed filter. 
+***not implemented yet***
 
 If all this fails and the filter, can not be loaded
 then this machine process can not complete and the
@@ -365,13 +352,14 @@ outputs.
 
 As each filter passes this load test, the filter's 
 position is looked at and the filter is added to 
-the approriate position array. 
+the approriate parent_stage.  
 
 A position for a filter is just it's location in a
 sax stream process. Typically most filters have a 
 position of "middle". They really don't care what
 comes before or after them. Nor do they care about
-filters and if they ran successfully or not.
+other filters and if they ran successfully or not.
+ie they are self contained units.....
 
 Complex commands like chroot or <amin:cond> do care
 about what position they are in relation to the filters
