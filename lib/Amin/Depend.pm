@@ -1,17 +1,22 @@
 package Amin::Depend;
 
+#LICENSE:
+
+#Please see the LICENSE file included with this distribution 
+#or see the following website http://projectamin.org.
+
 #Amin Depend
 use strict;
 use vars qw(@ISA);
-use XML::SAX::Base;
 use Amin;
 use Amin::Elt;
-use Amin::Profile::Checker;
+use Amin::Machine::Profile::Checker;
 
 use XML::SAX::Writer;
 use XML::Generator::PerlData;
 use XML::SAX::PurePerl;
-@ISA = qw(Amin::Elt XML::SAX::Base);
+
+@ISA = qw(Amin::Elt);
 
 my $state = 0;
 my $pass = 0;
@@ -25,7 +30,7 @@ sub start_element {
 	my %attrs = %{$element->{Attributes}};
 	my $log = $self->{Spec}->{Log};
 	
-	if ($element->{LocalName} eq "depend") {
+	if (($element->{Prefix} eq "amin") && ($element->{LocalName} eq "depend")) {
 		$self->SUPER::start_element($element);
 	} elsif ($element->{LocalName} eq "test") {
 		#instead of capturing the test xml, 
@@ -61,6 +66,7 @@ sub start_element {
 		} else {
 			#fail failed
 			$log->driver_start_element($element->{Name}, %attrs);
+		}
 	} else { 
 		#this is where pass, or fail do their thing
 		unless (($element->{LocalName} eq "depend") ||
@@ -82,7 +88,7 @@ sub characters {
 	my $data = $chars->{Data};
 	my $log = $self->{Spec}->{Log};
 	$data = $self->fix_text($data);
-	if ($data ne "") {
+	if (($self->command eq "depend") && ($data ne "")) {
 		if ($state == 1) {
 			#we are parsing test xml
 			#so parse a chunk
@@ -132,7 +138,7 @@ sub end_element {
 		#just checks for errors, if so it returns fail,
 		#if everything passes it returns pass.
 		
-		$h = Amin::Profile::Checker->new();
+		$h = Amin::Machine::Profile::Checker->new();
 		$p = XML::SAX::PurePerl->new(Handler => $h);
 		my $test = $p->parse_string($results);	
 		if ($test) {
@@ -184,7 +190,7 @@ amin 0.5.0
 
   ******AAAAATTTTTEEEENNNNNTTTTTIIIIIOOOOOOOONNNNN*******
   
-  THIS MODULE HAS NOT BEEN TESTED AND IS BROKEN!!!!!!
+  THIS MODULE HAS NOT BEEN TESTED AND SHOULD BE CONSIDERED BROKEN!!!!!!
   
 
   A reader class for an amin depend. Please look at the
