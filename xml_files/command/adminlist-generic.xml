@@ -3,6 +3,9 @@
      <amin:uri>file://amin/xml_files/command/amin.xml</amin:uri>
    </amin:profile>
    <amin:profile>
+     <amin:uri>file://amin/xml_files/command/mkdir.xml</amin:uri>
+   </amin:profile>
+   <amin:profile>
      <amin:uri>file://amin/xml_files/command/df.xml</amin:uri>
    </amin:profile>
    <amin:profile>
@@ -19,5 +22,8 @@
    </amin:profile>
    <amin:profile>
      <amin:uri>file://amin/xml_files/command/ldconfig.xml</amin:uri>
+   </amin:profile>
+   <amin:profile>
+     <amin:uri>file://amin/xml_files/command/rmdir.xml</amin:uri>
    </amin:profile>
 </amin:adminlist>
