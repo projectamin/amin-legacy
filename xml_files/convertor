@@ -18,7 +18,7 @@ if (!$search) {
 
 my $replace = "file:/$Bin";
 opendir(DIR, $Bin) or die "can't opendir $Bin: $!";
-while (defined($file = readdir(DIR))) {
+while (defined(my $file = readdir(DIR))) {
 	if ($file =~ /.xml/) {
 		my $xmlfile = $Bin . "/" . $file;
 		open (XML, "< $xmlfile");
@@ -33,3 +33,5 @@ while (defined($file = readdir(DIR))) {
 	}
 }
 closedir(DIR);
+
+print $replace;
