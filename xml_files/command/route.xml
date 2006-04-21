@@ -7,9 +7,11 @@
                 <amin:param name="metric">1</amin:param>
         </amin:command>
 
+	<!--
         <amin:command name="route">
                 <amin:param name="state">del</amin:param>
                 <amin:param name="type">default</amin:param>
         </amin:command>
+	-->
 </amin:profile>
 
