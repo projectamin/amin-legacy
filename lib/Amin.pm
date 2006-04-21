@@ -36,7 +36,7 @@ sub parse_adminlist {
 	
 	my $h = Amin::Machine::AdminList->new();
 	my $p = XML::SAX::PurePerl->new(Handler => $h);
-	my $adminlist = $p->parse_uri($adminlist);
+	$adminlist = $p->parse_uri($adminlist);
 	
 	#get/parse/load the adminlist/class map
 	#this is used for when people name="" their 
@@ -190,7 +190,7 @@ sub parse_uri {
 		$lout = $m->parse_uri($uri);
 	}
 	foreach (@$lout) {
-		$aout = $aout . $_;
+		$aout = $aout . "$_";
 	}
 	$self->results($aout);
 }
