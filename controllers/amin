@@ -8,7 +8,16 @@
 use Amin;
 use Amin::Controller::CLI;
 use Getopt::Long;
+
+use XML::SAX::PurePerl;
+use Amin::Controller::CLIOutput;
 use strict;
+
+
+
+
+
+
 
 my $cli = Amin::Controller::CLI->new();
 my $help = (<<END);
@@ -118,19 +127,28 @@ if (defined $cli->adminlist) {
 	$amin->parse_adminlist($cli->adminlist);
 	my $results = $amin->results;
 	foreach (@$results) {
-		print "$_\n";
+		my $h = Amin::Controller::CLIOutput->new();
+		my $p = XML::SAX::PurePerl->new(Handler => $h);
+		my $text = $p->parse_string($_);
+		print $text;
 	}
 } elsif (defined $cli->uri) {
 	$amin->parse_uri($cli->uri); 
 	my $results = $amin->results;
 	foreach (@$results) {
-		print "$_\n";
+		my $h = Amin::Controller::CLIOutput->new();
+		my $p = XML::SAX::PurePerl->new(Handler => $h);
+		my $text = $p->parse_string($_);
+		print $text;
 	}
 } elsif (defined $cli->profile) {
 	$amin->parse_string($cli->profile);
 	my $results = $amin->results;
 	foreach (@$results) {
-		print "$_\n";
+		my $h = Amin::Controller::CLIOutput->new();
+		my $p = XML::SAX::PurePerl->new(Handler => $h);
+		my $text = $p->parse_string($_);
+		print $text;
 	}
 } else {
 	print "nothing to parse\n";
