@@ -6,8 +6,10 @@ diag ("# I'm testing Amin version $Amin::VERSION\n");
 use Amin::Controller::CLIOutput;
 use XML::SAX::PurePerl;
 
+system ("chmod 755 ./xml_files/convertor");
 my $uri = `./xml_files/convertor`;
 chomp($uri);
+
 $uri = $uri . "/command/adminlist-main.xml";
 
 my $amin = Amin->new();
