@@ -18,6 +18,11 @@ sub start_element {
 	my ($self, $element) = @_;
 	%attrs = %{$element->{Attributes}};
 	$self->attrs(%attrs);
+	if (($element->{Prefix} eq "amin") && ($element->{LocalName} eq "download")) {
+		$self->command("download");
+	}
+
+	
 	$self->element($element);
 	$self->SUPER::start_element($element);
 }
@@ -28,34 +33,34 @@ sub characters {
 	$data = $self->fix_text($data);
 	my $attrs = $self->{"ATTRS"};
 	my $element = $self->{"ELEMENT"};
-
-	if ($attrs{'{}name'}->{Value} eq "uri") {
-		if ($data ne "") {
-			$self->uri($data);
+	
+	if (($self->command eq "download") && ($data ne "")) {
+		if (!$attrs{'{}name'}->{'Value'}) {
+			$attrs{'{}name'}->{'Value'} = "";
 		}
-	}
-	if ($attrs{'{}name'}->{Value} eq "file") {
-		if ($data ne "") {
+
+		if ($attrs{'{}name'}->{Value} eq "uri") {
+				$self->uri($data);
+		}
+		if ($attrs{'{}name'}->{Value} eq "file") {
 			$self->file($data);
 		}
-	}
-	if ($attrs{'{}name'}->{Value} eq "alt") {
-		if ($data ne "") {
+		if ($attrs{'{}name'}->{Value} eq "alt") {
 			$self->alt($data);
 		}
-	}
+	}	
+		
 	$self->SUPER::characters($chars);
 }
 
 sub end_element {
 	my ($self, $element) = @_;
 
-	if ($element->{LocalName} eq "download") {
+	if (($element->{LocalName} eq "download") && ($self->command eq "download")) {
 		
-		my $alt = "";
 		my $uri = $self->{'URI'};
 		my $file = $self->{'FILE'};
-		my $alt = $self->{'ALT'};
+		my $alt = $self->{'ALT'} || ();
 		my @alt;
 		my $log = $self->{Spec}->{Log};
 		unshift @$alt, $uri;	
