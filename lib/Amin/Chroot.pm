@@ -26,7 +26,8 @@ sub start_element {
         if ($element->{LocalName} eq "profile") {
 		$self->SUPER::start_element($element);
 	}
-	if ($element->{LocalName} eq "chroot") {
+	if (($element->{Prefix} eq "amin") && ($element->{LocalName} eq "chroot")) {
+		$self->command("chroot");
                 $pid = fork;
                 if ( ! chroot $dir ) {
                         print "Could not chroot to $dir";
@@ -50,7 +51,7 @@ sub end_element {
         my ($self, $element) = @_;
 	my $chroot;
 
-        if ($element->{LocalName} eq "chroot") {
+	if (($element->{LocalName} eq "chroot") && ($self->command eq "chroot")) {
                 #get out of chroot
                 $chroot = 1;
         }
