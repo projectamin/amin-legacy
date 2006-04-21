@@ -20,69 +20,11 @@ sub run {
 	my ($self, $profile, $type) = @_;
 	#build the machine
 	my $spec = $self->{Spec};
-	#deal with the filter_list
-	my $fl = $spec->{Filter_List};
-	
-	#deal with the end first
-	my $end;
-	foreach (keys %$fl) {
-		if ($fl->{$_}->{position} eq "end") {
-			if (!$end) {
-				$end = $fl->{$_}->{module}->new(Handler => $spec->{Handler}, Spec => $spec);
-			} else {
-				$end = $fl->{$_}->{module}->new(Handler => $end, Spec => $spec);
-			}
-		}
-	}
-	
-	#deal with the middle	
-	foreach (keys %$fl) {
-		if ($fl->{$_}->{position} eq "middle") {
-			my $middle;
-			if ($end) {
-				$middle = $fl->{$_}->{module}->new(Handler => $end, Spec => $spec);
-			} else {
-				$middle = $fl->{$_}->{module}->new(Handler => $spec->{Handler}, Spec => $spec);
-			}
-			$fl->{$_}->{chain} = $middle; 
-		}
-	}
-	
-	#deal with the beginning	
-	foreach (keys %$fl) {
-		if ($fl->{$_}->{parent}) {
-			my $parent = $fl->{$_}->{parent};
-			my $begin;
-			foreach my $child (@$parent) {
-				foreach my $filter (keys %$fl) {
-					my ($num, $lname) = split (/-/, $fl->{$filter}->{stage});
-					if (!$lname) {
-						next;
-					}
-					if ($lname eq $child) {
-					if ($num eq $_) {
-						#here is our kid
-						$begin = $fl->{$_}->{module}->new(
-						Handler =>$fl->{$filter}->{chain}, Spec =>$spec);
-					}
-					}
-					delete $fl->{$filter};
-					$fl->{$_}->{chain} = $begin; 
-				}
-			}
-		}
-	}
-	
-	#put our new wierd filter list back as the spec's Filter_List
-	$spec->{Filter_List} = $fl;
-	
-	
 	#add in the machine itself
 	my $machine = $spec->{Machine_Name}->new(Handler => $spec->{Handler}, Spec => $spec);
 	$spec->{Machine_Handler} = $machine;
 	#grab a new sax parser and parse this sucker
 	my $p = $spec->{Generator}->new(Handler => $machine, Spec => $spec);
-	
 	if ($type eq "uri") {
 		$p->parse_uri( $profile );
 	} else {
@@ -141,13 +83,9 @@ Amin::Machine run method.
 =item *parse_uri
 
 this method is called by Amin::Machines or your Machines 
-module. It accepts one argument, $uri and $type. 
+module. It accepts one argument $uri. 
 
 	$m->parse_uri($uri, $type);
-
-$type needs to be set to  	
-
-	my $type = "uri";
 
 this method will return the results from the 
 machine's run method. See below for the default 
@@ -155,28 +93,10 @@ Amin::Machine run method.
 	
 =item *run
 
-this method is one of the more important methods inside
-of the amin codebase. It's job is to take all the different
-spec pieces, and run the resulting machine. It does this 
-by building a filterlist in reverse. Since a normal sax
-chain is built in reverse we do the same and attach the 
-next filter in the filterlist as a handler in the chain.
-Eventually we get a complete list that looks like
+this method takes the $spec prepared by the machine type's
+spec machine filter and loads it into an amin machine. 
+This is the main routine that runs any amin machine type. 
 
-
-Generator->Machine_Name->Filters_Here->Handler
-
-Filters_Here can also have 
-
-Filters_Here_begin->Filters_Here_middle->Filters_Here_end
-
-as explained in Amin::Machine::Machine_Spec
-	
-otherwise all this method does is run the appropriate
-parse_uri or parse_string methods on the sax generator
-and get's the party started. Just use this method or 
-rewrite it if you don't like our party music.... :)
-   
 =back
 
 =cut
