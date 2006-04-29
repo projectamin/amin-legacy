@@ -53,8 +53,8 @@ sub new {
 			my %repeats;
 			foreach my $kid (keys %$fl) {
 				if ($fl->{$kid}->{parent_stage} == $_) {
-					if ($kid == $_) {
-						#this is the parent skip it
+					if ($kid == $_) { 
+						#this is the same parent filter skip it
 						next;
 					}
 					my $repeat = $fl->{$kid}->{module};
@@ -79,7 +79,6 @@ sub new {
 			$fl->{$_}->{chain} = $begin; 
 		}
 	}
-	
 	#put our new wierd filter list back as the spec's Filter_List
 	$spec->{Filter_List} = $fl;
 	return $self->SUPER::new($spec);
