@@ -6,6 +6,11 @@ use XML::SAX::Base;
 use vars qw(@ISA);
 use warnings;
 
+#LICENSE:
+
+#Please see the LICENSE file included with this distribution 
+#or see the following website http://projectamin.org.
+
 @ISA = qw(XML::SAX::Base);
 
 #generic parts of an element
