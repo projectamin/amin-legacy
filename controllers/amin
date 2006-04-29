@@ -113,13 +113,17 @@ my $amin = Amin->new();
 #this controller is a little more advanced.
 if (defined $cli->networkmap) {
 	$amin->set_networkmap($cli->networkmap);
-} elsif (defined $cli->machine_spec) {
+} 
+if (defined $cli->machine_spec) {
 	$amin->set_machine_spec($cli->machine_spec);
-} elsif (defined $cli->machine_type) {
+} 
+if (defined $cli->machine_type) {
 	$amin->set_machine_type($cli->machine_type);
-} elsif (defined $cli->filter_param) {
+} 
+if (defined $cli->filter_param) {
 	$amin->set_filter_param($cli->filter_param);
-} elsif (defined $cli->adminlist_map) {
+} 
+if (defined $cli->adminlist_map) {
 	$amin->set_adminlist_map($cli->adminlist_map);
 }
 
