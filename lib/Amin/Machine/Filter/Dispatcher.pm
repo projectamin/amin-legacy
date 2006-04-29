@@ -11,7 +11,6 @@ use vars qw(@ISA);
 use Amin::Machine::Handler::Empty;
 use Amin::Elt;
 
-
 @ISA = qw(Amin::Elt);
 
 sub start_element {
@@ -33,6 +32,13 @@ sub start_element {
 				#if there is an error reset handler to Empty
 				$self->set_handler( Amin::Machine::Handler::Empty->new(Handler => $spec->{Handler}, Spec => $spec) );
 			} else {
+				#this is one of those special begin chains....
+				if (($fl->{$_}->{'name'} eq $element->{'LocalName'} ) && ($attrs{'{}name'}->{'Value'})) {
+					if ($fl->{$_}->{attr} ne $attrs{'{}name'}->{'Value'}) {
+						next;
+					}
+				}	
+				
 				my $module = $fl->{$_}->{module};
 				eval "require $module"; 
 				
