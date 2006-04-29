@@ -112,6 +112,12 @@ sub start_element {
 			$stage++;
 			
 			my %new;
+			#this is one of those filters ie begin with that 
+			#whole special attr
+			if (($stuff->{$_}->{'name'} eq $element->{'LocalName'} ) && ($attrs{'{}name'}->{'Value'})) {
+				$new{attr} = $attrs{'{}name'}->{'Value'};
+			}	
+		
 			#we found something, is it a begin filter?
 			if ($stuff->{$_}->{position} eq "begin") {
 				#begin and reset the parent
