@@ -27,6 +27,12 @@ sub run {
 	my $p = $spec->{Generator}->new(Handler => $machine, Spec => $spec);
 	if ($type eq "uri") {
 		$p->parse_uri( $profile );
+		#get rid of the filter list...
+		my $fl = $self->{Spec}->{Filter_List};
+		foreach (keys %$fl) {
+			delete $fl->{$_};
+		}
+		$self->{Spec}->{Filter_List} = $fl;
 	} else {
 		$p->parse_string( $profile );
 	}
@@ -44,6 +50,7 @@ sub parse_string {
 	my $results = $self->run($profile);
 	return $results;
 }
+
 
 1;
 
