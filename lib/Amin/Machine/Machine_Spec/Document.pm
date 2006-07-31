@@ -36,8 +36,8 @@ sub start_element {
 	if ($element->{LocalName} eq "log") {
 		$self->log($attrs{'{}name'}->{'Value'});
 	}
-
 }
+
 sub characters {
 	my ($self, $chars) = @_;
 	my $data = $chars->{Data};
@@ -147,7 +147,6 @@ sub name {
 	return $self->{NAME};
 }
 
-
 sub log {
 	my $self = shift;
 	$self->{LOG} = shift if @_;
@@ -159,7 +158,6 @@ sub filter_param {
 	if (@_) {push @{$self->{FILTER_PARAM}}, @_; }
 	return @{ $self->{FILTER_PARAM} };
 }
-
 
 sub position {
 	my $self = shift;
