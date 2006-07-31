@@ -44,19 +44,38 @@ sub new {
 			$fl->{$_}->{chain} = $middle; 
 		}
 	}
-	
+		
 	#deal with the beginning	
 	foreach (keys %$fl) {
 		if ($fl->{$_}->{position} eq "begin") {
 			#get the parent's kids
 			my $begin;
 			my %repeats;
+			#deal with permanents
 			foreach my $kid (keys %$fl) {
 				if ($fl->{$kid}->{parent_stage} == $_) {
 					if ($kid == $_) { 
 						#this is the same parent filter skip it
 						next;
 					}
+					#skip perms
+					if ($fl->{$kid}->{position} eq "permanent") {
+						next;
+					}
+					if ($fl->{$kid}->{position} eq "permanent-middle") {
+						next;
+					}
+					if ($fl->{$kid}->{position} eq "permanent-begin") {
+						next;
+					}
+					#if ($fl->{$kid}->{module} == $fl->{$kid}->{parent_name}) {
+					#	if ($kid == $_) {
+					#		next; 
+					#	} else {
+							#this is a modperl or daemonized repeat
+					#		delete $fl->{$kid};
+					#	}
+					#}
 					my $repeat = $fl->{$kid}->{module};
 					if ($repeats{$repeat} eq "r") {
 						delete $fl->{$kid};
@@ -71,6 +90,44 @@ sub new {
 						$begin = $fl->{$kid}->{module}->new(Handler =>$begin, Spec =>$spec);
 						$repeats{$repeat} = "r";
 						delete $fl->{$kid};
+					}
+				}
+			}
+			#deal with permanents
+			foreach my $perms (keys %$fl) {
+				if ($fl->{$perms}->{position} eq "permanent") {
+					if ($begin) {
+						$begin = $fl->{$perms}->{module}->new(Handler => $begin, Spec => $spec);
+						delete $fl->{$perms};
+					} else {
+						$begin = $fl->{$perms}->{module}->new(Handler => $spec->{Handler}, Spec => $spec);
+						delete $fl->{$perms};
+					}
+				}
+			}
+			
+
+			foreach my $perms (keys %$fl) {
+				if ($fl->{$perms}->{position} eq "permanent-middle") {
+					if ($begin) {
+						$begin = $fl->{$perms}->{module}->new(Handler => $begin, Spec => $spec);
+						delete $fl->{$perms};
+					} else {
+						$begin = $fl->{$perms}->{module}->new(Handler => $spec->{Handler}, Spec => $spec);
+						delete $fl->{$perms};
+					}
+				}
+			}
+
+			
+			foreach my $perms (keys %$fl) {
+				if ($fl->{$perms}->{position} eq "permanent-begin") {
+					if ($begin) {
+						$begin = $fl->{$perms}->{module}->new(Handler => $begin, Spec => $spec);
+						delete $fl->{$perms};
+					} else {
+						$begin = $fl->{$perms}->{module}->new(Handler => $spec->{Handler}, Spec => $spec);
+						delete $fl->{$perms};
 					}
 				}
 			}
