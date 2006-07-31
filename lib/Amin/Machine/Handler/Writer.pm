@@ -14,10 +14,12 @@ use Amin::Elt;
 sub start_element {
 	my ($self, $element) = @_;
 	my $spec = $self->{Spec};
-	my %attrs = %{$element->{Attributes}};
 	my $el = '<' . $element->{Name};
-	for my $k (keys %attrs) {
-		$el .= " " . $attrs{$k}->{Name} . "=\"" . $attrs{$k}->{Value} . "\"";
+	if ($element->{Attributes}) {
+		my %attrs = %{$element->{Attributes}};
+		for my $k (keys %attrs) {
+			$el .= " " . $attrs{$k}->{Name} . "=\"" . $attrs{$k}->{Value} . "\"";
+		}
 	}
 	$el .= ">";
 	push @{$self->{Spec}->{Buffer}}, $el;
