@@ -36,6 +36,7 @@ my @parent;
 my %attrs;
 my $pname;
 my $pstage;
+my $psname;
 
 sub start_document {
 	my $self = shift;
@@ -124,6 +125,7 @@ sub start_element {
 				$begin = 1;
 				$new{parent_name} = $stuff->{$_}->{module};
 				$pname = $stuff->{$_}->{module};
+				$psname = $stuff->{$_}->{module};
 				$pstage = $stage;
 			}
 			if ($begin == 1) {
@@ -160,6 +162,25 @@ sub end_element {
 
 sub end_document {
 	my $self = shift;
+	my $stuff = $spec->{Filter};
+	#do the permanents
+	foreach (keys %$stuff) {
+	if ($stuff->{$_}->{position} =~ /permanent/) {
+		my %new;
+		$stage++;
+		$new{parent_name} = $psname;
+		$new{parent_stage} = 1;
+		my $hash = $stuff->{$_};
+		foreach my $keys (keys %$hash) {
+			$new{$keys} = $stuff->{$_}->{$keys};
+		}
+		$machine_filters{$stage} = \%new;
+	}
+	}	
+		
+	
+	
+	
 	foreach (keys %machine_filters) {
 		#autoload module check
 		no strict 'refs';
