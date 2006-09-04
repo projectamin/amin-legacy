@@ -61,6 +61,7 @@ sub new {
 	return $self;
 }
 
+
 sub parse_uri {
 	my ($self, $profile) = @_;
 	
@@ -79,6 +80,7 @@ sub parse_uri {
 	my $m = $self->{Machine_Name}->new($spec);
 	while ($m->parse_uri( $profile )) {
 		if ($spec->{Handler}->{Spec}->{Buffer_End}) {
+#			$spec->{Filter_List} = undef;
 			return $spec->{Handler}->{Spec}->{Buffer};
 			#$self->{Buffer} = $spec->{Handler}->{Spec}->{Buffer};
 			#$spec->{Handler}->{Spec}->{Buffer} = ();
@@ -196,7 +198,7 @@ sub load_spec {
 		$spec->{Handler} = $self->{Handler};
 	}
 	
-	if ($spec->{Log}->{name}) {
+	if ($spec->{Log}) {
 		#there was a log in the spec use it
 		no strict 'refs';
 		eval "require $spec->{Log}";
@@ -210,6 +212,14 @@ sub load_spec {
 		#there was no log in the spec use the default loaded
 		$spec->{Log} = $self->{Log};
 	}
+	
+	if ($spec->{Machine_Name}) {
+		#there was a machine name in the spec use it
+		$self->{Machine_Name} = $spec->{Machine_Name};
+	}
+	
+	#this needs to be removed
+	$spec->{Request} = $self->{Request};
 	
 	return $spec;
 	
