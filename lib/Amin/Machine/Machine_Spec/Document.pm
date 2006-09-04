@@ -10,9 +10,6 @@ use vars qw(@ISA);
 use Amin::Elt;
 @ISA = qw(Amin::Elt);
 
-#use XML::SAX::Base;
-#@ISA = qw(XML::SAX::Base);
-
 my %document;
 my @filters;
 my @bundle;
@@ -54,6 +51,9 @@ sub characters {
 		}
 		if ($element->{LocalName} eq "name") {
 			$self->name($data);
+		}
+		if ($element->{LocalName} eq "machine_name") {
+			$self->machine_name($data);
 		}
 		if ($element->{LocalName} eq "position") {
 			$self->position($data);
@@ -118,6 +118,9 @@ sub end_document {
 	if ($self->{LOG}) {
 		$document{Log} = $self->log;
 	}
+	if ($self->{MACHINE_NAME}) {
+		$document{Machine_Name} = $self->machine_name;
+	}
 	if ($self->{GENERATOR}) {
 		$document{Generator} = $self->generator;
 	}
@@ -151,6 +154,12 @@ sub log {
 	my $self = shift;
 	$self->{LOG} = shift if @_;
 	return $self->{LOG};
+}
+
+sub machine_name {
+	my $self = shift;
+	$self->{MACHINE_NAME} = shift if @_;
+	return $self->{MACHINE_NAME};
 }
 
 sub filter_param {
