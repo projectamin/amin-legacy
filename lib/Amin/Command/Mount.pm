@@ -145,8 +145,14 @@ sub end_element {
 			$self->SUPER::end_element($element);
 			return;
 		}
+		
+		my $text;
+		if ($type) {
+			$text = "New partition is a $type partition. Mounting $device on $target.";
+		} else {
+			$text = "Mounting $device on $target.";
+		}
 
-		my $text = "New partition is a $type partition. Mounting $device on $target.";
 		$self->text($text);
 		$log->success_message($text);
 		if ($cmd->{OUT}) {
