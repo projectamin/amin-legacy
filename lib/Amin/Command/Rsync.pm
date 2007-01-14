@@ -30,10 +30,10 @@ sub start_element {
 sub characters {
 	my ($self, $chars) = @_;
 	my $data = $chars->{Data};
-	$data = $self->fix_text($data);
 	my $attrs = $self->{"ATTRS"};
 	my $element = $self->{"ELEMENT"};
 	my $command = $self->command;
+	$data = $self->fix_text($data);
 	if (($command eq "rsync") && ($data ne "")) {
 		if ($element->{LocalName} eq "shell") {
 			if ($attrs{'{}name'}->{Value} eq "env") {
@@ -43,16 +43,12 @@ sub characters {
 				$self->dir($data);
 			}
 		}
-	
 		if ($element->{LocalName} eq "param") {
 			if ($attrs{'{}name'}->{Value} eq "target") {
 				$self->target($data);
 			}
 			if ($attrs{'{}name'}->{Value} eq "source") {
-				my @things = $data =~ m/([\*\+\.\w=\/-]+|'[^']+')\s*/g;
-				foreach (@things) {
-					$self->source($_);
-				}
+				$self->source($data);
 			}
 		}
 		if ($element->{LocalName} eq "flag") {
@@ -66,18 +62,13 @@ sub characters {
 
 sub end_element {
 	my ($self, $element) = @_;
-
 	if (($element->{LocalName} eq "command") && ($self->command eq "rsync")) {
-
 		my $dir = $self->{'DIR'};
 		my $source = $self->{'SOURCE'};
 		my $target = $self->{'TARGET'};
 		my $xflag = $self->{'FLAG'};
-		
 		my (%acmd, @param, @flag, $flag);
-		
 		my $log = $self->{Spec}->{Log};
-		
 		if ($dir) {
 			if (! chdir $dir) {
 				$self->{Spec}->{amin_error} = "red";
@@ -89,7 +80,6 @@ sub end_element {
 				return;
 			}
 		}
-		
 		my $state = 0;
 		foreach my $ip (@$xflag){
 			if (!$ip) {next;};
@@ -118,9 +108,8 @@ sub end_element {
 			}
 		}
 		my @source;
-		foreach (@$source) {
-			push @source, glob($_);
-		}
+		glob($source);
+		push @source, $source;
 		push @source, $target;
 
 		$acmd{'CMD'} = "rsync";
@@ -176,8 +165,8 @@ sub target {
 
 sub source {
 	my $self = shift;
-	if (@_) {push @{$self->{SOURCE}}, @_; }
-	return @{ $self->{SOURCE} };
+	$self->{SOURCE} = shift if @_;
+	return $self->{SOURCE};
 }
 
 sub filter_map {
