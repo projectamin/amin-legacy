@@ -12,7 +12,7 @@ use Amin::Elt;
 
 @ISA = qw(Amin::Elt);
 
-my (%attrs, @target);
+my %attrs;
 
 sub start_element {
 	my ($self, $element) = @_;
@@ -48,8 +48,8 @@ sub characters {
 			if ($attrs{'{}name'}->{Value} eq "g") {
 				$self->g($data);
 			}
-			if ($attrs{'{}name'}->{Value} eq "") {
-				$self->flag(split(/\s+/, $data));
+			if ($attrs{'{}name'}->{Value} eq "o") {
+				$self->g($data);
 			}
 		}
 	}
@@ -61,28 +61,19 @@ sub end_element {
 
 	if (($element->{LocalName} eq "command") && ($self->command eq "groupadd")) {
 		my $xparam = $self->{'PARAM'};
-		my $xflag = $self->{'FLAG'};
 		my $g = $self->{'G'};
 		my $command = $self->{'COMMAND'};
 		my ($flag, @flag, @param);
 		my $log = $self->{Spec}->{Log};
 
 		if ($g) {
-			$flag = "-g " . $g;
-			push @flag, $flag;
-		}
-		my $state = 0;
-		foreach my $ip (@$xflag){
-			if (!$ip) {next;};
-			if ($state == 0) {
-				$flag = "-" . $ip;
-				$state = 1;
+			if ($g eq "o") {
+				$flag = "-o";
 			} else {
-				$flag = " -" . $ip;
+				$flag = "-g " . $g;
 			}
 			push @flag, $flag;
 		}
-
 		foreach (@$xparam) {
 			push @param, $_;
 		}
@@ -262,7 +253,6 @@ Groupadd (coreutils)
 
  <amin:profile xmlns:amin='http://projectamin.org/ns/'>
         <amin:command name="groupadd">
-                <amin:flag name="g">134</amin:param>
                 <amin:param>mynewgroup</amin:param>
         </amin:command>
  </amin:profile>
@@ -271,12 +261,10 @@ Groupadd (coreutils)
  
  <amin:profile xmlns:amin='http://projectamin.org/ns/'>
         <amin:command name="groupadd">
-                <amin:flag name="g">54334</amin:flag>
                 <amin:flag>o</amin:flag>
                 <amin:param>mynewgroup</amin:param>
         </amin:command>
         <amin:command name="groupadd">
-                <amin:flag name="g">54335</amin:flag>
                 <amin:flag>o</amin:flag>
                 <amin:param>myothernewgroup</amin:param>
         </amin:command>
