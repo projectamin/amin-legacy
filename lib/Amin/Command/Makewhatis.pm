@@ -37,10 +37,10 @@ sub characters {
 	my $command = $self->command;
 	if (($command eq "makewhatis") && ($data ne "")) {
 		if ($element->{LocalName} eq "flag") {
-			if ($attrs{'{}name'}->{Value} eq "sections") {
+			if (($attrs{'{}name'}->{Value} eq "s") || ($attrs{'{}name'}->{Value} eq "sections")) {
 				$self->sections($data);
 			}
-			if ($attrs{'{}name'}->{Value} eq "catpath") {
+			if (($attrs{'{}name'}->{Value} eq "catpath") ||($attrs{'{}name'}->{Value} eq "c")){
 				$self->catpath($data);
 			}
 			if ($attrs{'{}name'}->{Value} eq "") {
@@ -271,7 +271,6 @@ makewhatis (coreutils) 5.0 March 2003
 
  <amin:profile xmlns:amin='http://projectamin.org/ns/'>
         <amin:command name="makewhatis">
-                <amin:param name="s">5</amin:param>
                 <amin:flag>w</amin:flag>
         </amin:command>
  </amin:profile>
@@ -280,11 +279,9 @@ makewhatis (coreutils) 5.0 March 2003
  
  <amin:profile xmlns:amin='http://projectamin.org/ns/'>
         <amin:command name="makewhatis">
-                <amin:param name="s">5</amin:param>
                 <amin:flag>w</amin:flag>
         </amin:command>
         <amin:command name="makewhatis">
-                <amin:param name="s">3</amin:param>
                 <amin:flag>w</amin:flag>
         </amin:command>
  </amin:profile>
