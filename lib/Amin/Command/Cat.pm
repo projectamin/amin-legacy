@@ -12,7 +12,7 @@ use Amin::Elt;
 
 @ISA = qw(Amin::Elt);
 
-my (%attrs, @target);
+my %attrs;
 
 sub start_element {
 	my ($self, $element) = @_;
