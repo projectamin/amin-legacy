@@ -6,7 +6,6 @@ package Amin::Command::System_command;
 #or see the following website http://projectamin.org.
 
 use strict;
-use warnings;
 use vars qw(@ISA);
 use Amin::Elt;
 
@@ -138,7 +137,12 @@ sub end_element {
 		
 		if ($cmd->{STATUS} != 0) {
 			$self->{Spec}->{amin_error} = "red";
-			my $text = "Unable to execute $basename in $dir. Reason: $cmd->{ERR}";
+			my $text;
+			if ($dir) {
+				$text = "Unable to execute $basename in $dir. Reason: $cmd->{ERR}";
+			} else {
+				$text = "Unable to execute $basename. Reason: $cmd->{ERR}";
+			}
 			$self->text($text);
 
 			$log->error_message($text);
