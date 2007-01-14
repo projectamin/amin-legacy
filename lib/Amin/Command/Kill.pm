@@ -6,14 +6,13 @@ package Amin::Command::Kill;
 #or see the following website http://projectamin.org.
 
 use strict;
-use warnings;
-use vars qw(@ISA);
 use Amin::Elt;
+use Proc::ProcessTable;
+use vars qw(@ISA);
 
 @ISA = qw(Amin::Elt);
 
-my (%attrs, @target);
-
+my %attrs;
 sub start_element {
 	my ($self, $element) = @_;
 	%attrs = %{$element->{Attributes}};
@@ -35,30 +34,17 @@ sub characters {
 	my $attrs = $self->{"ATTRS"};
 	my $element = $self->{"ELEMENT"};
 	my $command = $self->command;
+
 	if (($command eq "kill") && ($data ne "")) {
 		if ($element->{LocalName} eq "param") {
-			
-			if ($attrs{'{}name'}->{Value} eq "signal") {
-				$self->signal($data);
-			} else {
-				my @things = $data =~ m/([\*\+\.\w=\/-]+|'[^']+')\s*/g;
-				foreach (@things) {
-					$self->param($_);
-				}
-			}
-		}
-		
-		if ($element->{LocalName} eq "shell") {
-			if ($attrs{'{}name'}->{Value} eq "dir") {
-				$self->dir($data);
-			}
-			if ($attrs{'{}name'}->{Value} eq "env") {
-				$self->env_vars($data);
+			my @things = $data =~ m/([\*\+\.\w=\/-]+|'[^']+')\s*/g;
+			foreach (@things) {
+				$self->param($_);
 			}
 		}
 		if ($element->{LocalName} eq "flag") {
-			if ($attrs{'{}name'}->{Value} eq "") {
-				$self->flag(split(/\s+/, $data));
+			if ($attrs{'{}name'}->{Value} eq "signal") {
+				$self->flag($data);
 			}
 		}
 	}
@@ -69,202 +55,91 @@ sub end_element {
 	my ($self, $element) = @_;
 
 	if (($element->{LocalName} eq "command") && ($self->command eq "kill")) {
-		my $signal = $self->{'SIGNAL'};
-		my $dir = $self->{'DIR'};
 		my $xparam = $self->{'PARAM'};
-		my $xflag = $self->{'FLAG'};
 		my $command = $self->{'COMMAND'};
-		my ($flag, @flag, @param);
+		my $signal = $self->{'FLAG'};
 		my $log = $self->{Spec}->{Log};
-
-		my $state = 0;
-		foreach my $ip (@$xflag){
-			if (!$ip) {next;};
-			if (($ip =~ /-/) || ($ip =~ /--/)) {
-				push @flag, $flag;
-			} else {	
-				if ($state == 0) {
-					$flag = "-" . $ip;
-					$state = 1;
-				} else {
-					$flag = " -" . $ip;
-				}
-				push @flag, $flag;
-			}
-		}
-		if ($signal) {
-			$flag = "-s " . $signal;
-			push @flag, $flag;
-		}
-
-		foreach (@$xparam) {
-			push @param, $_;
-		}
-
-		if ($dir) {
-			if (! chdir $dir) {
-				$self->{Spec}->{amin_error} = "red";
-				my $text = "Unable to change directory to $dir. Reason: $!";
-				$self->text($text);
-
-				$log->error_message($text);
-				$self->SUPER::end_element($element);
-				return;
-			}
-		}
-
-		my %acmd;
-		$acmd{'CMD'} = $command;
-		$acmd{'FLAG'} = \@flag;
-		$acmd{'PARAM'} = \@param;
+		my $state;
+		my @pat;
 		
-		if ($self->{'ENV_VARS'}) {
-			$acmd{'ENV_VARS'} = $self->{'ENV_VARS'};
+		foreach (@$xparam) {
+			push @pat, $_;
 		}
 
-		my $cmd = $self->amin_command(\%acmd);
-
-		if ($cmd->{STATUS} != 0) {
-			$self->{Spec}->{amin_error} = "red";
-			my $text = "Unable to run kill Reason: $cmd->{ERR}";
-			$self->text($text);
-
-			$log->error_message($text);
-			if ($cmd->{ERR}) {
-				$log->ERR_message($cmd->{ERR});
+		#signal check
+		if (!$signal) {
+			$signal = "9";
+		}
+					
+		my $t = new Proc::ProcessTable;
+		my $text = "Kill has killed the following processes";
+		my $error;
+		
+		my $count;
+		
+		
+		foreach my $pat (@pat) {
+		foreach my $p (@{$t->table}) {
+			my $npat = $p->cmndline;
+			$npat = $self->fix_text($npat);
+			if ($npat =~ /^$pat$/) {
+				next unless $p->pid != $$ || $self;
+				my $lpid = $p->pid;
+				if (kill $signal, $p->pid) {
+					#killed the process add a message
+					$count=1;
+					$text = $text . " $pat pid $lpid"; 
+					last;
+				} else {
+					$self->{Spec}->{amin_error} = "red";
+					$text = $text . "could not kill $pat $lpid,";
+					$error = 1;
+				}
 			}
-			$self->SUPER::end_element($element);
-			return;
 		}
-
-		my $text = "Killed processes";
-	        $text .= join (", ", @param);
+		}
+		if (!$count) {
+			$text = "Kill could not find the following processes";
+			foreach (@pat) {
+				$text = $text . " $_,";
+			}
+		}
 		$self->text($text);
-
-		$log->success_message($text);
-		if ($cmd->{OUT}) {
-			$log->OUT_message($cmd->{OUT});
+		if ($error) {
+			$log->error_message($text);
+		} else {
+			$log->success_message($text);
 		}
+		
 		#reset this command
 		
 		$self->{DIR} = undef;
-		$self->{SIGNAL} = undef;
-		$self->{FLAG} = [];
+		$self->{FLAG} = undef;
 		$self->{PARAM} = [];
 		$self->{COMMAND} = undef;
 		$self->{ATTRS} = undef;
 		$self->{ENV_VARS} = [];
+		$self->{NAME} = undef;
 		$self->{ELEMENT} = undef;
+
 		$self->SUPER::end_element($element);
 	} else {
 		$self->SUPER::end_element($element);
 	}
 }
 
-sub filter_map {
-	my $self = shift;
-	my $command = shift;
-	my %command;
-	my @flags;
-	my @params;
-	my @shells;
-	my @things = split(/([\*\+\.\w=\/-]+|'[^']+')\s*/, $command);
-
-	my %scratch;
-	my $stop;
-	foreach (@things) {
-	#check for real stuff
-	if ($_) {
-		#check for flag
-		if (($_ =~ /^-.*$/) || ($_ =~ /^--.*$/) || ($scratch{name})) {
-			#it is a flag
-			my %flag;
-			my $char;
-			$_ =~ s/-//;
-			$_ =~ s/--//;
-			if ($scratch{name}) {
-				#this completes the -s 2 crap
-				if ($_ =~ /\d+/) {
-					$char = $_;
-				} else {
-					#this is a param and their -s is
-					#not a digit why they want this 
-					#is unknown :)
-					my %param;
-					$param{"char"} = $_;
-					push @params, \%param;
-				}
-				$_ = $scratch{name};
-				#undefine stuff
-				$stop = undef;
-				%scratch = {};
-			} else {
-				if ($_ eq "m") {
-					#check for stuff like -s 2 crap
-					$scratch{name} = $_;
-					$stop = 1;
-				} else  {
-					#its just a flag
-					$char = $_;
-					$_ = undef;
-				}
-			}
-			
-			if (!$stop) {
-				if ($_) {
-					$flag{"name"} = $_;
-				}
-			
-				$flag{"char"} = $char;
-				push @flags, \%flag;
-			}
-		
-		} elsif ($_ =~ /^.*=.*$/) {
-			my %shell;
-			#it is an env variable 
-			$shell{"name"} = 'env';
-			$shell{"char"} = $_;
-			push @shells, \%shell;
-		} else {
-			#it is either a param, command name
-			if (!$command{name}) {
-				$command{name} = $_;
-			} else {
-				my %param;
-				$param{"char"} = $_;
-				push @params, \%param;
-			}
-		}
-	}
-	}
-	
-	if (@shells) {
-		$command{shell} = \@shells;
-	}
-	if (@flags) {
-		$command{flag} = \@flags;
-	}
-	if (@params) {
-		$command{param} = \@params;
-	}
-	
-	my %fcommand;
-	$fcommand{command} = \%command;
-	return \%fcommand;	
-}
-
-sub signal {
-	my $self = shift;
-	$self->{SIGNAL} = shift if @_;
-	return $self->{SIGNAL};
-}
-
 sub version {
 	return "1.0";
 }
 
-1;
+sub flag {
+        my $self = shift;
+        $self->{FLAG} = shift if @_;
+        return $self->{FLAG};
+}
 
+
+1;
 
 =head1 NAME
 
@@ -286,8 +161,8 @@ kill Taken from BSD 4.4.
 
  <amin:profile xmlns:amin='http://projectamin.org/ns/'>
         <amin:command name="kill">
-                <amin:param name="signal">9</amin:param>
-                <amin:param name="signal">apache</amin:param>
+                <amin:flag name="signal">9</amin:flag>
+                <amin:param name="signal">syslogd</amin:param>
         </amin:command>
  </amin:profile>
 
@@ -295,12 +170,12 @@ kill Taken from BSD 4.4.
  
  <amin:profile xmlns:amin='http://projectamin.org/ns/'>
         <amin:command name="kill">
-                <amin:param name="signal">9</amin:param>
-                <amin:param>apache</amin:param>
+                <amin:flag name="signal">9</amin:flag>
+                <amin:param>syslogd</amin:param>
         </amin:command>
         <amin:command name="kill">
-                <amin:param name="signal">9</amin:param>
-                <amin:param>postfix</amin:param>
+                <amin:flag name="signal">9</amin:flag>
+                <amin:param>klogd</amin:param>
         </amin:command>
  </amin:profile>
 
