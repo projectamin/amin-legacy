@@ -66,7 +66,7 @@ sub end_element {
 
 		my $find = $self->{'FIND'};
 		my $replace = $self->{'REPLACE'};
-		my $dir = $self->{'DIR'};
+		my $dir = $self->{'DIR'} || "/";
 		my $target = $self->{'TARGET'};
 		my @targets;
 		my $log = $self->{Spec}->{Log};
