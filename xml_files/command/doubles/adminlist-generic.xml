@@ -20,7 +20,9 @@
    <amin:profile>
      <amin:uri>file://amin/xml_files/command/doubles/ls.xml</amin:uri>
    </amin:profile>
+   <!--bad at the moment
    <amin:profile>
      <amin:uri>file://amin/xml_files/command/doubles/ldconfig.xml</amin:uri>
    </amin:profile>
+   -->
 </amin:adminlist>
