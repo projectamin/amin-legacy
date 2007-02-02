@@ -6,9 +6,18 @@ use Amin::Elt;
 
 @ISA = qw(Amin::Elt);
 
+
 my $doc;
 my $level = 0;
 
+
+sub start_document {
+	my $self = shift;
+	$doc = undef;
+	$level = 0;
+}
+
+	
 sub start_element {
 	my ($self, $element) = @_;
 	my %attrs = %{$element->{Attributes}};
