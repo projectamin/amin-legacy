@@ -5,19 +5,17 @@
 #Please see the LICENSE file included with this distribution 
 #or see the following website http://projectamin.org.
 
+use strict;
 use Amin;
 use Amin::Controller::CLI;
-use Getopt::Long;
-
-use XML::SAX::PurePerl;
 use Amin::Controller::CLIOutput;
-use strict;
-
-
-
-
-
-
+use Amin::Machine::AdminList;
+use Amin::Machine::NetworkMap;
+use Amin::Machine::AdminList::Name;
+use Amin::Machine::Profile::Checker;
+use Sort::Naturally;
+use Getopt::Long;
+use XML::SAX::PurePerl;
 
 my $cli = Amin::Controller::CLI->new();
 my $help = (<<END);
@@ -91,6 +89,10 @@ my $usage = (<<END);
 [-m|-machine_spec] uri://
 [-x|-filter_param] parameters
 [-t|-machine_type] ex. Dispatcher
+[-o|-machine_name] ex. Amin::Machine::Dispatcher
+[-g|-generator] ex. XML::SAX::PurePerl
+[-h|-handler] ex.Amin::Machine::Handler::Writer
+[-l|-log] ex. Amin::Machine::Log::Standard
 [-v|-version] 
 END
 
@@ -120,6 +122,18 @@ if (defined $cli->machine_spec) {
 if (defined $cli->machine_type) {
 	$amin->set_machine_type($cli->machine_type);
 } 
+if (defined $cli->machine_name) {
+	$amin->set_machine_name($cli->machine_name);
+} 
+if (defined $cli->generator) {
+	$amin->set_generator($cli->generator);
+} 
+if (defined $cli->handler) {
+	$amin->set_handler($cli->handler);
+} 
+if (defined $cli->log) {
+	$amin->set_log($cli->log);
+} 
 if (defined $cli->filter_param) {
 	$amin->set_filter_param($cli->filter_param);
 } 
@@ -128,32 +142,226 @@ if (defined $cli->adminlist_map) {
 }
 
 if (defined $cli->adminlist) {
-	$amin->parse_adminlist($cli->adminlist);
-	my $results = $amin->results;
-	foreach (@$results) {
-		my $h = Amin::Controller::CLIOutput->new();
+
+	
+	my $adminlist = $cli->adminlist;
+	my @networkmap;
+	my @adminlists;
+	my @profiles;
+	my $simplemap;
+	
+	my $h = Amin::Machine::AdminList->new();
+	my $p = XML::SAX::PurePerl->new(Handler => $h);
+	$adminlist = $p->parse_uri($adminlist);
+	
+	#get/parse/load the adminlist/class map
+	#this is used for when people name="" their 
+	#adminlists and then use the map to specify
+	#which names they want to run.
+	my $adminlist_map;
+	if($cli->adminlist_map) {
+		my $h = Amin::Machine::AdminList::Name->new();
 		my $p = XML::SAX::PurePerl->new(Handler => $h);
-		my $text = $p->parse_string($_);
-		print $text;
+		$adminlist_map = $p->parse_uri($cli->adminlist_map);
 	}
+	
+	foreach my $key (nsort keys %$adminlist) {
+		if (($key =~ m/server/) || ($adminlist_map->{key})) {
+			#if ($adminlist->{key}->{type} eq "map") {
+				my $n = Amin::Machine::NetworkMap->new();
+				my $np = XML::SAX::PurePerl->new(Handler => $n);
+				$simplemap = $np->parse_uri($adminlist->{$key});
+				foreach my $map (@$simplemap) {
+					if ($map eq undef) {
+						next;
+					} else {
+						push @networkmap, $map;
+					}
+				}
+			#}
+		}
+		if (($key =~ m/profile/) || ($adminlist_map->{key})) {
+			#if ($adminlist->{key}->{type} eq "profile") {
+				push @profiles, $adminlist->{$key};
+		}
+		if (($key =~ m/adminlist/) || ($adminlist_map->{key})) {
+			#if ($adminlist->{key}->{type} eq "adminlist") {
+				push @adminlists, $adminlist->{$key};
+			#}
+		}
+	}
+		
+	#deal with adminlists within adminlists
+	#we have to repeat ourselves for a while....
+	foreach (@adminlists) {
+		my $ih = Amin::Machine::AdminList->new();
+		my $ip = XML::SAX::PurePerl->new(Handler => $ih);
+		my $iadminlist = $ip->parse_uri($_);
+		
+		foreach my $key (nsort keys %$iadminlist) {
+			if (($key =~ m/server/) || ($adminlist_map->{key})) {
+	#			if ($adminlist->{key}->{type} eq "adminlist") {
+					my $n = Amin::Machine::NetworkMap->new();
+					my $np = XML::SAX::PurePerl->new(Handler => $n);
+					$simplemap = $np->parse_uri($iadminlist->{$key});
+					foreach my $map (@$simplemap) {	
+						if ($map eq undef) {
+							next;
+						} else {
+							push @networkmap, $map;
+						}
+					}
+	#			}
+			}
+			if (($key =~ m/profile/) || ($adminlist_map->{key})) {
+	#			if ($adminlist->{key}->{type} eq "adminlist") {
+					push @profiles, $iadminlist->{$key};
+	#			}
+			}
+			if (($key =~ m/adminlist/) || ($adminlist_map->{key})) {
+	#			if ($adminlist->{key}->{type} eq "adminlist") {
+					push @adminlists, $iadminlist->{$key};
+	#			}
+			}
+		}
+	}
+	
+	my @results;
+	if (@networkmap) {
+		foreach my $networkmap (@networkmap) {
+			my $protocol = $networkmap->{protocol};
+			foreach my $profile (@profiles) {
+				if ($profile =~ /^</) {
+				#	$mout = $protocol->parse_string($nm->{$networkmap}, $profile, $adminlist_map);
+				} else {
+				#	$mout = $protocol->parse_uri($nm->{$networkmap}, $profile, $adminlist_map);
+				}
+			
+			
+			}
+		}
+	} else {
+		foreach my $profile (@profiles) {
+			if ($profile =~ /^</) {
+				my $m = Amin->new (
+						Machine_Name => $cli->machine_name, 
+						Machine_Spec => $cli->machine_spec,
+						Generator => $cli->genereator,
+						Handler => $cli->hanlder,
+						Filter_Param => $cli->filter_param,
+						Log => $cli->log
+    				);
+				my $aout;
+				my $lout;
+				if ($cli->networkmap) {
+					my $h = Amin::Machine::NetworkMap->new();
+					my $p = XML::SAX::PurePerl->new(Handler => $h);
+					my $nm = $p->parse_string($cli->networkmap);
+					foreach my $networkmap (keys %$nm) {
+						my $protocol = $nm->{$networkmap}->{protocol};
+						$lout = $protocol->parse_string($nm->{$networkmap}, $profile);
+					}
+				} else {
+					$lout = $m->parse_string($profile);
+				}
+				foreach (@$lout) {
+					$aout = $aout . "$_";
+				}
+				my $h = Amin::Controller::CLIOutput->new();
+				my $p = XML::SAX::PurePerl->new(Handler => $h);
+				my $text = $p->parse_string($aout);
+				print $text;
+			} else {
+				my $m = Amin->new (
+						Machine_Name => $cli->machine_name, 
+						Machine_Spec => $cli->machine_spec,
+						Generator => $cli->generator,
+						Handler => $cli->handler,
+						Filter_Param => $cli->filter_param,
+						Log => $cli->log
+				);
+				my $aout;
+				my $lout;
+				if ($cli->networkmap) {
+					my $h = Amin::Machine::NetworkMap->new();
+					my $p = XML::SAX::PurePerl->new(Handler => $h);
+					my $nm = $p->parse_uri($cli->networkmap);
+					foreach my $networkmap (keys %$nm) {
+						my $protocol = $nm->{$networkmap}->{protocol};
+						$lout = $protocol->parse_uri($nm->{$networkmap}, $profile);
+					}
+				} else {
+					$lout = $m->parse_uri($profile);
+				}
+				foreach (@$lout) {
+					$aout = $aout . "$_";
+				}
+				my $h = Amin::Controller::CLIOutput->new();
+				my $p = XML::SAX::PurePerl->new(Handler => $h);
+				my $text = $p->parse_string($aout);
+				print $text;
+			}
+		}
+	}	
+	
 } elsif (defined $cli->uri) {
-	$amin->parse_uri($cli->uri); 
-	my $results = $amin->results;
-	foreach (@$results) {
-		my $h = Amin::Controller::CLIOutput->new();
+	my $m = Amin->new (
+				Machine_Name => $cli->machine_name, 
+				Machine_Spec => $cli->machine_spec,
+				Generator => $cli->generator,
+				Handler => $cli->handler,
+				Filter_Param => $cli->filter_param,
+				Log => $cli->log
+    	);
+	my $aout;
+	my $lout;
+	if ($cli->networkmap) {
+		my $h = Amin::Machine::NetworkMap->new();
 		my $p = XML::SAX::PurePerl->new(Handler => $h);
-		my $text = $p->parse_string($_);
-		print $text;
+		my $nm = $p->parse_uri($cli->networkmap);
+		foreach my $networkmap (keys %$nm) {
+			my $protocol = $nm->{$networkmap}->{protocol};
+			$lout = $protocol->parse_uri($nm->{$networkmap}, $cli->uri);
+		}
+	} else {
+		$lout = $m->parse_uri($cli->uri);
 	}
+	foreach (@$lout) {
+		$aout = $aout . "$_";
+	}
+	my $h = Amin::Controller::CLIOutput->new();
+	my $p = XML::SAX::PurePerl->new(Handler => $h);
+	my $text = $p->parse_string($aout);
+	print $text;
 } elsif (defined $cli->profile) {
-	$amin->parse_string($cli->profile);
-	my $results = $amin->results;
-	foreach (@$results) {
-		my $h = Amin::Controller::CLIOutput->new();
+	my $m = Amin->new (
+				Machine_Name => $cli->machine_name, 
+				Machine_Spec => $cli->machine_spec,
+				Generator => $cli->generator,
+				Handler => $cli->handler,
+				Filter_Param => $cli->filter_param,
+				Log => $cli->log
+    	);
+	my $aout;
+	my $lout;
+	if ($cli->networkmap) {
+		my $h = Amin::Machine::NetworkMap->new();
 		my $p = XML::SAX::PurePerl->new(Handler => $h);
-		my $text = $p->parse_string($_);
-		print $text;
+		my $nm = $p->parse_string($cli->networkmap);
+		foreach my $networkmap (keys %$nm) {
+			my $protocol = $nm->{$networkmap}->{protocol};
+			$lout = $protocol->parse_string($nm->{$networkmap}, $cli->profile);
+		}
+	} else {
+		$lout = $m->parse_string($cli->profile);
 	}
+	foreach (@$lout) {
+		$aout = $aout . "$_";
+	}
+	my $h = Amin::Controller::CLIOutput->new();
+	my $p = XML::SAX::PurePerl->new(Handler => $h);
+	my $text = $p->parse_string($aout);
+	print $text;
 } else {
 	print "nothing to parse\n";
 }
@@ -161,7 +369,7 @@ if (defined $cli->adminlist) {
 sub get_profile {
 	my $cli = shift;
         my ($help, $uri, $profile, $adminlist, $networkmap, 
-	    $machine_spec, $machine_type, $filter_param, $version, $type, $adminlist_map);
+	    $machine_spec, $machine_type, $machine_name, $generator, $handler, $log, $filter_param, $version, $type, $adminlist_map);
 	my $opts_ok = &GetOptions( "h|help"    => \$help,
 				   "u|uri=s"     => \$uri,
 				   "p|profile=s" => \$profile,
@@ -169,6 +377,10 @@ sub get_profile {
 				   "b|adminlist_map=s" => \$adminlist_map,
 				   "n|networkmap=s" => \$networkmap,
 				   "m|machine_spec=s" => \$machine_spec,
+				   "o|machine_name=s" => \$machine_name,
+				   "g|generator=s" => \$generator,
+				   "h|handler=s" => \$handler,
+				   "l|log=s" => \$log,
 				   "x|filter_param=s" => \$filter_param,
 				   "t|machine_type=s" => \$type,
 				   "v|version" => \$version,
@@ -199,7 +411,19 @@ sub get_profile {
 		$cli->filter_param($filter_param);
 	} 
 	if ($machine_type) {
-		$cli->machine_type();
+		$cli->machine_type($machine_type);
+	} 
+	if ($machine_name) {
+		$cli->machine_name($machine_name);
+	} 
+	if ($generator) {
+		$cli->generator($generator);
+	} 
+	if ($handler) {
+		$cli->handler($handler);
+	} 
+	if ($log) {
+		$cli->log($log);
 	} 
 	if ($version) {
 		$cli->print_version();
