@@ -1,55 +1,102 @@
 package Amin::Machine::Dispatcher;
 
 #LICENSE:
-
 #Please see the LICENSE file included with this distribution 
 #or see the following website http://projectamin.org.
 
 #Amin Dispatcher Machine
-
 use strict;
-use vars qw(@ISA);
-use Amin::Machine;
 use Amin::Machine::Filter::Dispatcher;
 
-@ISA = qw(Amin::Machine);
+my $end;
+my $middle;
+my $checker = "no";
 
 sub new {
-	my ($self, $spec) = @_;
+	
+	my $proto = shift;
+	my $class = ref $proto || $proto;
+	my $spec = shift;
+ 	my @options_if_any = @_ && ref $_[-1] eq "HASH" ? %{pop()} : ();
+ 	my $self = bless { @options_if_any }, $class;
 	$spec->{Machine_Name} = Amin::Machine::Filter::Dispatcher->new();
+	$end = undef;
+	$middle = undef;
+	$checker = "no";
 	#deal with the filter_list ie set it up for a dispatcher filter machine
 	my $fl = $spec->{Filter_List};
-	
 	#deal with the end first
-	my $end;
 	foreach (keys %$fl) {
-		if ($fl->{$_}->{position} eq "end") {
+		if ($fl->{$_}->{position} =~ /end/) {
 			if (!$end) {
 				$end = $fl->{$_}->{module}->new(Handler => $spec->{Handler}, Spec => $spec);
 			} else {
 				$end = $fl->{$_}->{module}->new(Handler => $end, Spec => $spec);
 			}
+			delete $fl->{$_};
+		}
+	}
+	#deal with the middle	
+	my %repeats;
+	foreach (keys %$fl) {
+		my $repeat = $fl->{$_}->{module};
+		if (defined $repeats{$repeat} eq "r") {
+			next;
+		} elsif ($fl->{$_}->{position} =~ /middle/) {
+			$checker = "yes";
+			if (!$middle) {
+				if ($end) {
+					$middle = $fl->{$_}->{module}->new(Handler => $end, Spec => $spec);
+					$repeats{$repeat} = "r";
+				} else {
+					$middle = $fl->{$_}->{module}->new(Handler => $spec->{Handler}, Spec => $spec);
+					$repeats{$repeat} = "r";
+				}
+			} else {
+				$middle = $fl->{$_}->{module}->new(Handler => $middle, Spec => $spec);
+				$repeats{$repeat} = "r";
+			}
+			#build a middle 1 chain in case there is none.
+			delete $fl->{$_};
+		}
+	}
+	#since we may have an end with no middle and only permanents
+	if ($end) {
+		if (!$middle) {
+			#we need to make the $middle variable the $end as well
+			#so we don't have to check for both later....
+			$middle = $end;
+		}
+	}
+	my $pbegin;
+	#deal with the permanents
+	foreach my $perms (keys %$fl) {
+		if ($fl->{$perms}->{position} =~ /permanent/) {
+			#this is a permanent
+			if ($pbegin) {
+				if ($fl->{$perms}->{module}) {
+					#this catches commented out permanent filters
+					$pbegin = $fl->{$perms}->{module}->new(Handler => $pbegin, Spec => $spec);
+				}
+			} else {
+				if ($fl->{$perms}->{module}) {
+					$pbegin = $fl->{$perms}->{module}->new(Handler => $middle, Spec => $spec);
+				}
+			}
+			delete $fl->{$perms};
 		}
 	}
 	
-	#deal with the middle	
-	foreach (keys %$fl) {
-		if ($fl->{$_}->{position} eq "middle") {
-			my $middle;
-			if ($end) {
-				$middle = $fl->{$_}->{module}->new(Handler => $end, Spec => $spec);
-			} else {
-				$middle = $fl->{$_}->{module}->new(Handler => $spec->{Handler}, Spec => $spec);
-			}
-			$fl->{$_}->{chain} = $middle; 
-		}
-	}
-		
+	my $no_begin = 0;
 	#deal with the beginning	
 	foreach (keys %$fl) {
 		if ($fl->{$_}->{position} eq "begin") {
 			#get the parent's kids
 			my $begin;
+			$no_begin=1;
+			if ($pbegin) {
+				$begin = $pbegin;
+			}
 			my %repeats;
 			#deal with permanents
 			foreach my $kid (keys %$fl) {
@@ -58,24 +105,6 @@ sub new {
 						#this is the same parent filter skip it
 						next;
 					}
-					#skip perms
-					if ($fl->{$kid}->{position} eq "permanent") {
-						next;
-					}
-					if ($fl->{$kid}->{position} eq "permanent-middle") {
-						next;
-					}
-					if ($fl->{$kid}->{position} eq "permanent-begin") {
-						next;
-					}
-					#if ($fl->{$kid}->{module} == $fl->{$kid}->{parent_name}) {
-					#	if ($kid == $_) {
-					#		next; 
-					#	} else {
-							#this is a modperl or daemonized repeat
-					#		delete $fl->{$kid};
-					#	}
-					#}
 					my $repeat = $fl->{$kid}->{module};
 					if ($repeats{$repeat} eq "r") {
 						delete $fl->{$kid};
@@ -93,52 +122,51 @@ sub new {
 					}
 				}
 			}
-			#deal with permanents
-			foreach my $perms (keys %$fl) {
-				if ($fl->{$perms}->{position} eq "permanent") {
-					if ($begin) {
-						$begin = $fl->{$perms}->{module}->new(Handler => $begin, Spec => $spec);
-						delete $fl->{$perms};
-					} else {
-						$begin = $fl->{$perms}->{module}->new(Handler => $spec->{Handler}, Spec => $spec);
-						delete $fl->{$perms};
-					}
-				}
-			}
-			
-
-			foreach my $perms (keys %$fl) {
-				if ($fl->{$perms}->{position} eq "permanent-middle") {
-					if ($begin) {
-						$begin = $fl->{$perms}->{module}->new(Handler => $begin, Spec => $spec);
-						delete $fl->{$perms};
-					} else {
-						$begin = $fl->{$perms}->{module}->new(Handler => $spec->{Handler}, Spec => $spec);
-						delete $fl->{$perms};
-					}
-				}
-			}
-
-			
-			foreach my $perms (keys %$fl) {
-				if ($fl->{$perms}->{position} eq "permanent-begin") {
-					if ($begin) {
-						$begin = $fl->{$perms}->{module}->new(Handler => $begin, Spec => $spec);
-						delete $fl->{$perms};
-					} else {
-						$begin = $fl->{$perms}->{module}->new(Handler => $spec->{Handler}, Spec => $spec);
-						delete $fl->{$perms};
-					}
-				}
-			}
 			#add in the parent
 			$begin = $fl->{$_}->{module}->new(Handler => $begin, Spec => $spec);
 			$fl->{$_}->{chain} = $begin; 
 		}
 	}
+	if ($no_begin == 0) {
+		if ($pbegin) {
+			$fl->{1}->{chain} = $pbegin;
+		} else {
+			$fl->{1}->{chain} = $middle;
+		}
+	}
 	#put our new wierd filter list back as the spec's Filter_List
 	$spec->{Filter_List} = $fl;
-	return $self->SUPER::new($spec);
+	$self->{Spec} = $spec;
+	return $self;
+}
+
+sub parse_uri {
+	my ($self, $uri) = @_;
+	my $type = "uri";
+	my $results = $self->run($uri, $type);
+	return $results;
+}
+
+sub parse_string {
+	my ($self, $profile) = @_;
+	my $results = $self->run($profile);
+	return $results;
+}
+
+sub run {
+	my ($self, $profile, $type) = @_;
+	#build the machine
+	my $spec = $self->{Spec};
+	#add in the machine itself
+	my $machine = $spec->{Machine_Name}->new(Handler => $spec->{Handler}, Spec => $spec);
+	$spec->{Machine_Handler} = $machine;
+	#grab a new sax parser and parse this sucker
+	my $p = $spec->{Generator}->new(Handler => $machine, Spec => $spec);
+	if ($type eq "uri") {
+		$p->parse_uri( $profile );
+	} else {
+		$p->parse_string( $profile );
+	}
 }
 
 1;
