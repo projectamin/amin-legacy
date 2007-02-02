@@ -24,6 +24,20 @@ my $fail = 0;
 my $machine = 0;
 my ($p, $pd, $h, $xmldoc);
 
+sub start_document {
+	my $self = shift;
+	$state = 0;
+	$pass = 0;
+	$fail = 0;
+	$machine = 0;
+	$p = undef;
+	$pd = undef;
+	$h = undef;
+	$xmldoc = undef;
+}
+
+
+
 #log = 1 Super = 0
 sub start_element {
 	my ($self, $element) = @_;
