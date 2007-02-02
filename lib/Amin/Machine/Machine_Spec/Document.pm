@@ -16,6 +16,16 @@ my @bundle;
 my %filters;
 my %bundle;
 
+sub start_document {
+	my $self = shift;
+	%document = {};
+	@filters = ();
+	@bundle = ();
+	%filters = {};
+	#%bundle = {};
+}
+
+
 sub start_element {
 	my ($self, $element) = @_;
 	$self->element($element);
