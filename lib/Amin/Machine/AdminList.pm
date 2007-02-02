@@ -14,6 +14,13 @@ use Amin::Elt;
 my %attrs;
 my (%adminlist, $x, $y, $z);
 
+sub start_document {
+	my $self = shift;
+	$x = 0;
+	$y = 0;
+	$z = 0;
+	%adminlist = {};	
+}
 
 sub start_element {
 	my ($self, $element) = @_;
@@ -98,17 +105,6 @@ sub end_document {
 	my $self = shift;
 	return \%adminlist;
 }
-
-sub start_document {
-	my $self = shift;
-
-	$x = 0;
-	$y = 0;
-	$z = 0;
-	%adminlist = ();	
-}
-
-
 
 sub uri {
 	my $self = shift;
