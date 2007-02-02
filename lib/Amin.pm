@@ -6,195 +6,205 @@ package Amin;
 #or see the following website http://projectamin.org.
 
 use strict;
-use Amin::Machines;
-use Amin::Machine::AdminList;
-use Amin::Machine::NetworkMap;
-use Amin::Machine::AdminList::Name;
-use Amin::Machine::Profile::Checker;
-use XML::SAX::PurePerl;
-use Sort::Naturally;
+use Amin::Machine::Machine_Spec;
+
+my $DefaultSAXHandler ||= 'Amin::Machine::Handler::Writer';
+my $DefaultSAXGenerator	||= 'XML::SAX::PurePerl';
+my $DefaultLog	||= 'Amin::Machine::Log::Standard';
+my $DefaultMachine ||= 'Amin::Machine::Dispatcher';
 
 use vars qw($VERSION);
-$VERSION = '0.5.3';
+$VERSION = '0.5.4';
 
 sub new {
 	my $class = shift;
 	my %args = @_;
 	my $self;
+	
+	if ( defined $args{Handler} ) {
+		if ( ! ref( $args{Handler} ) ) {
+			my $handler_class =  $args{Handler};
+			eval "require $handler_class";
+			$args{Handler} = $handler_class->new();
+		}
+	} else {
+		eval "require $DefaultSAXHandler";
+        	$args{Handler} = $DefaultSAXHandler->new();
+	}
+	
+	if ( defined $args{Generator} ) {
+		if ( ! ref( $args{Generator} ) ) {
+			my $generator_class =  $args{Generator};
+			eval "use $generator_class";
+			$args{Generator} = $generator_class->new();
+		}
+	} else {
+	       	eval "use $DefaultSAXGenerator";
+		$args{Generator} = $DefaultSAXGenerator->new();
+	}
+	
+	if (!defined $args{Machine_Name} ) {
+		$args{Machine_Name} = $DefaultMachine;
+	}	
+	
+	
+	if ( defined $args{Log} ) {
+		if ( ! ref( $args{Log} ) ) {
+			my $log_class =  $args{Log};
+			eval "use $log_class";
+			$args{Log} = $log_class->new(Handler => $args{Handler}); 
+		}
+	} else {
+	       	eval "use $DefaultLog";
+		$args{Log} = $DefaultLog->new(Handler => $args{Handler});
+	}
+	
+	$args{FILTERLIST} ||= [];
 	$self = bless \%args, $class;
 	return $self;
 }
 
-sub parse_adminlist {
-	my $self = shift;
-	my $adminlist = shift;
 
-	my @networkmap;
-	my @adminlists;
-	my @profiles;
-	my $simplemap;
-	
-	my $h = Amin::Machine::AdminList->new();
-	my $p = XML::SAX::PurePerl->new(Handler => $h);
-	$adminlist = $p->parse_uri($adminlist);
-	
-	#get/parse/load the adminlist/class map
-	#this is used for when people name="" their 
-	#adminlists and then use the map to specify
-	#which names they want to run.
-	my $adminlist_map;
-	if($self->{AdminList_Map}) {
-		my $h = Amin::Machine::AdminList::Name->new();
-		my $p = XML::SAX::PurePerl->new(Handler => $h);
-		$adminlist_map = $p->parse_uri($self->{AdminList_Map});
-	}
-	
-	foreach my $key (nsort keys %$adminlist) {
-		if (($key =~ m/server/) || ($adminlist_map->{key})) {
-			#if ($adminlist->{key}->{type} eq "map") {
-				my $n = Amin::Machine::NetworkMap->new();
-				my $np = XML::SAX::PurePerl->new(Handler => $n);
-				$simplemap = $np->parse_uri($adminlist->{$key});
-				foreach my $map (@$simplemap) {
-					if ($map eq undef) {
-						next;
-					} else {
-						push @networkmap, $map;
-					}
-				}
-			#}
-		}
-		if (($key =~ m/profile/) || ($adminlist_map->{key})) {
-			#if ($adminlist->{key}->{type} eq "profile") {
-				push @profiles, $adminlist->{$key};
-		}
-		if (($key =~ m/adminlist/) || ($adminlist_map->{key})) {
-			#if ($adminlist->{key}->{type} eq "adminlist") {
-				push @adminlists, $adminlist->{$key};
-			#}
-		}
-	}
-		
-	#deal with adminlists within adminlists
-	#we have to repeat ourselves for a while....
-	foreach (@adminlists) {
-		my $ih = Amin::Machine::AdminList->new();
-		my $ip = XML::SAX::PurePerl->new(Handler => $ih);
-		my $iadminlist = $ip->parse_uri($_);
-		
-		foreach my $key (nsort keys %$iadminlist) {
-			if (($key =~ m/server/) || ($adminlist_map->{key})) {
-	#			if ($adminlist->{key}->{type} eq "adminlist") {
-					my $n = Amin::Machine::NetworkMap->new();
-					my $np = XML::SAX::PurePerl->new(Handler => $n);
-					$simplemap = $np->parse_uri($iadminlist->{$key});
-					foreach my $map (@$simplemap) {	
-						if ($map eq undef) {
-							next;
-						} else {
-							push @networkmap, $map;
-						}
-					}
-	#			}
-			}
-			if (($key =~ m/profile/) || ($adminlist_map->{key})) {
-	#			if ($adminlist->{key}->{type} eq "adminlist") {
-					push @profiles, $iadminlist->{$key};
-	#			}
-			}
-			if (($key =~ m/adminlist/) || ($adminlist_map->{key})) {
-	#			if ($adminlist->{key}->{type} eq "adminlist") {
-					push @adminlists, $iadminlist->{$key};
-	#			}
-			}
-		}
-	}
-	
-	my @results;
-	if (@networkmap) {
-		foreach my $networkmap (@networkmap) {
-			my $protocol = $networkmap->{protocol};
-			foreach my $profile (@profiles) {
-				if ($profile =~ /^</) {
-				#	$mout = $protocol->parse_string($nm->{$networkmap}, $profile, $adminlist_map);
-				} else {
-				#	$mout = $protocol->parse_uri($nm->{$networkmap}, $profile, $adminlist_map);
-				}
-			
-			
-			}
-		}
+sub parse_uri {
+	my ($self, $profile) = @_;
+	my $spec;
+	if ($self->{Machine_Spec}) {
+		$spec = $self->machine_spec($profile, $self->{Machine_Spec})
 	} else {
-		foreach my $profile (@profiles) {
-			if ($profile =~ /^</) {
-				$self->parse_string($profile);
-			} else {
-				$self->parse_uri($profile);
-			}
-		}
+		$spec = $self->machine_spec($profile)
 	}
+	#load modules from the new $spec
+	$spec = $self->load_spec($spec);
+	#build the machine and run it
+	eval "require $self->{Machine_Name}";
+	my $m = $self->{Machine_Name}->new($spec);
+	$m->parse_uri( $profile );
+	#get rid of the filter list...
+	my $fl = $spec->{Filter_List};
+	foreach (keys %$fl) {
+		delete $fl->{$_};
+	}
+	$spec->{Filter_List} = $fl;
+	my $buffer = $spec->{Handler}->{Spec}->{Buffer};
+	$spec->{Handler}->{Spec}->{Buffer} = undef;	
+	return $buffer;
 }
 
 sub parse_string {
 	my ($self, $profile) = @_;
-	my $m = Amin::Machines->new (
-				Machine_Name => $self->{Machine_Name}, 
-				Machine_Spec => $self->{Machine_Spec},
-				Generator => $self->{Generator},
-				Handler => $self->{Handler},
-				Filter_Param => $self->{Filter_Param},
-				Log => $self->{Log}
-    	);
-	my $aout;
-	my $lout;
-	if ($self->{NetworkMap}) {
-		my $h = Amin::Machine::NetworkMap->new();
-		my $p = XML::SAX::PurePerl->new(Handler => $h);
-		my $nm = $p->parse($self->{NetworkMap});
-		foreach my $networkmap (keys %$nm) {
-			my $protocol = $networkmap->{protocol};
-			$lout = $protocol->parse_string($nm->{$networkmap},$profile);
-		
-		
-		}
+	#parse and add the machine spec
+	my $spec;
+	if ($self->{Machine_Spec}) {
+		$spec = $self->machine_spec($profile, $self->{Machine_Spec})
 	} else {
-		$lout = $m->parse_string($profile);
+		$spec = $self->machine_spec($profile)
 	}
-	foreach (@$lout) {
-		$aout = $aout . $_;
+	#load modules from the new $spec
+	$spec = $self->load_spec($spec);
+	#build the machine and run it
+	eval "require $spec->{Machine_Name}";
+	my $m = $spec->{Machine_Name}->new($spec);
+	$m->parse_string( $profile );
+	#get rid of the filter list...
+	my $fl = $spec->{Filter_List};
+	foreach (keys %$fl) {
+		delete $fl->{$_};
 	}
-	$self->results($aout);
+	$spec->{Filter_List} = $fl;
+	my $buffer = $spec->{Handler}->{Spec}->{Buffer};
+	$spec->{Handler}->{Spec}->{Buffer} = undef;	
+	return $buffer;
 }
 
-sub parse_uri {
-	my ($self, $uri) = @_;
-	my $m = Amin::Machines->new (
-				Machine_Name => $self->{Machine_Name}, 
-				Machine_Spec => $self->{Machine_Spec},
-				Generator => $self->{Generator},
-				Handler => $self->{Handler},
-				Filter_Param => $self->{Filter_Param},
-				Log => $self->{Log}
-    	);
-	my $aout;
-	my $lout;
-	if ($self->{NetworkMap}) {
-		my $h = Amin::Machine::NetworkMap->new();
-		my $p = XML::SAX::PurePerl->new(Handler => $h);
-		my $nm = $p->parse_uri($self->{NetworkMap});
-		foreach my $networkmap (keys %$nm) {
-			my $protocol = $nm->{$networkmap}->{protocol};
-			$lout = $protocol->parse_uri($nm->{$networkmap}, $uri);
-		}
+sub machine_spec {
+	my ($self, $profile, $uri) = @_;
+	my $h;
+	if (defined $uri) {	
+		$h = Amin::Machine::Machine_Spec->new('URI' => $uri);
 	} else {
-		$lout = $m->parse_uri($uri);
+		$h = Amin::Machine::Machine_Spec->new();
 	}
-	foreach (@$lout) {
-		$aout = $aout . "$_";
+	my $ix = XML::Filter::XInclude->new(Handler => $h);
+	my $p = XML::SAX::PurePerl->new(Handler => $ix);
+	my $spec;
+	if ($profile =~ /^</) {
+		$spec = $p->parse_string($profile);
+	} else {
+		$spec = $p->parse_uri($profile);
 	}
-	$self->results($aout);
+	unless ($spec) {
+		$spec = {};
+	}
+	return $spec;
 }
-	
+
+sub load_spec {
+	my ($self, $spec) = @_;
+	#stick in our filter params
+	$spec->{Filter_Param} = $self->{Filter_Param}; 
+	#load up the generator, handler and the log mechanisms if not already loaded
+	#ie they came from the spec. 
+	if ($spec->{Generator}->{name}) {
+		#there was a generator in the spec use it
+		no strict 'refs';
+		eval "require $spec->{Generator}";
+		$spec->{Generator} = $spec->{Generator}->new();
+		if ($@) {
+			my $text = "Machines failed. Could not load a generator named $spec->{Generator}. Reason $@";
+			die $text;
+		}
+		
+	} else { 
+		#there was no generator in the spec use the default loaded
+		$spec->{Generator} = $self->{Generator}; 
+	}
+	if ($spec->{FHandler}->{name}) {
+		#there was a Handler in the spec use it
+		no strict 'refs';
+		eval "require $spec->{FHandler}->{name}";
+		
+		if ($spec->{FHandler}->{out}) {
+			$spec->{Handler} = $spec->{FHandler}->{name}->new(Output => $spec->{FHandler}->{out});
+		} else {		
+			$spec->{Handler} = $spec->{FHandler}->{name}->new();
+		}
+		
+		if ($@) {
+			my $text = "Machines failed. Could not load a handler named $spec->{FHandler}. Reason $@";
+			die $text;
+		}
+		
+	} else { 
+		#there was no Handler in the spec use the default loaded
+		$spec->{Handler} = $self->{Handler};
+	}
+	if ($spec->{Log}) {
+		#there was a log in the spec use it
+		if (! ref($spec->{Log})) {
+		no strict 'refs';
+		eval "require $spec->{Log}";
+		$spec->{Log} = $spec->{Log}->new(Handler => $spec->{Handler} );
+		if ($@) {
+			my $text = "Machines failed. Could not load a log named $spec->{Log}. Reason $@";
+			die $text;
+		}
+		}
+	} else { 
+		#there was no log in the spec use the default loaded
+		$spec->{Log} = $self->{Log};
+	}
+	if ($spec->{Machine_Name}) {
+		#there was a machine name in the spec use it
+		$self->{Machine_Name} = $spec->{Machine_Name};
+	} elsif (!$spec->{Machine_Name}) {
+		#there was no machine name in the spec use default
+		$spec->{Machine_Name} = $self->{Machine_Name};
+	}
+	return $spec;
+}
+
+
+
 
 sub set_handler {
 	my $self = shift;
@@ -228,7 +238,6 @@ sub get_log {
 	my $self = shift;
 	return $self->{Log};
 }
-
 
 sub set_networkmap {
 	my $self = shift;
