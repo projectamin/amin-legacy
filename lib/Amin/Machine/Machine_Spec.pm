@@ -13,9 +13,7 @@ use XML::SAX::PurePerl;
 use IPC::Run qw( run );
 use File::Basename qw(dirname);
 use Amin::Elt;
-
 @ISA = qw(Amin::Elt);
-
 
 my $spec;
 #the spec is defined in one of four ways
@@ -27,8 +25,8 @@ my $spec;
 
 my $home = $ENV{'HOME'};
 my $configfile = "$home/.amin/machine_spec.xml";
+
 my %machine_filters;
-my %control;
 my $begin = 0;
 my $stage = 0;
 my $p = 0;
@@ -37,54 +35,54 @@ my %attrs;
 my $pname;
 my $pstage;
 my $psname;
+my %repeats;
 
 sub start_document {
 	my $self = shift;
+	$spec = undef;
+	#reset variables
+	$begin = 0;
+	$stage = 0;
+	$p = 0;
+	@parent = ();
+	%attrs = {};
+	$pname = undef;
+	$pstage = undef;
+	$psname = undef;
+	%repeats = {};
+	
 	if ($self->{URI}) {
 		#process the uri
 		my $h = Amin::Machine::Machine_Spec::Document->new();
 		my $x = XML::Filter::XInclude->new(Handler => $h);
 		my $p = XML::SAX::PurePerl->new(Handler => $x);
 		$spec = $p->parse_uri($self->{URI});	
-		$control{ICONTROL} = "yes";
 	} elsif (-f '/etc/amin/machine_spec.xml') {
-		#check if %filters is set
-		unless ($control{ICONTROL}) {
-			my $uri = "file://etc/amin/machine_spec.xml";
-			#process /etc/amin/machine_spec.xml
-			my $h = Amin::Machine::Machine_Spec::Document->new();
-			my $x = XML::Filter::XInclude->new(Handler => $h);
-			my $p = XML::SAX::PurePerl->new(Handler => $x);
-			$spec = $p->parse_uri($uri);	
-			$control{ICONTROL} = "yes";
-		}
+		my $uri = "file://etc/amin/machine_spec.xml";
+		#process /etc/amin/machine_spec.xml
+		my $h = Amin::Machine::Machine_Spec::Document->new();
+		my $x = XML::Filter::XInclude->new(Handler => $h);
+		my $p = XML::SAX::PurePerl->new(Handler => $x);
+		$spec = $p->parse_uri($uri);	
 	} elsif (-f $configfile) {
-		#check if %filters is set
-		unless ($control{ICONTROL}) {
-			my $uri = "file:/" . $configfile;
-			#process ~/.amin/machine_spec.xml
-			my $h = Amin::Machine::Machine_Spec::Document->new();
-			my $x = XML::Filter::XInclude->new(Handler => $h);
-			my $p = XML::SAX::PurePerl->new(Handler => $x);
-			$spec = $p->parse_uri($uri);	
-			$control{ICONTROL} = "yes";
-		}
+		my $uri = "file:/" . $configfile;
+		#process ~/.amin/machine_spec.xml
+		my $h = Amin::Machine::Machine_Spec::Document->new();
+		my $x = XML::Filter::XInclude->new(Handler => $h);
+		my $p = XML::SAX::PurePerl->new(Handler => $x);
+		$spec = $p->parse_uri($uri);	
 	} else {
-		#check if %filters is set
-		unless ($control{ICONTROL}) {
-			#mess with stuff
-			my $dir = $INC{'Amin.pm'};
-		        $dir = dirname($dir);
-			my $uri = "file:/" . $dir . "/Amin/Machine/Machine_Spec/machine_spec.xml";
+		#mess with stuff
+		my $dir = $INC{'Amin.pm'};
+	        $dir = dirname($dir);
+		my $uri = "file:/" . $dir . "/Amin/Machine/Machine_Spec/machine_spec.xml";
 			
-			#define the spec
-			#process ~perl/site_perl/Amin/Machine/Machine_Spec/machine_spec.xml
-			my $h = Amin::Machine::Machine_Spec::Document->new();
-			my $x = XML::Filter::XInclude->new(Handler => $h);
-			my $p = XML::SAX::PurePerl->new(Handler => $x);
-			$spec = $p->parse_uri($uri);	
-			$control{ICONTROL} = "yes";
-		}
+		#define the spec
+		#process ~perl/site_perl/Amin/Machine/Machine_Spec/machine_spec.xml
+		my $h = Amin::Machine::Machine_Spec::Document->new();
+		my $x = XML::Filter::XInclude->new(Handler => $h);
+		my $p = XML::SAX::PurePerl->new(Handler => $x);
+		$spec = $p->parse_uri($uri);	
 	}
 }
 
@@ -108,17 +106,19 @@ sub start_element {
 		|| ($stuff->{$_}->{'name'} eq $element->{'LocalName'} )) {
 		
 		if ($stuff->{$_}->{namespace} eq $element->{Prefix}) {
-		
+			#if this is a repeat skip it.
+			my $repeat = $stuff->{$_}->{module};
+			if ($repeats{$repeat} eq "r") {
+				next;
+			}
 			#up the stage
 			$stage++;
-			
 			my %new;
 			#this is one of those filters ie begin with that 
 			#whole special attr
 			if (($stuff->{$_}->{'name'} eq $element->{'LocalName'} ) && ($attrs{'{}name'}->{'Value'})) {
 				$new{attr} = $attrs{'{}name'}->{'Value'};
 			}	
-		
 			#we found something, is it a begin filter?
 			if ($stuff->{$_}->{position} eq "begin") {
 				#begin and reset the parent
@@ -136,6 +136,7 @@ sub start_element {
 			foreach my $keys (keys %$hash) {
 				$new{$keys} = $stuff->{$_}->{$keys};
 			}
+			$repeats{$repeat} = "r";
 			$machine_filters{$stage} = \%new;
 		}
 		}
@@ -163,6 +164,7 @@ sub end_element {
 sub end_document {
 	my $self = shift;
 	my $stuff = $spec->{Filter};
+	
 	#do the permanents
 	foreach (keys %$stuff) {
 	if ($stuff->{$_}->{position} =~ /permanent/) {
@@ -178,8 +180,20 @@ sub end_document {
 	}
 	}	
 		
-	
-	
+	#do the ends as well
+	foreach (keys %$stuff) {
+	if ($stuff->{$_}->{position} =~ /end/) {
+		my %new;
+		$stage++;
+		$new{parent_name} = $psname;
+		$new{parent_stage} = 1;
+		my $hash = $stuff->{$_};
+		foreach my $keys (keys %$hash) {
+			$new{$keys} = $stuff->{$_}->{$keys};
+		}
+		$machine_filters{$stage} = \%new;
+	}
+	}	
 	
 	foreach (keys %machine_filters) {
 		#autoload module check
@@ -187,6 +201,7 @@ sub end_document {
 		eval "require $machine_filters{$_}->{module}";
 		#version check
 		my $lv;
+		#my $lh = $machine_filters->{$_}->{module};
 		my $lh = $machine_filters{$_}->{module};
 		unless ($@) {
 			if ($lh->can("version")) {
@@ -207,11 +222,11 @@ sub end_document {
 		}
 		if (($@) || ($version eq "bad")) {
 			if ($machine_filters{$_}->{'download'}) {
-				my @cmd = ($0, '-u', $machine_filters{$_}->{'download'});
+				#removed $0 due to daemon/httpd loops/crashes....
+				my @cmd = ('amin', '-u', $machine_filters{$_}->{'download'});
 				run \@cmd;
 				eval "require $machine_filters{$_}->{module}";
 				if ($@) {
-					#$self->{Spec}->{amin_error} = "red";
 					die "Machine_Spec failed could not load $_->{module}. Reason $@";
 				}
 			} #else {
@@ -223,7 +238,7 @@ sub end_document {
 			#		use lib 'http://projectamin.org/amin-latest.par';
 			#		use lib 'http://projectamin.org/lwp.par';
 			#
-			#		eval "require $machine_filters{$_}->{module}";
+			#		eval "require $machine_filters->{$_}->{module}";
 			#		if ($@) {
 			#			#$self->{Spec}->{amin_error} = "red";
 			#			die "Machine_Spec failed could not load $_->{module}. Reason $@";
@@ -234,11 +249,9 @@ sub end_document {
 		
 	}
 	
-	
 	$spec->{Filter_List} = \%machine_filters;
 	return $spec;
 }
-
 
 =head1 NAME
 
