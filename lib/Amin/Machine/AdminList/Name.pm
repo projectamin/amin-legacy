@@ -28,6 +28,8 @@ sub end_document {
 	foreach (@$name) {
 		$name{$_} = "";
 	}
+	#reset name
+	$self->{NAME} = ();
 	return \%name;
 }
 
