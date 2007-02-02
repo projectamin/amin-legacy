@@ -91,6 +91,30 @@ sub machine_type {
 	return $self->{MACHINE_TYPE};
 }
 
+sub machine_name {
+	my $self = shift;
+	if (@_) { $self->{MACHINE_NAME} = shift;}
+	return $self->{MACHINE_NAME};
+}
+
+sub generator {
+	my $self = shift;
+	if (@_) { $self->{GENERATOR} = shift;}
+	return $self->{GENERATOR};
+}
+
+sub handler {
+	my $self = shift;
+	if (@_) { $self->{HANDLER} = shift;}
+	return $self->{HANDLER};
+}
+
+sub log {
+	my $self = shift;
+	if (@_) { $self->{LOG} = shift;}
+	return $self->{LOG};
+}
+
 sub uri {
 	my $self = shift;
 	if (@_) { $self->{URI} = shift;}
