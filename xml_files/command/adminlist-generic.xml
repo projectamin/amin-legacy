@@ -20,9 +20,11 @@
    <amin:profile>
      <amin:uri>file://amin/xml_files/command/ls.xml</amin:uri>
    </amin:profile>
+<!--
    <amin:profile>
      <amin:uri>file://amin/xml_files/command/ldconfig.xml</amin:uri>
    </amin:profile>
+-->
    <amin:profile>
      <amin:uri>file://amin/xml_files/command/rmdir.xml</amin:uri>
    </amin:profile>
