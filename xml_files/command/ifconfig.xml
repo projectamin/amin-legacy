@@ -1,14 +1,14 @@
 <amin:profile xmlns:amin='http://projectamin.org/ns/'>
         <amin:command name="ifconfig">
-                <amin:param name="interface">eth0:1</amin:param>
+                <amin:param name="interface">eth0:1000</amin:param>
                 <amin:param name="address">192.168.0.1</amin:param>
                 <amin:param name="netmask">255.255.255.0</amin:param>
         </amin:command>
 
-	<!--
+	<amin:command name="ifconfig"/>
+
         <amin:command name="ifconfig">
-                <amin:param name="interface">eth0:1</amin:param>
+                <amin:param name="interface">eth0:1000</amin:param>
                 <amin:param name="state">down</amin:param>
         </amin:command>
-	-->
 </amin:profile>
