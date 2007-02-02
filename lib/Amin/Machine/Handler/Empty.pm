@@ -12,6 +12,12 @@ use Amin::Elt;
 @ISA = qw(Amin::Elt);
 
 my %attrs;
+
+sub start_document {
+	my $self = shift;
+	%attrs = {};
+}
+
 sub start_element {
 	my($self, $element) = @_;
 	%attrs = %{$element->{Attributes}};
