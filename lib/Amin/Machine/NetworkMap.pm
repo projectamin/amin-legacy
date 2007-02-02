@@ -14,6 +14,12 @@ use Amin::Protocol::Standard;
 
 my (%maps, %attrs);
 
+sub start_document {
+	my $self = shift;
+	%maps = {};
+	%attrs = {};
+}
+
 sub start_element {
 	my ($self, $element) = @_;
 	%attrs = %{$element->{Attributes}};
