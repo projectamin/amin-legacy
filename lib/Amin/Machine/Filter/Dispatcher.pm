@@ -13,6 +13,7 @@ use Amin::Elt;
 
 @ISA = qw(Amin::Elt);
 
+
 sub start_element {
 	my ($self, $element) = @_;
 	my $spec = $self->{Spec};
@@ -21,39 +22,17 @@ sub start_element {
 	if (!$attrs{'{}name'}->{'Value'}) {
 		$attrs{'{}name'}->{'Value'} = "";
 	}
-	
 	my $fl = $spec->{Filter_List};
 	foreach (keys %$fl) {
-		if ($element->{LocalName} eq $fl->{$_}->{element})  {
-		if (($attrs{'{}name'}->{Value} eq $fl->{$_}->{name}) || 
-		($element->{LocalName} eq $fl->{$_}->{name})) {
-		if ($fl->{$_}->{namespace} eq $element->{Prefix}) {
-			if ($self->{Spec}->{amin_error}) {
-				#if there is an error reset handler to Empty
-				$self->set_handler( Amin::Machine::Handler::Empty->new(Handler => $spec->{Handler}, Spec => $spec) );
-			} else {
-				#this is one of those special begin chains....
-				if (($fl->{$_}->{'name'} eq $element->{'LocalName'} ) && ($attrs{'{}name'}->{'Value'})) {
-					if ($fl->{$_}->{attr} ne $attrs{'{}name'}->{'Value'}) {
-						next;
-					}
-				}	
-				
-				my $module = $fl->{$_}->{module};
-				eval "require $module"; 
-				
-				if ($@) {
-					$self->{Spec}->{amin_error} = "red";
-					my $text = "Dispatcher failed could not load $_->{module}. Reason $@";
-					$log->error_message($text);
-				} else {
-					my $schain = $fl->{$_}->{chain};
-					$self->set_handler($schain);
-				}
-			}	
-		}
-		}
-		}
+		if ($self->{Spec}->{amin_error}) {
+			#if there is an error reset handler to Empty
+			$self->set_handler( Amin::Machine::Handler::Empty->new(Handler => $spec->{Handler}, Spec => $spec) );
+		} else {
+			if ($fl->{$_}->{chain}) {
+				my $schain = $fl->{$_}->{chain};
+				$self->set_handler($schain);
+			}
+		}	
 	}
 	$self->SUPER::start_element($element);
 }
