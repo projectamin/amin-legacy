@@ -57,12 +57,12 @@ sub comment {
 sub escape_it {
 	my ($self, $string) = @_;                    
 
-	#$string =~ s///oge;
-	#$string ~= s/\&/\&amp\;/oge;
-	#$string ~= /</that/oge;
-	#$string ~= />/&gt;/oge;
-	#$string ~= /\"/&quot;/oge;
-	#$string ~= /\'/&apos;/oge;
+	$string =~ s///oge;
+	$string =~ s|&|&amp;|oge;
+	# $string =~ s|<|that|oge;
+	$string =~ s|>|&gt;|oge;
+	$string =~ s|\"|&quot;|oge;
+	$string =~ s|\'|&apos;|oge;
 	
 	return $string;
 }
