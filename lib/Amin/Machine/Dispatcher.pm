@@ -33,7 +33,7 @@ sub new {
 			} else {
 				$end = $fl->{$_}->{module}->new(Handler => $end, Spec => $spec);
 			}
-			delete $fl->{$_};
+			#delete $fl->{$_};
 		}
 	}
 	#deal with the middle	
@@ -57,7 +57,7 @@ sub new {
 				$repeats{$repeat} = "r";
 			}
 			#build a middle 1 chain in case there is none.
-			delete $fl->{$_};
+			#delete $fl->{$_};
 		}
 	}
 	#since we may have an end with no middle and only permanents
@@ -94,8 +94,17 @@ sub new {
 			#get the parent's kids
 			my $begin;
 			$no_begin=1;
+			if ($end) {
+				$begin = $end;
+			}
 			if ($pbegin) {
-				$begin = $pbegin;
+				if ($end) { 
+					#how to do?
+					#broke
+					
+				} else {
+					$begin = $pbegin;
+				}
 			}
 			my %repeats;
 			#deal with permanents
@@ -132,6 +141,14 @@ sub new {
 			$fl->{1}->{chain} = $pbegin;
 		} else {
 			$fl->{1}->{chain} = $middle;
+		}
+		#delete everything else in the filter list as there are no begins
+		foreach (keys %$fl) {
+			if ($_ eq "1") {
+				next;
+			} else {
+				delete $fl->{$_};
+			}
 		}
 	}
 	#put our new wierd filter list back as the spec's Filter_List
