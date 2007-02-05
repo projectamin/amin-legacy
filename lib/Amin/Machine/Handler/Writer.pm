@@ -64,7 +64,6 @@ sub escape_it {
 	$string =~ s|>|\&gt;|oge;
 	$string =~ s|\"|\&quot;|oge;
 	$string =~ s|\'|\&apos;|oge;
-	print "$string\n";
 	return $string;
 }
 
