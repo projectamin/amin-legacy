@@ -97,6 +97,32 @@ sub machine_name {
 	return $self->{MACHINE_NAME};
 }
 
+sub arg {
+	my $self = shift;
+	if (@_) { $self->{ARG} = shift;}
+	return $self->{ARG};
+}
+
+#this is here for ainit or other controllers that
+#do not use a setup like amin does for it's get_opts
+#ie it's a loop for ainit pid 1 or not and not just
+#options from the cli interface used...
+sub good {
+	my $self = shift;
+	if (@_) { $self->{GOOD} = shift;}
+	return $self->{GOOD};
+}
+
+
+sub argname {
+	my $self = shift;
+	if (@_) { $self->{ARGNAME} = shift;}
+	return $self->{ARGNAME};
+}
+
+
+
+
 sub generator {
 	my $self = shift;
 	if (@_) { $self->{GENERATOR} = shift;}
