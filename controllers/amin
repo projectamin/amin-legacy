@@ -109,37 +109,10 @@ get_profile($cli);
 #the commented out code below is all
 #a simple uri based controller needs
 
-my $amin = Amin->new();
+#my $amin = Amin->new();
 #$amin->parse($cli->{'URI'});
 
 #this controller is a little more advanced.
-if (defined $cli->networkmap) {
-	$amin->set_networkmap($cli->networkmap);
-} 
-if (defined $cli->machine_spec) {
-	$amin->set_machine_spec($cli->machine_spec);
-} 
-if (defined $cli->machine_type) {
-	$amin->set_machine_type($cli->machine_type);
-} 
-if (defined $cli->machine_name) {
-	$amin->set_machine_name($cli->machine_name);
-} 
-if (defined $cli->generator) {
-	$amin->set_generator($cli->generator);
-} 
-if (defined $cli->handler) {
-	$amin->set_handler($cli->handler);
-} 
-if (defined $cli->log) {
-	$amin->set_log($cli->log);
-} 
-if (defined $cli->filter_param) {
-	$amin->set_filter_param($cli->filter_param);
-} 
-if (defined $cli->adminlist_map) {
-	$amin->set_adminlist_map($cli->adminlist_map);
-}
 
 if (defined $cli->adminlist) {
 
