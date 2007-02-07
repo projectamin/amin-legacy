@@ -10,7 +10,7 @@ use Net::Daemon;
 use Amin;
 use LWP::UserAgent;
 #use Amin::Machine::Protocol::Datastore;
-use XML::Filter::XInclude;
+use Amin::Machine::Filter::XInclude;
 use XML::SAX::PurePerl;
 use Digest::MD5;
 use IO::Socket;
@@ -98,7 +98,7 @@ sub Run ($) {
 			#compare to datastore of checksums
 			my $ds = $self->{Data_Store};
 			my $h = Amin::Machine::Protocol::Datastore->new();
-			my $x = XML::Filter::XInclude->new(Handler => $h);
+			my $x = Amin::Machine::Filter::XInclude->new(Handler => $h);
 			my $p = XML::SAX::PurePerl->new(Handler => $x);
 			$ds = $p->parse_uri($ds);	
 			#if checksum matches or not.
