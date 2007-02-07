@@ -19,7 +19,9 @@ sub start_document {
 	$x = 0;
 	$y = 0;
 	$z = 0;
-	%adminlist = {};	
+	foreach (keys %adminlist) {
+		delete $adminlist{$_};
+	}
 }
 
 sub start_element {
