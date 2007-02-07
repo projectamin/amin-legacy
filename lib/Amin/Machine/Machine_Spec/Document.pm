@@ -18,11 +18,17 @@ my %bundle;
 
 sub start_document {
 	my $self = shift;
-	%document = {};
 	@filters = ();
 	@bundle = ();
-	%filters = {};
-	#%bundle = {};
+	foreach (keys %document) {
+		delete $document{$_};
+	}
+	foreach (keys %filters) {
+		delete $filters{$_};
+	}
+	foreach (keys %bundle) {
+		delete $bundle{$_};
+	}
 }
 
 
