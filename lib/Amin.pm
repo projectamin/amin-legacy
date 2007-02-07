@@ -7,6 +7,7 @@ package Amin;
 
 use strict;
 use Amin::Machine::Machine_Spec;
+use Amin::Machine::Filter::XInclude;
 
 my $DefaultSAXHandler ||= 'Amin::Machine::Handler::Writer';
 my $DefaultSAXGenerator	||= 'XML::SAX::PurePerl';
