@@ -17,11 +17,6 @@ use Amin::Elt;
 sub start_element {
 	my ($self, $element) = @_;
 	my $spec = $self->{Spec};
-	my %attrs = %{$element->{Attributes}};
-	my $log = $self->{Spec}->{Log};
-	if (!$attrs{'{}name'}->{'Value'}) {
-		$attrs{'{}name'}->{'Value'} = "";
-	}
 	my $fl = $spec->{Filter_List};
 	foreach (keys %$fl) {
 		if ($self->{Spec}->{amin_error}) {
