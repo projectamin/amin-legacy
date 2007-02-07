@@ -14,6 +14,8 @@ use IPC::Run qw( run );
 use File::Basename qw(dirname);
 use Amin::Elt;
 @ISA = qw(Amin::Elt);
+use Data::Dumper;
+
 
 my $spec;
 #the spec is defined in one of four ways
@@ -35,7 +37,7 @@ my %attrs;
 my $pname;
 my $pstage;
 my $psname;
-my %repeats;
+#my %repeats;
 
 sub start_document {
 	my $self = shift;
@@ -44,13 +46,17 @@ sub start_document {
 	$begin = 0;
 	$stage = 0;
 	$p = 0;
+	
 	@parent = ();
 	$pname = undef;
 	$pstage = undef;
 	$psname = undef;
-	foreach (keys %repeats) {
-		delete $repeats{$_};
-	}
+	#foreach (keys %repeats) {
+	#	delete $repeats{$_};
+	#}
+	#foreach (keys %attrs) {
+	#	delete $attrs{$_};
+	#}
 	
 	if ($self->{URI}) {
 		#process the uri
@@ -110,13 +116,18 @@ sub start_element {
 		if ($stuff->{$_}->{namespace} eq $element->{Prefix}) {
 			#if this is a repeat skip it.
 			
-			
-			
-			my $repeat = $stuff->{$_}->{module};
-			if (!defined $repeats{$repeat}) {next;} 
-			if ($repeats{$repeat} eq "r") {
-				next;
+			foreach my $ikeys (keys %machine_filters) {
+				if ($ikeys eq $stuff->{$_}->{module}) {
+					next;
+				}
 			}
+			
+			#my $repeat = $stuff->{$_}->{module};
+			#warn Dumper(%repeats, "repeats");
+			#if (!defined $repeats{$repeat}) {next;} 
+			#if ($repeats{$repeat} eq "r") {
+			#	next;
+			#}
 			#up the stage
 			$stage++;
 			my %new;
@@ -142,7 +153,7 @@ sub start_element {
 			foreach my $keys (keys %$hash) {
 				$new{$keys} = $stuff->{$_}->{$keys};
 			}
-			$repeats{$repeat} = "r";
+			#$repeats{$repeat} = "r";
 			$machine_filters{$stage} = \%new;
 		}
 		}
