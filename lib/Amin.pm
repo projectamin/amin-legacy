@@ -124,7 +124,7 @@ sub machine_spec {
 	} else {
 		$h = Amin::Machine::Machine_Spec->new();
 	}
-	my $ix = XML::Filter::XInclude->new(Handler => $h);
+	my $ix = Amin::Machine::Filter::XInclude->new(Handler => $h);
 	my $p = XML::SAX::PurePerl->new(Handler => $ix);
 	my $spec;
 	if ($profile =~ /^</) {
