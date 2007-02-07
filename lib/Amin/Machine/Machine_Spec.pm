@@ -8,7 +8,7 @@ package Amin::Machine::Machine_Spec;
 use strict;
 use vars qw(@ISA);
 use Amin::Machine::Machine_Spec::Document;
-use XML::Filter::XInclude;
+use Amin::Machine::Filter::XInclude;
 use XML::SAX::PurePerl;
 use IPC::Run qw( run );
 use File::Basename qw(dirname);
@@ -45,30 +45,31 @@ sub start_document {
 	$stage = 0;
 	$p = 0;
 	@parent = ();
-	%attrs = {};
 	$pname = undef;
 	$pstage = undef;
 	$psname = undef;
-	%repeats = {};
+	foreach (keys %repeats) {
+		delete $repeats{$_};
+	}
 	
 	if ($self->{URI}) {
 		#process the uri
 		my $h = Amin::Machine::Machine_Spec::Document->new();
-		my $x = XML::Filter::XInclude->new(Handler => $h);
+		my $x = Amin::Machine::Filter::XInclude->new(Handler => $h);
 		my $p = XML::SAX::PurePerl->new(Handler => $x);
 		$spec = $p->parse_uri($self->{URI});	
 	} elsif (-f '/etc/amin/machine_spec.xml') {
 		my $uri = "file://etc/amin/machine_spec.xml";
 		#process /etc/amin/machine_spec.xml
 		my $h = Amin::Machine::Machine_Spec::Document->new();
-		my $x = XML::Filter::XInclude->new(Handler => $h);
+		my $x = Amin::Machine::Filter::XInclude->new(Handler => $h);
 		my $p = XML::SAX::PurePerl->new(Handler => $x);
 		$spec = $p->parse_uri($uri);	
 	} elsif (-f $configfile) {
 		my $uri = "file:/" . $configfile;
 		#process ~/.amin/machine_spec.xml
 		my $h = Amin::Machine::Machine_Spec::Document->new();
-		my $x = XML::Filter::XInclude->new(Handler => $h);
+		my $x = Amin::Machine::Filter::XInclude->new(Handler => $h);
 		my $p = XML::SAX::PurePerl->new(Handler => $x);
 		$spec = $p->parse_uri($uri);	
 	} else {
@@ -80,7 +81,7 @@ sub start_document {
 		#define the spec
 		#process ~perl/site_perl/Amin/Machine/Machine_Spec/machine_spec.xml
 		my $h = Amin::Machine::Machine_Spec::Document->new();
-		my $x = XML::Filter::XInclude->new(Handler => $h);
+		my $x = Amin::Machine::Filter::XInclude->new(Handler => $h);
 		my $p = XML::SAX::PurePerl->new(Handler => $x);
 		$spec = $p->parse_uri($uri);	
 	}
@@ -94,7 +95,8 @@ sub start_element {
 	#let's process this element
 	my $stuff = $spec->{Filter};
 	foreach (keys %$stuff) {
-		if ($_ eq "") { next; }
+		if (!defined $stuff->{$_}->{element}) {next;} 
+		
 		if (!$attrs{'{}name'}->{'Value'}) {
 			$attrs{'{}name'}->{'Value'} = "";
 		}
@@ -107,7 +109,11 @@ sub start_element {
 		
 		if ($stuff->{$_}->{namespace} eq $element->{Prefix}) {
 			#if this is a repeat skip it.
+			
+			
+			
 			my $repeat = $stuff->{$_}->{module};
+			if (!defined $repeats{$repeat}) {next;} 
 			if ($repeats{$repeat} eq "r") {
 				next;
 			}
@@ -149,7 +155,7 @@ sub end_element {
 	#all this just to reset some stuff *sigh* :)
 	my $stuff = $spec->{Filter};
 	foreach (keys %$stuff) {
-		if ($_ eq "") { next; }
+		if (!defined $stuff->{$_}->{namespace}) {next;} 
 		if ($stuff->{$_}->{namespace} eq $element->{Prefix}) {
 		if ($stuff->{$_}->{parent_name}) {
 		if ($stuff->{$_}->{parent_name} eq $element->{LocalName}) {
@@ -167,6 +173,8 @@ sub end_document {
 	
 	#do the permanents
 	foreach (keys %$stuff) {
+	if (!defined $stuff->{$_}->{position}) {next;} 
+	
 	if ($stuff->{$_}->{position} =~ /permanent/) {
 		my %new;
 		$stage++;
@@ -182,6 +190,7 @@ sub end_document {
 		
 	#do the ends as well
 	foreach (keys %$stuff) {
+	if (!defined $stuff->{$_}->{position}) {next;} 
 	if ($stuff->{$_}->{position} =~ /end/) {
 		my %new;
 		$stage++;
@@ -261,7 +270,7 @@ Machine_Spec - The machine spec reader, default setup class.
 =head1 Example
 
   use Amin::Machine::Machine_Spec;	
-  use XML::Filter::XInclude;	
+  use Amin::Machine::Filter::XInclude;	
   use XML::SAX::PurePerl;
 	
   my $h;
@@ -271,7 +280,7 @@ Machine_Spec - The machine spec reader, default setup class.
     $h = Amin::Machine::Machine_Spec->new();
   }
   #don't forget to include other specs this spec may include....
-  my $ix = XML::Filter::XInclude->new(Handler => $h);
+  my $ix = Amin::Machine::Filter::XInclude->new(Handler => $h);
   my $p = XML::SAX::PurePerl->new(Handler => $ix);
   
   my $spec;
