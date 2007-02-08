@@ -94,7 +94,11 @@ sub end_element {
 			push @flag, "-i";
 			push @flag, $input
 		} else {
-			#throw a must have an input error
+		    my $text = "No patch to apply: $!";
+		    $self->text($text);
+		    $log->error_message($text);
+		    $self->SUPER::end_element($element);
+		    return;
 		}
 
 		if ($dir) {
