@@ -97,6 +97,12 @@ sub machine_name {
 	return $self->{MACHINE_NAME};
 }
 
+sub debug {
+	my $self = shift;
+	if (@_) { $self->{Debug} = shift;}
+	return $self->{Debug};
+}
+
 sub arg {
 	my $self = shift;
 	if (@_) { $self->{ARG} = shift;}
