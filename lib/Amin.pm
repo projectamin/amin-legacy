@@ -201,6 +201,11 @@ sub load_spec {
 		#there was no machine name in the spec use default
 		$spec->{Machine_Name} = $self->{Machine_Name};
 	}
+	#add debug info to the $spec
+	if ($self->{Debug}) {
+		$spec->{Debug} = $self->{Debug};
+	}
+	
 	return $spec;
 }
 
@@ -289,6 +294,18 @@ sub results {
 	if (@_) {push @{$self->{RESULTS}}, @_; }
 	return \@{ $self->{RESULTS} };
 }
+
+sub set_debug {
+	my $self = shift;
+	my $debug = shift;
+	$self->{Debug} = $debug;
+}
+
+sub get_debug {
+	my $self = shift;
+	return $self->{Debug};
+}
+
 
 sub set_adminlist_map {
 	my $self = shift;
