@@ -114,6 +114,8 @@ get_profile($cli);
 
 #this controller is a little more advanced.
 
+my $filter_param = $cli->filter_param;
+
 if (defined $cli->adminlist) {
 
 	
@@ -221,8 +223,9 @@ if (defined $cli->adminlist) {
 						Machine_Spec => $cli->machine_spec,
 						Generator => $cli->genereator,
 						Handler => $cli->hanlder,
-						Filter_Param => $cli->filter_param,
-						Log => $cli->log
+						Filter_Param => $filter_param,
+						Log => $cli->log,
+						Debug => $cli->debug
     				);
 				my $aout;
 				my $lout;
@@ -250,8 +253,9 @@ if (defined $cli->adminlist) {
 						Machine_Spec => $cli->machine_spec,
 						Generator => $cli->generator,
 						Handler => $cli->handler,
-						Filter_Param => $cli->filter_param,
-						Log => $cli->log
+						Filter_Param => $filter_param,
+						Log => $cli->log,
+						Debug => $cli->debug
 				);
 				my $aout;
 				my $lout;
@@ -283,8 +287,9 @@ if (defined $cli->adminlist) {
 				Machine_Spec => $cli->machine_spec,
 				Generator => $cli->generator,
 				Handler => $cli->handler,
-				Filter_Param => $cli->filter_param,
-				Log => $cli->log
+				Filter_Param => $filter_param,
+				Log => $cli->log,
+				Debug => $cli->debug
     	);
 	my $aout;
 	my $lout;
@@ -312,8 +317,9 @@ if (defined $cli->adminlist) {
 				Machine_Spec => $cli->machine_spec,
 				Generator => $cli->generator,
 				Handler => $cli->handler,
-				Filter_Param => $cli->filter_param,
-				Log => $cli->log
+				Filter_Param => $filter_param,
+				Log => $cli->log,
+				Debug => $cli->debug
     	);
 	my $aout;
 	my $lout;
@@ -342,7 +348,7 @@ if (defined $cli->adminlist) {
 sub get_profile {
 	my $cli = shift;
         my ($help, $uri, $profile, $adminlist, $networkmap, 
-	    $machine_spec, $machine_type, $machine_name, $generator, $handler, $log, $filter_param, $version, $type, $adminlist_map);
+	    $machine_spec, $machine_type, $machine_name, $generator, $handler, $log, $filter_param, $version, $type, $adminlist_map, $debug);
 	my $opts_ok = &GetOptions( "h|help"    => \$help,
 				   "u|uri=s"     => \$uri,
 				   "p|profile=s" => \$profile,
@@ -351,6 +357,7 @@ sub get_profile {
 				   "n|networkmap=s" => \$networkmap,
 				   "m|machine_spec=s" => \$machine_spec,
 				   "o|machine_name=s" => \$machine_name,
+				   "d|debug=s" => \$debug,
 				   "g|generator=s" => \$generator,
 				   "h|handler=s" => \$handler,
 				   "l|log=s" => \$log,
@@ -379,6 +386,9 @@ sub get_profile {
 	}
 	if ($machine_spec) {
 		$cli->machine_spec($machine_spec);
+	} 
+	if ($debug) {
+		$cli->debug($debug);
 	} 
 	if ($filter_param) {
 		$cli->filter_param($filter_param);
