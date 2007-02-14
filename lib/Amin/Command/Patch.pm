@@ -65,13 +65,12 @@ sub characters {
 
 sub end_element {
 	my ($self, $element) = @_;
-
 	if (($element->{LocalName} eq "command") && ($self->command eq "patch")) {
-		my $dir = $self->{'DIR'};
+
+	        my $dir = $self->{'DIR'};
 		my $input = $self->{'INPUT'};
 		my $xflag = $self->{'FLAG'};
 		my $param = $self->{'PARAM'};
-		my $command = "patch";
 		my ($flag, @flag, @param);
 		my $log = $self->{Spec}->{Log};
 
@@ -114,7 +113,7 @@ sub end_element {
 		}
 
 		my %acmd;
-		$acmd{'CMD'} = $command;
+		$acmd{'CMD'} = 'patch';
 		$acmd{'FLAG'} = \@flag;
 		$acmd{'PARAM'} = \@param;
 		if ($self->{'ENV_VARS'}) {
@@ -125,7 +124,7 @@ sub end_element {
 
 		if ($cmd->{STATUS} != 0) {
 			$self->{Spec}->{amin_error} = "red";
-			my $text = "Unable to execute patch $command in $dir. Reason: $cmd->{ERR}";
+			my $text = "Unable to execute patch in $dir. Reason: $cmd->{ERR}";
 			$self->text($text);
 
 			$log->error_message($text);
