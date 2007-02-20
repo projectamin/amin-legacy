@@ -195,7 +195,7 @@ sub version {
 	return "1.0";
 }
 
-;
+1;
 
 =head1 NAME
 
