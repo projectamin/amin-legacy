@@ -181,7 +181,7 @@ sub amin_command {
 		$status = $h->result;
 	} else {
 		my $h = harness \@cmd, \$in, \$out, \$err;
-		if ($debug eq "ac") {
+		if (($debug eq "ac") || ($debug eq "all")) {
 			print ":@cmd:\n";
 		}
 		run $h ;
