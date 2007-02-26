@@ -394,7 +394,7 @@ Amin - base class for Amin controllers
   and helper modules for your controller. 
   
   It is a good idea to review SAX before you get lost in 
-  Amin and Amin::Machines.
+  Amin and Amin machine types.
 
 =head1 Methods 
 
