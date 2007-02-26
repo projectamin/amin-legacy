@@ -14,7 +14,6 @@ use IPC::Run qw( run );
 use File::Basename qw(dirname);
 use Amin::Elt;
 @ISA = qw(Amin::Elt);
-use Data::Dumper;
 
 
 my $spec;
@@ -123,7 +122,6 @@ sub start_element {
 			}
 			
 			#my $repeat = $stuff->{$_}->{module};
-			#warn Dumper(%repeats, "repeats");
 			#if (!defined $repeats{$repeat}) {next;} 
 			#if ($repeats{$repeat} eq "r") {
 			#	next;
