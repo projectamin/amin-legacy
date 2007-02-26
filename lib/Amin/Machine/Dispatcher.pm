@@ -198,10 +198,10 @@ Please see Amin::Machine::Filter::Dispatcher for details on the
 Dispatcher machine
 
 This module is also ISA Amin::Machine. After setting the internal
-spec's Machine_Name, we call Amin::Machine's new() with our $spec
-to build our amin machine. This is done by manipulation of the $spec
-and then calling Amin::Machines to run our machine with our manipulated
-$spec.
+spec's Machine_Name, we call Amin::Machine::Filter::Dispatcher's 
+new() with our $spec to build our amin machine. This is done by 
+manipulation of the $spec and then calling Amin::Machine::Filter::Dispatcher
+to run our machine with our manipulated $spec.
 
 We manipulate the $spec given to us by Machine_Spec.pm module as follows
 

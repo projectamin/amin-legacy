@@ -49,12 +49,10 @@ own Machines as a Machine_Name. ie
     return $self->SUPER::new($spec);
  }
 
-What this filter does is quite simple. It will check against 
-the machine_spec's filterlist for each sax start_element processed.
-If an element matches the machine_spec's filterlist then the module
-is loaded and the sax events are "Dispatched" to the appropriate 
-sax filter by reseting XML::SAX::Base's Handler via set_handler. 
-Please see that doc for more information.
+If there is a chain, then the chain is set as the handler. This means
+the sax events are "Dispatched" to the appropriate sax filter through
+the chain.
+
 
 If the $spec that is being passed around the machine to other 
 filters ever has 
