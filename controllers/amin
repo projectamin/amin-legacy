@@ -140,12 +140,41 @@ if (defined $cli->adminlist) {
 		$adminlist_map = $p->parse_uri($cli->adminlist_map);
 	}
 	
-	foreach my $key (nsort keys %$adminlist) {
-		if (($key =~ m/server/) || ($adminlist_map->{key})) {
-			#if ($adminlist->{key}->{type} eq "map") {
+	if (defined $adminlist_map) {
+		#there is adminlist_mappings
+		foreach my $key (nsort keys %$adminlist_map) {
+			if ($adminlist->{$key}->{name} eq $key) {
+				if ($adminlist->{$key}->{type} eq "map") {
+					my $n = Amin::Machine::NetworkMap->new();
+					my $np = XML::SAX::PurePerl->new(Handler => $n);
+					$simplemap = $np->parse_uri($adminlist->{$key}->{uri});
+					foreach my $map (@$simplemap) {
+						if ($map eq undef) {
+							next;
+						} else {
+							push @networkmap, $map;
+						}
+					}
+				}
+			}
+			if ($adminlist->{$key}->{name} eq $key) {
+				if ($adminlist->{$key}->{type} eq "profile") {
+					push @profiles, $adminlist->{$key}->{uri};
+				}
+			}
+			if ($adminlist->{$key}->{name} eq $key) {
+				if ($adminlist->{$key}->{type} eq "adminlist") {
+					push @adminlists, $adminlist->{$key}->{uri};
+				}
+			}
+		}
+	} else {
+		#there are no mapping
+		foreach my $key (nsort keys %$adminlist) {
+			if ($adminlist->{$key}->{type} eq "map") {
 				my $n = Amin::Machine::NetworkMap->new();
 				my $np = XML::SAX::PurePerl->new(Handler => $n);
-				$simplemap = $np->parse_uri($adminlist->{$key});
+				$simplemap = $np->parse_uri($adminlist->{$key}->{uri});
 				foreach my $map (@$simplemap) {
 					if ($map eq undef) {
 						next;
@@ -153,32 +182,63 @@ if (defined $cli->adminlist) {
 						push @networkmap, $map;
 					}
 				}
-			#}
+			}
+			if ($adminlist->{$key}->{type} eq "profile") {
+				push @profiles, $adminlist->{$key}->{uri};
+			}
+			if ($adminlist->{$key}->{type} eq "adminlist") {
+				push @adminlists, $adminlist->{$key}->{uri};
+			}
 		}
-		if (($key =~ m/profile/) || ($adminlist_map->{key})) {
-			#if ($adminlist->{key}->{type} eq "profile") {
-				push @profiles, $adminlist->{$key};
-		}
-		if (($key =~ m/adminlist/) || ($adminlist_map->{key})) {
-			#if ($adminlist->{key}->{type} eq "adminlist") {
-				push @adminlists, $adminlist->{$key};
-			#}
-		}
+		
 	}
-		
-	#deal with adminlists within adminlists
-	#we have to repeat ourselves for a while....
-	foreach (@adminlists) {
-		my $ih = Amin::Machine::AdminList->new();
-		my $ip = XML::SAX::PurePerl->new(Handler => $ih);
-		my $iadminlist = $ip->parse_uri($_);
-		
-		foreach my $key (nsort keys %$iadminlist) {
-			if (($key =~ m/server/) || ($adminlist_map->{key})) {
-	#			if ($adminlist->{key}->{type} eq "adminlist") {
+	
+	if (defined $adminlist_map) {
+		#deal with adminlists within adminlists
+		#we have to repeat ourselves for a while....
+		foreach (@adminlists) {
+			my $ih = Amin::Machine::AdminList->new();
+			my $ip = XML::SAX::PurePerl->new(Handler => $ih);
+			my $iadminlist = $ip->parse_uri($_);
+			foreach my $key (nsort keys %$adminlist_map) {
+				if ($iadminlist->{$key}->{name} eq $key) {
+					if ($iadminlist->{$key}->{type} eq "map") {
+						my $n = Amin::Machine::NetworkMap->new();
+						my $np = XML::SAX::PurePerl->new(Handler => $n);
+						$simplemap = $np->parse_uri($iadminlist->{$key}->{uri});
+						foreach my $map (@$simplemap) {	
+							if ($map eq undef) {
+								next;
+							} else {
+								push @networkmap, $map;
+							}
+						}
+					}
+				}
+				if ($iadminlist->{$key}->{name} eq $key) {
+					if ($iadminlist->{$key}->{type} eq "profile") {
+						push @profiles, $iadminlist->{$key}->{uri};
+					}
+				}
+				if ($iadminlist->{$key}->{name} eq $key) {
+					if ($iadminlist->{$key}->{type} eq "adminlist") {
+						push @adminlists, $iadminlist->{$key}->{uri};
+					}
+				}
+			}
+		}
+	} else {
+		#deal with adminlists within adminlists
+		#we have to repeat ourselves for a while....
+		foreach (@adminlists) {
+			my $ih = Amin::Machine::AdminList->new();
+			my $ip = XML::SAX::PurePerl->new(Handler => $ih);
+			my $iadminlist = $ip->parse_uri($_);
+			foreach my $key (nsort keys %$iadminlist) {
+				if ($adminlist->{$key}->{type} eq "map") {
 					my $n = Amin::Machine::NetworkMap->new();
 					my $np = XML::SAX::PurePerl->new(Handler => $n);
-					$simplemap = $np->parse_uri($iadminlist->{$key});
+					$simplemap = $np->parse_uri($iadminlist->{$key}->{uri});
 					foreach my $map (@$simplemap) {	
 						if ($map eq undef) {
 							next;
@@ -186,21 +246,16 @@ if (defined $cli->adminlist) {
 							push @networkmap, $map;
 						}
 					}
-	#			}
-			}
-			if (($key =~ m/profile/) || ($adminlist_map->{key})) {
-	#			if ($adminlist->{key}->{type} eq "adminlist") {
-					push @profiles, $iadminlist->{$key};
-	#			}
-			}
-			if (($key =~ m/adminlist/) || ($adminlist_map->{key})) {
-	#			if ($adminlist->{key}->{type} eq "adminlist") {
-					push @adminlists, $iadminlist->{$key};
-	#			}
+				}
+				if ($adminlist->{$key}->{type} eq "profile") {
+					push @profiles, $iadminlist->{$key}->{uri};
+				}
+				if ($adminlist->{$key}->{type} eq "adminlist") {
+					push @adminlists, $iadminlist->{$key}->{uri};
+				}
 			}
 		}
-	}
-	
+	}	
 	my @results;
 	if (@networkmap) {
 		foreach my $networkmap (@networkmap) {
