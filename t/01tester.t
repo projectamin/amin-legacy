@@ -18,12 +18,13 @@ my @profiles;
 my $h = Amin::Machine::AdminList->new();
 my $p = XML::SAX::PurePerl->new(Handler => $h);
 $adminlist = $p->parse_uri($adminlist);
+
 foreach my $key (nsort keys %$adminlist) {
-	if ($key =~ m/profile/) {
-		push @profiles, $adminlist->{$key};
+	if ($adminlist->{$key}->{type} eq "profile") {
+		push @profiles, $adminlist->{$key}->{uri};
 	}
-	if ($key =~ m/adminlist/) {
-		push @adminlists, $adminlist->{$key};
+	if ($adminlist->{$key}->{type} eq "adminlist") {
+		push @adminlists, $adminlist->{$key}->{uri};
 	}
 }
 #deal with adminlists within adminlists
@@ -34,11 +35,11 @@ foreach (@adminlists) {
 	my $iadminlist = $ip->parse_uri($_);
 		
 	foreach my $key (nsort keys %$iadminlist) {
-		if ($key =~ m/profile/) {
-			push @profiles, $iadminlist->{$key};
+		if ($iadminlist->{$key}->{type} eq "profile") {
+			push @profiles, $iadminlist->{$key}->{uri};
 		}
-		if ($key =~ m/adminlist/) {
-			push @adminlists, $iadminlist->{$key};
+		if ($iadminlist->{$key}->{type} eq "profile") {
+			push @adminlists, $iadminlist->{$key}->{uri};
 		}
 	}
 }
