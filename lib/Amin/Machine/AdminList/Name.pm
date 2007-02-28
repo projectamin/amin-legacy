@@ -23,7 +23,7 @@ sub start_element {
 
 sub end_document {
 	my $self = shift;
-	my $name = $self->name;
+	my $name = $self->{NAME};
 	my %name;
 	foreach (@$name) {
 		$name{$_} = "";
