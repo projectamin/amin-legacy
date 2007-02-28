@@ -8,7 +8,6 @@ package Amin::Machine::Handler::Writer;
 use strict;
 use vars qw(@ISA);
 use Amin::Elt;
-use Data::Dumper;
 
 @ISA = qw(Amin::Elt);
 
@@ -56,8 +55,7 @@ sub comment {
 
 
 sub escape_it {
-	my ($self, $string) = @_;                    
-
+	my ($self, $string) = @_;
 	$string =~ s///oge;
 	$string =~ s|\&|\&amp;|oge;
         $string =~ s|<|\&lt;|oge;
