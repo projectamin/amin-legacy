@@ -59,11 +59,15 @@ sub end_element {
 			} else {
 				$name = "server$x";
 			}
-			$adminlist{$name} = $self->uri;
+			my %hash;
+			$hash{uri} = $self->uri;
+			$hash{name} = $name;
+			$hash{type} = "map";
+			$adminlist{$name} = \%hash;
 			#reset stuff
 			$self->{URI} = "";
 			$self->{NAME} = "";
-			$self->{TYPE} = "map";
+			$self->{TYPE} = "";
 		}
 	}
 	if ($element->{LocalName} eq "profile") {
@@ -76,11 +80,15 @@ sub end_element {
 			} else {
 				$name = "profile$y";
 			}
-			$adminlist{$name} = $self->uri;
+			my %hash;
+			$hash{uri} = $self->uri;
+			$hash{name} = $name;
+			$hash{type} = "profile";
+			$adminlist{$name} = \%hash;
 			#reset stuff
 			$self->{URI} = "";
 			$self->{NAME} = "";
-			$self->{TYPE} = "profile";
+			$self->{TYPE} = "";
 		}
 	}
 	if ($element->{LocalName} eq "adminlist") {
@@ -94,11 +102,15 @@ sub end_element {
 			} else {
 				$name = "adminlist$z";
 			}
-			$adminlist{$name} = $self->uri;
+			my %hash;
+			$hash{uri} = $self->uri;
+			$hash{name} = $name;
+			$hash{type} = "adminlist";
+			$adminlist{$name} = \%hash;
 			#reset stuff
 			$self->{URI} = "";
 			$self->{NAME} = "";
-			$self->{TYPE} = "adminlist";
+			$self->{TYPE} = "";
 		}
 	}
 }
