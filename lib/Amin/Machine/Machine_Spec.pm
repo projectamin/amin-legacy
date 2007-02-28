@@ -15,7 +15,6 @@ use File::Basename qw(dirname);
 use Amin::Elt;
 @ISA = qw(Amin::Elt);
 
-
 my $spec;
 #the spec is defined in one of four ways
 #1. any uri
@@ -36,7 +35,7 @@ my %attrs;
 my $pname;
 my $pstage;
 my $psname;
-#my %repeats;
+my $repeat = "";
 
 sub start_document {
 	my $self = shift;
@@ -116,16 +115,17 @@ sub start_element {
 			#if this is a repeat skip it.
 			
 			foreach my $ikeys (keys %machine_filters) {
-				if ($ikeys eq $stuff->{$_}->{module}) {
-					next;
+				if ($machine_filters{$ikeys}->{module} eq $stuff->{$_}->{module}) {
+					$repeat = "yes";
 				}
 			}
 			
-			#my $repeat = $stuff->{$_}->{module};
-			#if (!defined $repeats{$repeat}) {next;} 
-			#if ($repeats{$repeat} eq "r") {
-			#	next;
-			#}
+			if ($repeat eq "yes") {
+				#reset the repeater
+				$repeat = "";
+				next;
+			}
+			
 			#up the stage
 			$stage++;
 			my %new;
@@ -151,7 +151,6 @@ sub start_element {
 			foreach my $keys (keys %$hash) {
 				$new{$keys} = $stuff->{$_}->{$keys};
 			}
-			#$repeats{$repeat} = "r";
 			$machine_filters{$stage} = \%new;
 		}
 		}
@@ -213,6 +212,7 @@ sub end_document {
 	}
 	}	
 	
+	my $debug = $self->{Spec}->{Debug} || "";
 	foreach (keys %machine_filters) {
 		#autoload module check
 		no strict 'refs';
@@ -239,6 +239,9 @@ sub end_document {
 		}
 		}
 		if (($@) || ($version eq "bad")) {
+			if ($debug eq "ms") {
+				print "$lh\n";
+			}
 			if ($machine_filters{$_}->{'download'}) {
 				#removed $0 due to daemon/httpd loops/crashes....
 				my @cmd = ('amin', '-u', $machine_filters{$_}->{'download'});
