@@ -127,24 +127,16 @@ sub end_element {
 			return;
 		}
 
-		my (@param, @flag);
+		my (%acmd, @flag, @param);
 
-		my %acmd;
-		push @param, $archive;
-		$acmd{'CMD'} = "bzcat";
-		$acmd{'PARAM'} = \@param;
-		$acmd{'FLAG'} = "";
+                push @flag, "-xjf";
+                push @param, $archive;
 
-		my %bcmd;
-		push @flag, "-x";
-		$bcmd{'CMD'} = "tar";
-		$bcmd{'FLAG'} = \@flag;
-		$bcmd{'PARAM'} = "";
+                $acmd{'CMD'} = "tar";
+                $acmd{'PARAM'} = \@param;
+                $acmd{'FLAG'} = \@flag;
 
-		my $special = "|";
-
-
-		$cmd = $self->amin_command(\%acmd, $special, \%bcmd);
+		$cmd = $self->amin_command(\%acmd);
 
 		if ($cmd->{STATUS} != 0) {
 			$self->{Spec}->{amin_error} = "red";
