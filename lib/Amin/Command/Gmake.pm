@@ -1,4 +1,4 @@
-package Amin::Command::Ggmake;
+package Amin::Command::Gmake;
 
 #LICENSE:
 
