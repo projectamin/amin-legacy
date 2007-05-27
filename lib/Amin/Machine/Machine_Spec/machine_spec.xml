@@ -180,6 +180,14 @@
 		<download>http://projectamin.org/filters/amin/command/fsck.xml</download>
 		<version>1.0</version>
 	</filter>
+        <filter name="Amin::Command::Gmake">
+                <element>command</element>
+                <namespace>amin</namespace>
+                <name>gmake</name>
+                <position>middle</position>
+                <download>http://projectamin.org/filters/amin/command/gmake.xml</download>
+                <version>1.0</version>
+        </filter>
 	<filter name="Amin::Command::Groupadd">
 		<element>command</element>
 		<namespace>amin</namespace>
