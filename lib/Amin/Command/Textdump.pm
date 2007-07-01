@@ -9,6 +9,7 @@ use strict;
 use warnings;
 use vars qw(@ISA);
 use Amin::Elt;
+use Data::Dumper;
 
 @ISA = qw(Amin::Elt);
 my %attrs;
@@ -46,7 +47,6 @@ sub characters {
 		}
 		if ($element->{LocalName} eq "shell") {
 			if ($attrs{'{}name'}->{Value} eq "dir") {
-				$self->dir($data);
 			}
 		}
 	}
@@ -58,12 +58,16 @@ sub end_element {
 
 	if (($element->{LocalName} eq "command") && ($self->command eq "textdump")) {
 		my $target = $self->{'TARGET'};
-		my $dir = $self->{'DIR'};
+	        my $dir;
+	        if (!defined $self->{'DIR'}) {
+		    $dir = "/";
+		    } else {
+		    $dir = $self->{'DIR'};
+		    }
 		my $content = $self->{'CONTENT'};
 		my @content;
 		
 		my $log = $self->{Spec}->{Log};
-
 		if (! chdir $dir) {
 			$self->{Spec}->{amin_error} = "red";
 			my $text = "Unable to change directory to $dir. Reason: $!";
