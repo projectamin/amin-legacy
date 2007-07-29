@@ -71,6 +71,7 @@ sub characters {
 
 sub end_element {
 	my ($self, $element) = @_;
+	my $debug = $self->{Spec}->{Debug} || "";
 
 	if ($element->{LocalName} eq "command") {
 	if (($self->command eq "link") || ($self->command eq "ln")) {
@@ -93,6 +94,9 @@ sub end_element {
 		}
 
 		if ($dir) {
+			if (($debug eq "dir") || ($debug eq "all")) {
+				print ":dir = $dir:\n";
+			}
 			if (! chdir $dir) {
 				$self->{Spec}->{amin_error} = "red";
 				my $text = "Unable to change directory to $dir. Reason: $!";
