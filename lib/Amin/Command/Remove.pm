@@ -48,12 +48,12 @@ sub characters {
 		}
 
 		if ($element->{LocalName} eq "param") {
-			if ($attrs{'{}name'}->{Value} eq "target") {
+			#if ($attrs{'{}name'}->{Value} eq "target") {
 				my @things = $data =~ m/([\[\*\+\.\w=\/-]+|'[^']+')\s*/g;
 				foreach (@things) {
 					$self->target($_);
 				}
-			}
+			#}
 		}
 		if ($element->{LocalName} eq "flag") {
 			if ($attrs{'{}name'}->{Value} eq "") {
