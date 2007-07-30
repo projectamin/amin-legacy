@@ -1,0 +1,418 @@
+<amin:profile xmlns:amin='http://projectamin.org/ns/'>
+        <amin:command name="mkdir">
+                <amin:param name="target">/tmp/amin-tests/my_new_dir</amin:param>
+                <amin:flag>p</amin:flag>
+		<amin:shell name='dir'>/opt/adistro/bootstrap/System/TemporaryFiles</amin:shell>
+        </amin:command>
+        <amin:command name="mkdir">
+                <amin:param name="target">/tmp/amin-tests/my_new_dir1</amin:param>
+                <amin:flag>p</amin:flag>
+                <amin:shell name='dir'>/opt/adistro/bootstrap/System/TemporaryFiles</amin:shell>
+        </amin:command>
+        <amin:command name="mkdir">
+                <amin:param name="target">/tmp/amin-tests/my_new_dir2</amin:param>
+                <amin:flag>p</amin:flag>
+                <amin:shell name='dir'>/opt/adistro/bootstrap/System/TemporaryFiles</amin:shell>
+        </amin:command>
+        <amin:command name="mkdir">
+                <amin:param name="target">/tmp/amin-tests/my_new_dir3</amin:param>
+                <amin:flag>p</amin:flag>
+                <amin:shell name='dir'>/opt/adistro/bootstrap/System/TemporaryFiles</amin:shell>
+        </amin:command>
+        <amin:command name="mkdir">
+                <amin:param name="target">/tmp/amin-tests/my_new_dir5</amin:param>
+                <amin:flag>p</amin:flag>
+                <amin:shell name='dir'>/opt/adistro/bootstrap/System/TemporaryFiles</amin:shell>
+        </amin:command>
+<!--breakpoint 1-->
+        <amin:command name="mkdir">
+                <amin:param name="target">/tmp/amin-tests/my_new_dir</amin:param>
+                <amin:flag>p</amin:flag>
+                <amin:shell name='dir'>/opt/adistro/bootstrap/System/TemporaryFiles</amin:shell>
+        </amin:command>
+        <amin:command name="mkdir">
+                <amin:param name="target">/tmp/amin-tests/my_new_dir1</amin:param>
+                <amin:flag>p</amin:flag>
+                <amin:shell name='dir'>/opt/adistro/bootstrap/System/TemporaryFiles</amin:shell>
+        </amin:command>
+        <amin:command name="mkdir">
+                <amin:param name="target">/tmp/amin-tests/my_new_dir2</amin:param>
+                <amin:flag>p</amin:flag>
+                <amin:shell name='dir'>/opt/adistro/bootstrap/System/TemporaryFiles</amin:shell>
+        </amin:command>
+        <amin:command name="mkdir">
+                <amin:param name="target">/tmp/amin-tests/my_new_dir3</amin:param>
+                <amin:flag>p</amin:flag>
+                <amin:shell name='dir'>/opt/adistro/bootstrap/System/TemporaryFiles</amin:shell>
+        </amin:command>
+        <amin:command name="mkdir">
+                <amin:param name="target">/tmp/amin-tests/my_new_dir5</amin:param>
+                <amin:flag>p</amin:flag>
+                <amin:shell name='dir'>/opt/adistro/bootstrap/System/TemporaryFiles</amin:shell>
+        </amin:command>
+<!--breakpoint 2-->
+        <amin:command name="mkdir">
+                <amin:param name="target">/tmp/amin-tests/my_new_dir</amin:param>
+                <amin:flag>p</amin:flag>
+                <amin:shell name='dir'>/opt/adistro/bootstrap/System/TemporaryFiles</amin:shell>
+        </amin:command>
+        <amin:command name="mkdir">
+                <amin:param name="target">/tmp/amin-tests/my_new_dir1</amin:param>
+                <amin:flag>p</amin:flag>
+                <amin:shell name='dir'>/opt/adistro/bootstrap/System/TemporaryFiles</amin:shell>
+        </amin:command>
+        <amin:command name="mkdir">
+                <amin:param name="target">/tmp/amin-tests/my_new_dir2</amin:param>
+                <amin:flag>p</amin:flag>
+                <amin:shell name='dir'>/opt/adistro/bootstrap/System/TemporaryFiles</amin:shell>
+        </amin:command>
+        <amin:command name="mkdir">
+                <amin:param name="target">/tmp/amin-tests/my_new_dir3</amin:param>
+                <amin:flag>p</amin:flag>
+                <amin:shell name='dir'>/opt/adistro/bootstrap/System/TemporaryFiles</amin:shell>
+        </amin:command>
+        <amin:command name="mkdir">
+                <amin:param name="target">/tmp/amin-tests/my_new_dir5</amin:param>
+                <amin:flag>p</amin:flag>
+                <amin:shell name='dir'>/opt/adistro/bootstrap/System/TemporaryFiles</amin:shell>
+        </amin:command>
+<!--breakpoint 3-->
+        <amin:command name="mkdir">
+                <amin:param name="target">/tmp/amin-tests/my_new_dir</amin:param>
+                <amin:flag>p</amin:flag>
+                <amin:shell name='dir'>/opt/adistro/bootstrap/System/TemporaryFiles</amin:shell>
+        </amin:command>
+        <amin:command name="mkdir">
+                <amin:param name="target">/tmp/amin-tests/my_new_dir1</amin:param>
+                <amin:flag>p</amin:flag>
+                <amin:shell name='dir'>/opt/adistro/bootstrap/System/TemporaryFiles</amin:shell>
+        </amin:command>
+        <amin:command name="mkdir">
+                <amin:param name="target">/tmp/amin-tests/my_new_dir2</amin:param>
+                <amin:flag>p</amin:flag>
+                <amin:shell name='dir'>/opt/adistro/bootstrap/System/TemporaryFiles</amin:shell>
+        </amin:command>
+        <amin:command name="mkdir">
+                <amin:param name="target">/tmp/amin-tests/my_new_dir3</amin:param>
+                <amin:flag>p</amin:flag>
+                <amin:shell name='dir'>/opt/adistro/bootstrap/System/TemporaryFiles</amin:shell>
+        </amin:command>
+        <amin:command name="mkdir">
+                <amin:param name="target">/tmp/amin-tests/my_new_dir5</amin:param>
+                <amin:flag>p</amin:flag>
+                <amin:shell name='dir'>/opt/adistro/bootstrap/System/TemporaryFiles</amin:shell>
+        </amin:command>
+<!--breakpoint 4-->
+        <amin:command name="mkdir">
+                <amin:param name="target">/tmp/amin-tests/my_new_dir</amin:param>
+                <amin:flag>p</amin:flag>
+                <amin:shell name='dir'>/opt/adistro/bootstrap/System/TemporaryFiles</amin:shell>
+        </amin:command>
+        <amin:command name="mkdir">
+                <amin:param name="target">/tmp/amin-tests/my_new_dir1</amin:param>
+                <amin:flag>p</amin:flag>
+                <amin:shell name='dir'>/opt/adistro/bootstrap/System/TemporaryFiles</amin:shell>
+        </amin:command>
+        <amin:command name="mkdir">
+                <amin:param name="target">/tmp/amin-tests/my_new_dir2</amin:param>
+                <amin:flag>p</amin:flag>
+                <amin:shell name='dir'>/opt/adistro/bootstrap/System/TemporaryFiles</amin:shell>
+        </amin:command>
+        <amin:command name="mkdir">
+                <amin:param name="target">/tmp/amin-tests/my_new_dir3</amin:param>
+                <amin:flag>p</amin:flag>
+                <amin:shell name='dir'>/opt/adistro/bootstrap/System/TemporaryFiles</amin:shell>
+        </amin:command>
+        <amin:command name="mkdir">
+                <amin:param name="target">/tmp/amin-tests/my_new_dir5</amin:param>
+                <amin:flag>p</amin:flag>
+                <amin:shell name='dir'>/opt/adistro/bootstrap/System/TemporaryFiles</amin:shell>
+        </amin:command>
+<!--breakpoint 5-->
+        <amin:command name="mkdir">
+                <amin:param name="target">/tmp/amin-tests/my_new_dir</amin:param>
+                <amin:flag>p</amin:flag>
+                <amin:shell name='dir'>/opt/adistro/bootstrap/System/TemporaryFiles</amin:shell>
+        </amin:command>
+        <amin:command name="mkdir">
+                <amin:param name="target">/tmp/amin-tests/my_new_dir1</amin:param>
+                <amin:flag>p</amin:flag>
+                <amin:shell name='dir'>/opt/adistro/bootstrap/System/TemporaryFiles</amin:shell>
+        </amin:command>
+        <amin:command name="mkdir">
+                <amin:param name="target">/tmp/amin-tests/my_new_dir2</amin:param>
+                <amin:flag>p</amin:flag>
+                <amin:shell name='dir'>/opt/adistro/bootstrap/System/TemporaryFiles</amin:shell>
+        </amin:command>
+        <amin:command name="mkdir">
+                <amin:param name="target">/tmp/amin-tests/my_new_dir3</amin:param>
+                <amin:flag>p</amin:flag>
+                <amin:shell name='dir'>/opt/adistro/bootstrap/System/TemporaryFiles</amin:shell>
+        </amin:command>
+        <amin:command name="mkdir">
+                <amin:param name="target">/tmp/amin-tests/my_new_dir5</amin:param>
+                <amin:flag>p</amin:flag>
+                <amin:shell name='dir'>/opt/adistro/bootstrap/System/TemporaryFiles</amin:shell>
+        </amin:command>
+<!--breakpoint 6-->
+        <amin:command name="mkdir">
+                <amin:param name="target">/tmp/amin-tests/my_new_dir</amin:param>
+                <amin:flag>p</amin:flag>
+                <amin:shell name='dir'>/opt/adistro/bootstrap/System/TemporaryFiles</amin:shell>
+        </amin:command>
+        <amin:command name="mkdir">
+                <amin:param name="target">/tmp/amin-tests/my_new_dir1</amin:param>
+                <amin:flag>p</amin:flag>
+                <amin:shell name='dir'>/opt/adistro/bootstrap/System/TemporaryFiles</amin:shell>
+        </amin:command>
+        <amin:command name="mkdir">
+                <amin:param name="target">/tmp/amin-tests/my_new_dir2</amin:param>
+                <amin:flag>p</amin:flag>
+                <amin:shell name='dir'>/opt/adistro/bootstrap/System/TemporaryFiles</amin:shell>
+        </amin:command>
+        <amin:command name="mkdir">
+                <amin:param name="target">/tmp/amin-tests/my_new_dir3</amin:param>
+                <amin:flag>p</amin:flag>
+                <amin:shell name='dir'>/opt/adistro/bootstrap/System/TemporaryFiles</amin:shell>
+        </amin:command>
+        <amin:command name="mkdir">
+                <amin:param name="target">/tmp/amin-tests/my_new_dir5</amin:param>
+                <amin:flag>p</amin:flag>
+                <amin:shell name='dir'>/opt/adistro/bootstrap/System/TemporaryFiles</amin:shell>
+        </amin:command>
+<!--breakpoint 7-->
+        <amin:command name="mkdir">
+                <amin:param name="target">/tmp/amin-tests/my_new_dir</amin:param>
+                <amin:flag>p</amin:flag>
+                <amin:shell name='dir'>/opt/adistro/bootstrap/System/TemporaryFiles</amin:shell>
+        </amin:command>
+        <amin:command name="mkdir">
+                <amin:param name="target">/tmp/amin-tests/my_new_dir1</amin:param>
+                <amin:flag>p</amin:flag>
+                <amin:shell name='dir'>/opt/adistro/bootstrap/System/TemporaryFiles</amin:shell>
+        </amin:command>
+        <amin:command name="mkdir">
+                <amin:param name="target">/tmp/amin-tests/my_new_dir2</amin:param>
+                <amin:flag>p</amin:flag>
+                <amin:shell name='dir'>/opt/adistro/bootstrap/System/TemporaryFiles</amin:shell>
+        </amin:command>
+        <amin:command name="mkdir">
+                <amin:param name="target">/tmp/amin-tests/my_new_dir3</amin:param>
+                <amin:flag>p</amin:flag>
+                <amin:shell name='dir'>/opt/adistro/bootstrap/System/TemporaryFiles</amin:shell>
+        </amin:command>
+        <amin:command name="mkdir">
+                <amin:param name="target">/tmp/amin-tests/my_new_dir5</amin:param>
+                <amin:flag>p</amin:flag>
+                <amin:shell name='dir'>/opt/adistro/bootstrap/System/TemporaryFiles</amin:shell>
+        </amin:command>
+<!--breakpoint 8-->
+        <amin:command name="mkdir">
+                <amin:param name="target">/tmp/amin-tests/my_new_dir</amin:param>
+                <amin:flag>p</amin:flag>
+                <amin:shell name='dir'>/opt/adistro/bootstrap/System/TemporaryFiles</amin:shell>
+        </amin:command>
+        <amin:command name="mkdir">
+                <amin:param name="target">/tmp/amin-tests/my_new_dir1</amin:param>
+                <amin:flag>p</amin:flag>
+                <amin:shell name='dir'>/opt/adistro/bootstrap/System/TemporaryFiles</amin:shell>
+        </amin:command>
+        <amin:command name="mkdir">
+                <amin:param name="target">/tmp/amin-tests/my_new_dir2</amin:param>
+                <amin:flag>p</amin:flag>
+                <amin:shell name='dir'>/opt/adistro/bootstrap/System/TemporaryFiles</amin:shell>
+        </amin:command>
+        <amin:command name="mkdir">
+                <amin:param name="target">/tmp/amin-tests/my_new_dir3</amin:param>
+                <amin:flag>p</amin:flag>
+                <amin:shell name='dir'>/opt/adistro/bootstrap/System/TemporaryFiles</amin:shell>
+        </amin:command>
+        <amin:command name="mkdir">
+                <amin:param name="target">/tmp/amin-tests/my_new_dir5</amin:param>
+                <amin:flag>p</amin:flag>
+                <amin:shell name='dir'>/opt/adistro/bootstrap/System/TemporaryFiles</amin:shell>
+        </amin:command>
+<!--breakpoint 9-->
+        <amin:command name="mkdir">
+                <amin:param name="target">/tmp/amin-tests/my_new_dir</amin:param>
+                <amin:flag>p</amin:flag>
+                <amin:shell name='dir'>/opt/adistro/bootstrap/System/TemporaryFiles</amin:shell>
+        </amin:command>
+        <amin:command name="mkdir">
+                <amin:param name="target">/tmp/amin-tests/my_new_dir1</amin:param>
+                <amin:flag>p</amin:flag>
+                <amin:shell name='dir'>/opt/adistro/bootstrap/System/TemporaryFiles</amin:shell>
+        </amin:command>
+        <amin:command name="mkdir">
+                <amin:param name="target">/tmp/amin-tests/my_new_dir2</amin:param>
+                <amin:flag>p</amin:flag>
+                <amin:shell name='dir'>/opt/adistro/bootstrap/System/TemporaryFiles</amin:shell>
+        </amin:command>
+        <amin:command name="mkdir">
+                <amin:param name="target">/tmp/amin-tests/my_new_dir3</amin:param>
+                <amin:flag>p</amin:flag>
+                <amin:shell name='dir'>/opt/adistro/bootstrap/System/TemporaryFiles</amin:shell>
+        </amin:command>
+        <amin:command name="mkdir">
+                <amin:param name="target">/tmp/amin-tests/my_new_dir5</amin:param>
+                <amin:flag>p</amin:flag>
+                <amin:shell name='dir'>/opt/adistro/bootstrap/System/TemporaryFiles</amin:shell>
+        </amin:command>
+<!--breakpoint 10-->
+        <amin:command name="mkdir">
+                <amin:param name="target">/tmp/amin-tests/my_new_dir</amin:param>
+                <amin:flag>p</amin:flag>
+                <amin:shell name='dir'>/opt/adistro/bootstrap/System/TemporaryFiles</amin:shell>
+        </amin:command>
+        <amin:command name="mkdir">
+                <amin:param name="target">/tmp/amin-tests/my_new_dir1</amin:param>
+                <amin:flag>p</amin:flag>
+                <amin:shell name='dir'>/opt/adistro/bootstrap/System/TemporaryFiles</amin:shell>
+        </amin:command>
+        <amin:command name="mkdir">
+                <amin:param name="target">/tmp/amin-tests/my_new_dir2</amin:param>
+                <amin:flag>p</amin:flag>
+                <amin:shell name='dir'>/opt/adistro/bootstrap/System/TemporaryFiles</amin:shell>
+        </amin:command>
+        <amin:command name="mkdir">
+                <amin:param name="target">/tmp/amin-tests/my_new_dir3</amin:param>
+                <amin:flag>p</amin:flag>
+                <amin:shell name='dir'>/opt/adistro/bootstrap/System/TemporaryFiles</amin:shell>
+        </amin:command>
+        <amin:command name="mkdir">
+                <amin:param name="target">/tmp/amin-tests/my_new_dir5</amin:param>
+                <amin:flag>p</amin:flag>
+                <amin:shell name='dir'>/opt/adistro/bootstrap/System/TemporaryFiles</amin:shell>
+        </amin:command>
+<!--breakpoint 11-->
+        <amin:command name="mkdir">
+                <amin:param name="target">/tmp/amin-tests/my_new_dir</amin:param>
+                <amin:flag>p</amin:flag>
+                <amin:shell name='dir'>/opt/adistro/bootstrap/System/TemporaryFiles</amin:shell>
+        </amin:command>
+        <amin:command name="mkdir">
+                <amin:param name="target">/tmp/amin-tests/my_new_dir1</amin:param>
+                <amin:flag>p</amin:flag>
+                <amin:shell name='dir'>/opt/adistro/bootstrap/System/TemporaryFiles</amin:shell>
+        </amin:command>
+        <amin:command name="mkdir">
+                <amin:param name="target">/tmp/amin-tests/my_new_dir2</amin:param>
+                <amin:flag>p</amin:flag>
+                <amin:shell name='dir'>/opt/adistro/bootstrap/System/TemporaryFiles</amin:shell>
+        </amin:command>
+        <amin:command name="mkdir">
+                <amin:param name="target">/tmp/amin-tests/my_new_dir3</amin:param>
+                <amin:flag>p</amin:flag>
+                <amin:shell name='dir'>/opt/adistro/bootstrap/System/TemporaryFiles</amin:shell>
+        </amin:command>
+        <amin:command name="mkdir">
+                <amin:param name="target">/tmp/amin-tests/my_new_dir5</amin:param>
+                <amin:flag>p</amin:flag>
+                <amin:shell name='dir'>/opt/adistro/bootstrap/System/TemporaryFiles</amin:shell>
+        </amin:command>
+<!--breakpoint 12-->
+        <amin:command name="mkdir">
+                <amin:param name="target">/tmp/amin-tests/my_new_dir</amin:param>
+                <amin:flag>p</amin:flag>
+                <amin:shell name='dir'>/opt/adistro/bootstrap/System/TemporaryFiles</amin:shell>
+        </amin:command>
+        <amin:command name="mkdir">
+                <amin:param name="target">/tmp/amin-tests/my_new_dir1</amin:param>
+                <amin:flag>p</amin:flag>
+                <amin:shell name='dir'>/opt/adistro/bootstrap/System/TemporaryFiles</amin:shell>
+        </amin:command>
+        <amin:command name="mkdir">
+                <amin:param name="target">/tmp/amin-tests/my_new_dir2</amin:param>
+                <amin:flag>p</amin:flag>
+                <amin:shell name='dir'>/opt/adistro/bootstrap/System/TemporaryFiles</amin:shell>
+        </amin:command>
+        <amin:command name="mkdir">
+                <amin:param name="target">/tmp/amin-tests/my_new_dir3</amin:param>
+                <amin:flag>p</amin:flag>
+                <amin:shell name='dir'>/opt/adistro/bootstrap/System/TemporaryFiles</amin:shell>
+        </amin:command>
+        <amin:command name="mkdir">
+                <amin:param name="target">/tmp/amin-tests/my_new_dir5</amin:param>
+                <amin:flag>p</amin:flag>
+                <amin:shell name='dir'>/opt/adistro/bootstrap/System/TemporaryFiles</amin:shell>
+        </amin:command>
+<!--breakpoint 13-->
+        <amin:command name="mkdir">
+                <amin:param name="target">/tmp/amin-tests/my_new_dir</amin:param>
+                <amin:flag>p</amin:flag>
+                <amin:shell name='dir'>/opt/adistro/bootstrap/System/TemporaryFiles</amin:shell>
+        </amin:command>
+        <amin:command name="mkdir">
+                <amin:param name="target">/tmp/amin-tests/my_new_dir1</amin:param>
+                <amin:flag>p</amin:flag>
+                <amin:shell name='dir'>/opt/adistro/bootstrap/System/TemporaryFiles</amin:shell>
+        </amin:command>
+        <amin:command name="mkdir">
+                <amin:param name="target">/tmp/amin-tests/my_new_dir2</amin:param>
+                <amin:flag>p</amin:flag>
+                <amin:shell name='dir'>/opt/adistro/bootstrap/System/TemporaryFiles</amin:shell>
+        </amin:command>
+        <amin:command name="mkdir">
+                <amin:param name="target">/tmp/amin-tests/my_new_dir3</amin:param>
+                <amin:flag>p</amin:flag>
+                <amin:shell name='dir'>/opt/adistro/bootstrap/System/TemporaryFiles</amin:shell>
+        </amin:command>
+        <amin:command name="mkdir">
+                <amin:param name="target">/tmp/amin-tests/my_new_dir5</amin:param>
+                <amin:flag>p</amin:flag>
+                <amin:shell name='dir'>/opt/adistro/bootstrap/System/TemporaryFiles</amin:shell>
+        </amin:command>
+<!--breakpoint 14-->
+        <amin:command name="mkdir">
+                <amin:param name="target">/tmp/amin-tests/my_new_dir</amin:param>
+                <amin:flag>p</amin:flag>
+                <amin:shell name='dir'>/opt/adistro/bootstrap/System/TemporaryFiles</amin:shell>
+        </amin:command>
+        <amin:command name="mkdir">
+                <amin:param name="target">/tmp/amin-tests/my_new_dir1</amin:param>
+                <amin:flag>p</amin:flag>
+                <amin:shell name='dir'>/opt/adistro/bootstrap/System/TemporaryFiles</amin:shell>
+        </amin:command>
+        <amin:command name="mkdir">
+                <amin:param name="target">/tmp/amin-tests/my_new_dir2</amin:param>
+                <amin:flag>p</amin:flag>
+                <amin:shell name='dir'>/opt/adistro/bootstrap/System/TemporaryFiles</amin:shell>
+        </amin:command>
+        <amin:command name="mkdir">
+                <amin:param name="target">/tmp/amin-tests/my_new_dir3</amin:param>
+                <amin:flag>p</amin:flag>
+                <amin:shell name='dir'>/opt/adistro/bootstrap/System/TemporaryFiles</amin:shell>
+        </amin:command>
+        <amin:command name="mkdir">
+                <amin:param name="target">/tmp/amin-tests/my_new_dir5</amin:param>
+                <amin:flag>p</amin:flag>
+                <amin:shell name='dir'>/opt/adistro/bootstrap/System/TemporaryFiles</amin:shell>
+        </amin:command>
+<!--breakpoint 15-->
+        <amin:command name="mkdir">
+                <amin:param name="target">/tmp/amin-tests/my_new_dir</amin:param>
+                <amin:flag>p</amin:flag>
+                <amin:shell name='dir'>/opt/adistro/bootstrap/System/TemporaryFiles</amin:shell>
+        </amin:command>
+        <amin:command name="mkdir">
+                <amin:param name="target">/tmp/amin-tests/my_new_dir1</amin:param>
+                <amin:flag>p</amin:flag>
+                <amin:shell name='dir'>/opt/adistro/bootstrap/System/TemporaryFiles</amin:shell>
+        </amin:command>
+        <amin:command name="mkdir">
+                <amin:param name="target">/tmp/amin-tests/my_new_dir2</amin:param>
+                <amin:flag>p</amin:flag>
+                <amin:shell name='dir'>/opt/adistro/bootstrap/System/TemporaryFiles</amin:shell>
+        </amin:command>
+        <amin:command name="mkdir">
+                <amin:param name="target">/tmp/amin-tests/my_new_dir3</amin:param>
+                <amin:flag>p</amin:flag>
+                <amin:shell name='dir'>/opt/adistro/bootstrap/System/TemporaryFiles</amin:shell>
+        </amin:command>
+        <amin:command name="mkdir">
+                <amin:param name="target">/tmp/amin-tests/my_new_dir5</amin:param>
+                <amin:flag>p</amin:flag>
+                <amin:shell name='dir'>/opt/adistro/bootstrap/System/TemporaryFiles</amin:shell>
+        </amin:command>
+<!--breakpoint 16-->
+</amin:profile>
