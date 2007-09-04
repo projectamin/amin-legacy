@@ -86,27 +86,30 @@ sub Run ($) {
 			my $req = HTTP::Request->new(GET => $uri);
 			my $res = $ua->request($req);
 			if ($res->is_success) {
-			
+				$aout = $res->as_string;
 			} else {
 				$aout .= " Unable to download $uri.";
 			
 			}
-			#checksum the profile
-			my $md5 = Digest::MD5->new;
-			$md5->add($aout);
-			my $digest = $md5->hexdigest;
-			#compare to datastore of checksums
-			my $ds = $self->{Data_Store};
-			my $h = Amin::Protocol::Datastore->new();
-			my $x = Amin::Machine::Filter::XInclude->new(Handler => $h);
-			my $p = XML::SAX::PurePerl->new(Handler => $x);
-			$ds = $p->parse_uri($ds);	
-			#if checksum matches or not.
-			foreach (keys %$ds) {
-				if ($digest eq $ds->{$_}->{checksum}) {
-					$aout = $m->parse_uri($uri);
-				} else {
-					$aout = "sorry this profile is not allowed";
+			if ($aout = $uri->is_uri($aout)) {
+			
+				#checksum the profile
+				my $md5 = Digest::MD5->new;
+				$md5->add($aout);
+				my $digest = $md5->hexdigest;
+				#compare to datastore of checksums
+				my $ds = $self->{Data_Store};
+				my $h = Amin::Protocol::Datastore->new();
+				my $x = Amin::Machine::Filter::XInclude->new(Handler => $h);
+				my $p = XML::SAX::PurePerl->new(Handler => $x);
+				$ds = $p->parse_uri($ds);	
+				#if checksum matches or not.
+				foreach (keys %$ds) {
+					if ($digest eq $ds->{$_}->{checksum}) {
+						$aout = $m->parse_uri($uri);
+					} else {
+						$aout = "sorry this profile is not allowed";
+					}
 				}
 			}
 			$sock->send($aout);
