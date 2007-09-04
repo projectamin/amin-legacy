@@ -6,18 +6,16 @@
 #or see the following website http://projectamin.org.
 
 use strict;
-use Amin::Protocol::Blowfish_SimpleAuth;
-
+use Amin::Protocol::Standard;
 #PLEASE NOTE!!!!!
 #key must be at least 8 chars
 
 #can add 'localaddr' => 'xxx.xxx.xxx.xxx',
 #to the options below for ip addresses
 
-my $server = Amin::Protocol::Blowfish_SimpleAuth->new(
+my $server = Amin::Protocol::Standard->new(
 					{'pidfile' => 'none',
 					    'localport' => '8000',
-					    'key' => 'testkeys',
 					    'logfile' => '/tmp/amindaemon-log'}, \@ARGV);
 $server->Bind();
 
