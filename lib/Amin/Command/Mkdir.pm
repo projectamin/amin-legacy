@@ -31,14 +31,25 @@ sub start_element {
 sub characters {
 	my ($self, $chars) = @_;
 	my $data = $chars->{Data};
+	my $debug = $self->{Spec}->{Debug} || "";
+	if ($debug eq "mk") {
+		print "data1:$data:\n";
+	}
 	$data = $self->fix_text($data);
 	my $attrs = $self->{"ATTRS"};
 	my $element = $self->{"ELEMENT"};
 	my $command = $self->command;
+
 	if (($command eq "mkdir") && ($data ne "")) {
 		if ($element->{LocalName} eq "param") {
+			if ($debug eq "mk") {
+				print "data:$data:\n";
+			}
 			my @things = $data =~ m/([\*\+\.\w=\/-]+|'[^']+')\s*/g;
 			foreach (@things) {
+				if ($debug eq "mk") {
+					print "$_ =:$_:\n";
+				}
 				#target and param are same thing
 				if ($attrs{'{}name'}->{Value} eq "target") {
 					$self->target($_);
