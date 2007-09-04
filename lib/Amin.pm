@@ -15,7 +15,7 @@ my $DefaultLog	||= 'Amin::Machine::Log::Standard';
 my $DefaultMachine ||= 'Amin::Machine::Dispatcher';
 
 use vars qw($VERSION);
-$VERSION = '0.5.4';
+$VERSION = '0.5.5';
 
 sub new {
 	my $class = shift;
