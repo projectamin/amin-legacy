@@ -1,0 +1,359 @@
+<amin:profile xmlns:amin='http://projectamin.org/ns/'>
+<amin:command name="mkdir">
+	<amin:param name="target">
+		/tmp/amin-tests/my_new_dir1
+	</amin:param>
+	<amin:flag>p</amin:flag>
+</amin:command>
+<amin:command name="mkdir">
+	<amin:param name="target">
+		/tmp/amin-tests/my_new_dir2
+	</amin:param>
+	<amin:flag>p</amin:flag>
+</amin:command>
+<amin:command name="mkdir">
+	<amin:param name="target">
+		/tmp/amin-tests/my_new_dir3
+	</amin:param>
+	<amin:flag>p</amin:flag>
+</amin:command>
+<amin:command name="mkdir">
+	<amin:param name="target">
+		/tmp/amin-tests/my_new_dir4
+	</amin:param>
+	<amin:flag>p</amin:flag>
+</amin:command>
+<amin:command name="mkdir">
+	<amin:param name="target">
+		/tmp/amin-tests/my_new_dir5
+	</amin:param>
+	<amin:flag>p</amin:flag>
+</amin:command>
+<amin:command name="mkdir">
+	<amin:param name="target">
+		/tmp/amin-tests/my_new_dir6
+	</amin:param>
+	<amin:flag>p</amin:flag>
+</amin:command>
+<amin:command name="mkdir">
+	<amin:param name="target">
+		/tmp/amin-tests/my_new_dir7
+	</amin:param>
+	<amin:flag>p</amin:flag>
+</amin:command>
+<amin:command name="mkdir">
+	<amin:param name="target">
+		/tmp/amin-tests/my_new_dir8
+	</amin:param>
+	<amin:flag>p</amin:flag>
+</amin:command>
+<amin:command name="mkdir">
+	<amin:param name="target">
+		/tmp/amin-tests/my_new_dir9
+	</amin:param>
+	<amin:flag>p</amin:flag>
+</amin:command>
+<amin:command name="mkdir">
+	<amin:param name="target">
+		/tmp/amin-tests/my_new_dir10
+	</amin:param>
+	<amin:flag>p</amin:flag>
+</amin:command>
+<amin:command name="mkdir">
+	<amin:param name="target">
+		/tmp/amin-tests/my_new_dir11
+	</amin:param>
+	<amin:flag>p</amin:flag>
+</amin:command>
+<amin:command name="mkdir">
+	<amin:param name="target">
+		/tmp/amin-tests/my_new_dir12
+	</amin:param>
+	<amin:flag>p</amin:flag>
+</amin:command>
+<amin:command name="mkdir">
+	<amin:param name="target">
+		/tmp/amin-tests/my_new_dir13
+	</amin:param>
+	<amin:flag>p</amin:flag>
+</amin:command>
+<amin:command name="mkdir">
+	<amin:param name="target">
+		/tmp/amin-tests/my_new_dir14
+	</amin:param>
+	<amin:flag>p</amin:flag>
+</amin:command>
+<amin:command name="mkdir">
+	<amin:param name="target">
+		/tmp/amin-tests/my_new_dir15
+	</amin:param>
+	<amin:flag>p</amin:flag>
+</amin:command>
+<amin:command name="mkdir">
+	<amin:param name="target">
+		/tmp/amin-tests/my_new_dir16
+	</amin:param>
+	<amin:flag>p</amin:flag>
+</amin:command>
+<amin:command name="mkdir">
+	<amin:param name="target">
+		/tmp/amin-tests/my_new_dir17
+	</amin:param>
+	<amin:flag>p</amin:flag>
+</amin:command>
+<amin:command name="mkdir">
+	<amin:param name="target">
+		/tmp/amin-tests/my_new_dir18
+	</amin:param>
+	<amin:flag>p</amin:flag>
+</amin:command>
+<amin:command name="mkdir">
+	<amin:param name="target">
+		/tmp/amin-tests/my_new_dir19
+	</amin:param>
+	<amin:flag>p</amin:flag>
+</amin:command>
+<amin:command name="mkdir">
+	<amin:param name="target">
+		/tmp/amin-tests/my_new_dir20
+	</amin:param>
+	<amin:flag>p</amin:flag>
+</amin:command>
+<amin:command name="mkdir">
+	<amin:param name="target">
+		/tmp/amin-tests/my_new_dir21
+	</amin:param>
+	<amin:flag>p</amin:flag>
+</amin:command>
+<amin:command name="mkdir">
+	<amin:param name="target">
+		/tmp/amin-tests/my_new_dir22
+	</amin:param>
+	<amin:flag>p</amin:flag>
+</amin:command>
+<amin:command name="mkdir">
+	<amin:param name="target">
+		/tmp/amin-tests/my_new_dir23
+	</amin:param>
+	<amin:flag>p</amin:flag>
+</amin:command>
+<amin:command name="mkdir">
+	<amin:param name="target">
+		/tmp/amin-tests/my_new_dir24
+	</amin:param>
+	<amin:flag>p</amin:flag>
+</amin:command>
+<amin:command name="mkdir">
+	<amin:param name="target">
+		/tmp/amin-tests/my_new_dir25
+	</amin:param>
+	<amin:flag>p</amin:flag>
+</amin:command>
+<amin:command name="mkdir">
+	<amin:param name="target">
+		/tmp/amin-tests/my_new_dir26
+	</amin:param>
+	<amin:flag>p</amin:flag>
+</amin:command>
+<amin:command name="mkdir">
+	<amin:param name="target">
+		/tmp/amin-tests/my_new_dir27
+	</amin:param>
+	<amin:flag>p</amin:flag>
+</amin:command>
+<amin:command name="mkdir">
+	<amin:param name="target">
+		/tmp/amin-tests/my_new_dir28
+	</amin:param>
+	<amin:flag>p</amin:flag>
+</amin:command>
+<amin:command name="mkdir">
+	<amin:param name="target">
+		/tmp/amin-tests/my_new_dir29
+	</amin:param>
+	<amin:flag>p</amin:flag>
+</amin:command>
+<amin:command name="mkdir">
+	<amin:param name="target">
+		/tmp/amin-tests/my_new_dir30
+	</amin:param>
+	<amin:flag>p</amin:flag>
+</amin:command>
+<amin:command name="mkdir">
+	<amin:param name="target">
+		/tmp/amin-tests/my_new_dir31
+	</amin:param>
+	<amin:flag>p</amin:flag>
+</amin:command>
+<amin:command name="mkdir">
+	<amin:param name="target">
+		/tmp/amin-tests/my_new_dir32
+	</amin:param>
+	<amin:flag>p</amin:flag>
+</amin:command>
+<amin:command name="mkdir">
+	<amin:param name="target">
+		/tmp/amin-tests/my_new_dir33
+	</amin:param>
+	<amin:flag>p</amin:flag>
+</amin:command>
+<amin:command name="mkdir">
+	<amin:param name="target">
+		/tmp/amin-tests/my_new_dir34
+	</amin:param>
+	<amin:flag>p</amin:flag>
+</amin:command>
+<amin:command name="mkdir">
+	<amin:param name="target">
+		/tmp/amin-tests/my_new_dir35
+	</amin:param>
+	<amin:flag>p</amin:flag>
+</amin:command>
+<amin:command name="mkdir">
+	<amin:param name="target">
+		/tmp/amin-tests/my_new_dir36
+	</amin:param>
+	<amin:flag>p</amin:flag>
+</amin:command>
+<amin:command name="mkdir">
+	<amin:param name="target">
+		/tmp/amin-tests/my_new_dir37
+	</amin:param>
+	<amin:flag>p</amin:flag>
+</amin:command>
+<amin:command name="mkdir">
+	<amin:param name="target">
+		/tmp/amin-tests/my_new_dir38
+	</amin:param>
+	<amin:flag>p</amin:flag>
+</amin:command>
+<amin:command name="mkdir">
+	<amin:param name="target">
+		/tmp/amin-tests/my_new_dir39
+	</amin:param>
+	<amin:flag>p</amin:flag>
+</amin:command>
+<amin:command name="mkdir">
+	<amin:param name="target">
+		/tmp/amin-tests/my_new_dir40
+	</amin:param>
+	<amin:flag>p</amin:flag>
+</amin:command>
+<amin:command name="mkdir">
+	<amin:param name="target">
+		/tmp/amin-tests/my_new_dir41
+	</amin:param>
+	<amin:flag>p</amin:flag>
+</amin:command>
+<amin:command name="mkdir">
+	<amin:param name="target">
+		/tmp/amin-tests/my_new_dir42
+	</amin:param>
+	<amin:flag>p</amin:flag>
+</amin:command>
+<amin:command name="mkdir">
+	<amin:param name="target">
+		/tmp/amin-tests/my_new_dir43
+	</amin:param>
+	<amin:flag>p</amin:flag>
+</amin:command>
+<amin:command name="mkdir">
+	<amin:param name="target">
+		/tmp/amin-tests/my_new_dir44
+	</amin:param>
+	<amin:flag>p</amin:flag>
+</amin:command>
+<amin:command name="mkdir">
+	<amin:param name="target">
+		/tmp/amin-tests/my_new_dir45
+	</amin:param>
+	<amin:flag>p</amin:flag>
+</amin:command>
+<amin:command name="mkdir">
+	<amin:param name="target">
+		/tmp/amin-tests/my_new_dir46
+	</amin:param>
+	<amin:flag>p</amin:flag>
+</amin:command>
+<amin:command name="mkdir">
+	<amin:param name="target">
+		/tmp/amin-tests/my_new_dir47
+	</amin:param>
+	<amin:flag>p</amin:flag>
+</amin:command>
+<amin:command name="mkdir">
+	<amin:param name="target">
+		/tmp/amin-tests/my_new_dir48
+	</amin:param>
+	<amin:flag>p</amin:flag>
+</amin:command>
+<amin:command name="mkdir">
+	<amin:param name="target">
+		/tmp/amin-tests/my_new_dir49
+	</amin:param>
+	<amin:flag>p</amin:flag>
+</amin:command>
+<amin:command name="mkdir">
+	<amin:param name="target">
+		/tmp/amin-tests/my_new_dir50
+	</amin:param>
+	<amin:flag>p</amin:flag>
+</amin:command>
+
+<amin:command name="mkdir">
+	<amin:param name="target">
+		/tmp/amin-tests/my_new_dir51
+	</amin:param>
+	<amin:flag>p</amin:flag>
+</amin:command>
+<amin:command name="mkdir">
+	<amin:param name="target">
+		/tmp/amin-tests/my_new_dir52
+	</amin:param>
+	<amin:flag>p</amin:flag>
+</amin:command>
+<amin:command name="mkdir">
+	<amin:param name="target">
+		/tmp/amin-tests/my_new_dir53
+	</amin:param>
+	<amin:flag>p</amin:flag>
+</amin:command>
+<amin:command name="mkdir">
+	<amin:param name="target">
+		/tmp/amin-tests/my_new_dir54
+	</amin:param>
+	<amin:flag>p</amin:flag>
+</amin:command>
+<amin:command name="mkdir">
+	<amin:param name="target">
+		/tmp/amin-tests/my_new_dir55
+	</amin:param>
+	<amin:flag>p</amin:flag>
+</amin:command>
+<amin:command name="mkdir">
+	<amin:param name="target">
+		/tmp/amin-tests/my_new_dir56
+	</amin:param>
+	<amin:flag>p</amin:flag>
+</amin:command>
+<amin:command name="mkdir"><amin:param name="target">/tmp/amin-tests/my_new_dir57</amin:param><amin:flag>p</amin:flag></amin:command>
+<amin:command name="mkdir">
+	<amin:param name="target">
+		/tmp/amin-tests/my_new_dir58
+	</amin:param>
+	<amin:flag>p</amin:flag>
+</amin:command>
+<amin:command name="mkdir">
+	<amin:param name="target">
+		/tmp/amin-tests/my_new_dir59
+	</amin:param>
+	<amin:flag>p</amin:flag>
+</amin:command>
+<amin:command name="mkdir">
+	<amin:param name="target">
+		/tmp/amin-tests/my_new_dir60
+	</amin:param>
+	<amin:flag>p</amin:flag>
+</amin:command>
+</amin:profile>
+

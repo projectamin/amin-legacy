@@ -1,0 +1,182 @@
+<amin:profile xmlns:amin='http://projectamin.org/ns/'>
+	<amin:command name="link">
+		<amin:param name="source">original_thing1</amin:param>
+		<amin:param name="target">linked_thing1</amin:param>
+		<amin:flag>sf</amin:flag>
+		<amin:shell name="dir">/tmp/amin-tests/</amin:shell>
+	</amin:command>
+	<amin:command name="link">
+		<amin:param name="source">original_thing2</amin:param>
+		<amin:param name="target">linked_thing2</amin:param>
+		<amin:flag>sf</amin:flag>
+		<amin:shell name="dir">/tmp/amin-tests/</amin:shell>
+	</amin:command>
+	<amin:command name="link">
+		<amin:param name="source">original_thing3</amin:param>
+		<amin:param name="target">linked_thing3</amin:param>
+		<amin:flag>sf</amin:flag>
+		<amin:shell name="dir">/tmp/amin-tests/</amin:shell>
+	</amin:command>
+	<amin:command name="link">
+		<amin:param name="source">original_thing4</amin:param>
+		<amin:param name="target">linked_thing4</amin:param>
+		<amin:flag>sf</amin:flag>
+		<amin:shell name="dir">/tmp/amin-tests/</amin:shell>
+	</amin:command>
+	<amin:command name="link">
+		<amin:param name="source">original_thing5</amin:param>
+		<amin:param name="target">linked_thing5</amin:param>
+		<amin:flag>sf</amin:flag>
+		<amin:shell name="dir">/tmp/amin-tests/</amin:shell>
+	</amin:command>
+	<amin:command name="link">
+		<amin:param name="source">original_thing6</amin:param>
+		<amin:param name="target">linked_thing6</amin:param>
+		<amin:flag>sf</amin:flag>
+		<amin:shell name="dir">/tmp/amin-tests/</amin:shell>
+	</amin:command>
+	<amin:command name="link">
+		<amin:param name="source">original_thing7</amin:param>
+		<amin:param name="target">linked_thing7</amin:param>
+		<amin:flag>sf</amin:flag>
+		<amin:shell name="dir">/tmp/amin-tests/</amin:shell>
+	</amin:command>
+	<amin:command name="link">
+		<amin:param name="source">original_thing8</amin:param>
+		<amin:param name="target">linked_thing8</amin:param>
+		<amin:flag>sf</amin:flag>
+		<amin:shell name="dir">/tmp/amin-tests/</amin:shell>
+	</amin:command>
+	<amin:command name="link">
+		<amin:param name="source">original_thing9</amin:param>
+		<amin:param name="target">linked_thing9</amin:param>
+		<amin:flag>sf</amin:flag>
+		<amin:shell name="dir">/tmp/amin-tests/</amin:shell>
+	</amin:command>
+	<amin:command name="link">
+		<amin:param name="source">original_thing10</amin:param>
+		<amin:param name="target">linked_thing10</amin:param>
+		<amin:flag>sf</amin:flag>
+		<amin:shell name="dir">/tmp/amin-tests/</amin:shell>
+	</amin:command>
+	<amin:command name="link">
+		<amin:param name="source">original_thing11</amin:param>
+		<amin:param name="target">linked_thing11</amin:param>
+		<amin:flag>sf</amin:flag>
+		<amin:shell name="dir">/tmp/amin-tests/</amin:shell>
+	</amin:command>
+	<amin:command name="link">
+		<amin:param name="source">original_thing12</amin:param>
+		<amin:param name="target">linked_thing12</amin:param>
+		<amin:flag>sf</amin:flag>
+		<amin:shell name="dir">/tmp/amin-tests/</amin:shell>
+	</amin:command>
+	<amin:command name="link">
+		<amin:param name="source">original_thing13</amin:param>
+		<amin:param name="target">linked_thing13</amin:param>
+		<amin:flag>sf</amin:flag>
+		<amin:shell name="dir">/tmp/amin-tests/</amin:shell>
+	</amin:command>
+	<amin:command name="link">
+		<amin:param name="source">original_thing14</amin:param>
+		<amin:param name="target">linked_thing14</amin:param>
+		<amin:flag>sf</amin:flag>
+		<amin:shell name="dir">/tmp/amin-tests/</amin:shell>
+	</amin:command>
+	<amin:command name="link">
+		<amin:param name="source">original_thing15</amin:param>
+		<amin:param name="target">linked_thing15</amin:param>
+		<amin:flag>sf</amin:flag>
+		<amin:shell name="dir">/tmp/amin-tests/</amin:shell>
+	</amin:command>
+	<amin:command name="link">
+		<amin:param name="source">original_thing16</amin:param>
+		<amin:param name="target">linked_thing16</amin:param>
+		<amin:flag>sf</amin:flag>
+		<amin:shell name="dir">/tmp/amin-tests/</amin:shell>
+	</amin:command>
+	<amin:command name="link">
+		<amin:param name="source">original_thing17</amin:param>
+		<amin:param name="target">linked_thing17</amin:param>
+		<amin:flag>sf</amin:flag>
+		<amin:shell name="dir">/tmp/amin-tests/</amin:shell>
+	</amin:command>
+	<amin:command name="link">
+		<amin:param name="source">original_thing18</amin:param>
+		<amin:param name="target">linked_thing18</amin:param>
+		<amin:flag>sf</amin:flag>
+		<amin:shell name="dir">/tmp/amin-tests/</amin:shell>
+	</amin:command>
+	<amin:command name="link">
+		<amin:param name="source">original_thing19</amin:param>
+		<amin:param name="target">linked_thing19</amin:param>
+		<amin:flag>sf</amin:flag>
+		<amin:shell name="dir">/tmp/amin-tests/</amin:shell>
+	</amin:command>
+	<amin:command name="link">
+		<amin:param name="source">original_thing20</amin:param>
+		<amin:param name="target">linked_thing20</amin:param>
+		<amin:flag>sf</amin:flag>
+		<amin:shell name="dir">/tmp/amin-tests/</amin:shell>
+	</amin:command>
+	<amin:command name="link">
+		<amin:param name="source">original_thing21</amin:param>
+		<amin:param name="target">linked_thing21</amin:param>
+		<amin:flag>sf</amin:flag>
+		<amin:shell name="dir">/tmp/amin-tests/</amin:shell>
+	</amin:command>
+	<amin:command name="link">
+		<amin:param name="source">original_thing22</amin:param>
+		<amin:param name="target">linked_thing22</amin:param>
+		<amin:flag>sf</amin:flag>
+		<amin:shell name="dir">/tmp/amin-tests/</amin:shell>
+	</amin:command>
+	<amin:command name="link">
+		<amin:param name="source">original_thing23</amin:param>
+		<amin:param name="target">linked_thing23</amin:param>
+		<amin:flag>sf</amin:flag>
+		<amin:shell name="dir">/tmp/amin-tests/</amin:shell>
+	</amin:command>
+	<amin:command name="link">
+		<amin:param name="source">original_thing24</amin:param>
+		<amin:param name="target">linked_thing24</amin:param>
+		<amin:flag>sf</amin:flag>
+		<amin:shell name="dir">/tmp/amin-tests/</amin:shell>
+	</amin:command>
+	<amin:command name="link">
+		<amin:param name="source">original_thing25</amin:param>
+		<amin:param name="target">linked_thing25</amin:param>
+		<amin:flag>sf</amin:flag>
+		<amin:shell name="dir">/tmp/amin-tests/</amin:shell>
+	</amin:command>
+	<amin:command name="link">
+		<amin:param name="source">original_thing26</amin:param>
+		<amin:param name="target">linked_thing26</amin:param>
+		<amin:flag>sf</amin:flag>
+		<amin:shell name="dir">/tmp/amin-tests/</amin:shell>
+	</amin:command>
+	<amin:command name="link">
+		<amin:param name="source">original_thing27</amin:param>
+		<amin:param name="target">linked_thing27</amin:param>
+		<amin:flag>sf</amin:flag>
+		<amin:shell name="dir">/tmp/amin-tests/</amin:shell>
+	</amin:command>
+	<amin:command name="link">
+		<amin:param name="source">original_thing28</amin:param>
+		<amin:param name="target">linked_thing28</amin:param>
+		<amin:flag>sf</amin:flag>
+		<amin:shell name="dir">/tmp/amin-tests/</amin:shell>
+	</amin:command>
+	<amin:command name="link">
+		<amin:param name="source">original_thing29</amin:param>
+		<amin:param name="target">linked_thing29</amin:param>
+		<amin:flag>sf</amin:flag>
+		<amin:shell name="dir">/tmp/amin-tests/</amin:shell>
+	</amin:command>
+	<amin:command name="link">
+		<amin:param name="source">original_thing30</amin:param>
+		<amin:param name="target">linked_thing30</amin:param>
+		<amin:flag>sf</amin:flag>
+		<amin:shell name="dir">/tmp/amin-tests/</amin:shell>
+	</amin:command>
+</amin:profile>

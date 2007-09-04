@@ -1,0 +1,63 @@
+<amin:profile xmlns:amin='http://projectamin.org/ns/'>
+<amin:command name="mkdir">
+	<amin:param name="target">
+		/tmp/amin-tests/my_new_dir1
+	</amin:param>
+	<amin:flag>p</amin:flag>
+</amin:command>
+<amin:command name="mkdir">
+	<amin:param name="target">
+		/tmp/amin-tests/my_new_dir2
+	</amin:param>
+	<amin:flag>p</amin:flag>
+</amin:command>
+<amin:command name="mkdir">
+	<amin:param name="target">
+		/tmp/amin-tests/my_new_dir3
+	</amin:param>
+	<amin:flag>p</amin:flag>
+</amin:command>
+<amin:command name="mkdir">
+	<amin:param name="target">
+		/tmp/amin-tests/my_new_dir4
+	</amin:param>
+	<amin:flag>p</amin:flag>
+</amin:command>
+<amin:command name="mkdir">
+	<amin:param name="target">
+		/tmp/amin-tests/my_new_dir5
+	</amin:param>
+	<amin:flag>p</amin:flag>
+</amin:command>
+<amin:command name="mkdir">
+	<amin:param name="target">
+		/tmp/amin-tests/my_new_dir6
+	</amin:param>
+	<amin:flag>p</amin:flag>
+</amin:command>
+<amin:command name="mkdir">
+	<amin:param name="target">
+		/tmp/amin-tests/my_new_dir7
+	</amin:param>
+	<amin:flag>p</amin:flag>
+</amin:command>
+<amin:command name="mkdir">
+	<amin:param name="target">
+		/tmp/amin-tests/my_new_dir8
+	</amin:param>
+	<amin:flag>p</amin:flag>
+</amin:command>
+<amin:command name="mkdir">
+	<amin:param name="target">
+		/tmp/amin-tests/my_new_dir9
+	</amin:param>
+	<amin:flag>p</amin:flag>
+</amin:command>
+<amin:command name="mkdir">
+	<amin:param name="target">
+		/tmp/amin-tests/my_new_dir10
+	</amin:param>
+	<amin:flag>p</amin:flag>
+</amin:command>
+</amin:profile>
+
