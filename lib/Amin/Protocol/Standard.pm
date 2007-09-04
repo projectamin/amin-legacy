@@ -9,7 +9,7 @@ use strict;
 use Net::Daemon;
 use Amin;
 use LWP::UserAgent;
-#use Amin::Machine::Protocol::Datastore;
+use Amin::Protocol::Datastore;
 use Amin::Machine::Filter::XInclude;
 use XML::SAX::PurePerl;
 use Digest::MD5;
@@ -97,13 +97,13 @@ sub Run ($) {
 			my $digest = $md5->hexdigest;
 			#compare to datastore of checksums
 			my $ds = $self->{Data_Store};
-			my $h = Amin::Machine::Protocol::Datastore->new();
+			my $h = Amin::Protocol::Datastore->new();
 			my $x = Amin::Machine::Filter::XInclude->new(Handler => $h);
 			my $p = XML::SAX::PurePerl->new(Handler => $x);
 			$ds = $p->parse_uri($ds);	
 			#if checksum matches or not.
 			foreach (keys %$ds) {
-				if ($digest eq $ds->{$_}->{digest}) {
+				if ($digest eq $ds->{$_}->{checksum}) {
 					$aout = $m->parse_uri($uri);
 				} else {
 					$aout = "sorry this profile is not allowed";
