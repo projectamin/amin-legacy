@@ -42,7 +42,7 @@ sub end_element {
 		$hash{checksum} = $self->checksum;
 		$hash{uri} = $self->uri;
 		$hash{type} = "profile";
-		$config{$self->name} = \%hash;
+		$datastore{$self->name} = \%hash;
 		
 	}
 	if ($element->{LocalName} eq "networkmap") {
@@ -50,7 +50,7 @@ sub end_element {
 		$hash{checksum} = $self->checksum;
 		$hash{uri} = $self->uri;
 		$hash{type} = "networkmap";
-		$config{$self->name} = \%hash;
+		$datastore{$self->name} = \%hash;
 		
 	}
 	if ($element->{LocalName} eq "adminlist") {
@@ -58,7 +58,7 @@ sub end_element {
 		$hash{checksum} = $self->checksum;
 		$hash{uri} = $self->uri;
 		$hash{type} = "adminlist";
-		$config{$self->name} = \%hash;
+		$datastore{$self->name} = \%hash;
 		
 	}
 }
