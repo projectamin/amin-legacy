@@ -109,12 +109,15 @@ This file looks like
   <datastore>
      <profile uri="http://adistro.com/apan/profile.xml">   
 	<checksum>mfewkfewtjwerj3werjtkwerjk</checksum>
+	<type>profile</type>
      </profile>	
      <networkmap uri="http://adistro.com/apan/networkmap.xml">   
 	<checksum>bncvcxnbvmxnmxcnmvhe32322</checksum>
+	<type>networkmap</type>
      </networkmap>	
      <adminlist uri="http://adistro.com/apan/adminlist.xml">   
 	<checksum>eiro3ir30-493943io2dsnxjsd8=sss</checksum>
+	<type>adminlist</type>
      </adminlist>	
   </datastore>
 
