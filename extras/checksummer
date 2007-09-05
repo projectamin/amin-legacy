@@ -1,0 +1,95 @@
+#!/usr/bin/perl
+
+use strict;
+use Digest::MD5;
+use Amin::Profile::Type;
+use XML::SAX::PurePerl;
+use XML::SAX::Writer;
+use XML::Generator::PerlData;
+use LWP::UserAgent;
+use HTTP::Request;
+
+my $x=0;
+my %datastore;
+while (1) {
+	print "please enter a uri\n";
+	my $uri = <STDIN>;
+	chomp $uri;
+	my $ah = Amin::Profile::Type->new();
+        my $ap = XML::SAX::PurePerl->new(Handler => $ah);
+        my $type = $ap->parse_uri($uri);
+
+	#grab profile
+	my $ua = LWP::UserAgent->new;
+	my $aout;
+	#change?
+	my $req = HTTP::Request->new(GET => $uri);
+	my $res = $ua->request($req);
+	if ($res->is_success) {
+		$aout = $res->as_string;
+	}
+
+	my $digest;
+	if ($aout) {
+		my $md5 = Digest::MD5->new;
+		$md5->add($aout);
+		$digest = $md5->hexdigest;
+	}
+	$x++;	
+	my $newtype = "$type-$x";
+	$datastore{$newtype} = {
+		uri => $uri,
+		checksum => $digest,
+		type => $type
+	};
+	print "create another checksum(y/n)?\n";
+	my $another = <STDIN>;
+	chomp $another;
+	if ($another eq "n") {
+		print "where do you want to store this xml file?\n";
+		my $location = <STDIN>;
+		chomp $location;
+		#do perldata generation here...
+		my $h = XML::SAX::Writer->new(Output => $location);
+		my $g = XML::Generator::PerlData->new (
+			rootname => 'datastore',
+			Handler => $h,
+			keymap => { '*' => \&generate },
+			attrmap => {
+				'profile' => 'uri',
+				'adminlist' => 'uri',
+				'networkmap' => 'uri',
+			},
+			charmap => {
+				'checksum' => 'char',
+			},
+			namespacemap => {'http://projectamin.org/ns/' => 'datastore'},
+			namespaces =>  {'http://projectamin.org/ns/' => 'amin' },
+        	);
+			
+	
+	
+	
+	
+	        $g->parse(\%datastore);
+		last;
+	}
+}
+
+sub generate {
+        my $key = shift;
+        my $elname;
+        if ($key =~ m/profile/) {
+                $elname = "profile";
+                return $elname;
+        } elsif ($key =~ m/networkmap/) {
+		$elname = "networkmap";
+		return $elname;
+        } elsif ($key =~ m/adminlist/) {
+		$elname = "adminlist";
+		return $elname;
+	} else {
+                return $key;
+        }
+}
+
