@@ -9,7 +9,6 @@ use strict;
 use warnings;
 use vars qw(@ISA);
 use Amin::Elt;
-use Data::Dumper;
 
 @ISA = qw(Amin::Elt);
 my %attrs;
@@ -134,9 +133,7 @@ sub end_element {
 		$log->success_message($text);
 		if ($cmd->{OUT}) {
 			#fix crap from make?
-			warn Dumper ("before", $cmd->{OUT});
 			$cmd->{OUT} =~ s|'+||;
-			warn Dumper ("after", $cmd->{OUT});
 			$log->OUT_message($cmd->{OUT});
 		}
 		#reset this command
