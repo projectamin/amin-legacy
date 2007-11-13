@@ -1,8 +1,8 @@
 <amin:profile xmlns:amin='http://projectamin.org/ns/'>
         <amin:command name="search_replace">
                 <amin:param name="target">pass</amin:param>
-                <amin:flag name="find">root</amin:flag>
-                <amin:flag name="replace">0</amin:flag>
+                <amin:flag name='find'>SHARED_LIB_LOADER_PREFIX="$(DEVEL_PREFIX)/lib"</amin:flag>
+                <amin:flag name='replace'>SHARED_LIB_LOADER_PREFIX="/bootstrap/lib"</amin:flag>
                 <amin:shell name="dir">/tmp/amin-tests/</amin:shell>
         </amin:command>
 </amin:profile>
