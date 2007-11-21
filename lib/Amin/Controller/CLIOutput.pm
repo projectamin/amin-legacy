@@ -134,7 +134,7 @@ CLIOutput - reader and formatter filter for any controller
 
 =head1 version
 
-cat (coreutils) 5.0 March 2003
+1.0
 
 =head1 DESCRIPTION
 
