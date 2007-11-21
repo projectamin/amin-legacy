@@ -50,7 +50,9 @@ sub comment {
 	my $data = $chars->{Data};
 	$data = $self->fix_text($data);
 	#$data = $self->escape_it($data);
-	push @{$self->{Spec}->{Buffer}}, "<!--" . $data . "-->";
+	if ($data) {
+		push @{$self->{Spec}->{Buffer}}, "<!--" . $data . "-->";
+	}
 }
 
 
