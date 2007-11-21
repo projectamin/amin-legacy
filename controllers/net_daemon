@@ -7,15 +7,11 @@
 
 use strict;
 use Amin::Protocol::Standard;
-#PLEASE NOTE!!!!!
-#key must be at least 8 chars
-
-#can add 'localaddr' => 'xxx.xxx.xxx.xxx',
-#to the options below for ip addresses
 
 my $server = Amin::Protocol::Standard->new(
-					{'pidfile' => 'none',
-					    'localport' => '8000',
-					    'logfile' => '/tmp/amindaemon-log'}, \@ARGV);
-$server->Bind();
+						'Port' => '8000',
+						'Ip' => '192.168.1.200',
+						'Data_Store' => 'file://tmp/datastorem.xml'
+					);
+$server->Run();
 
