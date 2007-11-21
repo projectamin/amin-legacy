@@ -214,7 +214,8 @@ $networkmap->{$_} would be jerry
 
 $networkmap->{$_}->{port} is 8000 
 
-and so on. 
+and so on. Attributes are ip, auth, protocol, port,
+user, key, and password.
   
 =head1 XML
 
