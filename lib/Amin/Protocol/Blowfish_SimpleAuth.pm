@@ -10,7 +10,7 @@ use Net::Daemon;
 use POSIX;
 use IPC::Run qw( run );
 use XML::SAX::ParserFactory;
-use Amin::CLI::Login;
+use Amin::Protocol::Login;
 use XML::SAX::Writer;
 use Crypt::Blowfish_PP;
 #use IPC::Shareable (':lock');
@@ -24,6 +24,7 @@ sub parse_uri {
 	my $self = shift;
 	my $networkmap = shift;
 	my $uri = shift;
+	my $m = shift;
 	my $line;
 	my $ip = $networkmap->{'ip'};
 	my $port = $networkmap->{'port'};
@@ -33,9 +34,9 @@ sub parse_uri {
 		Type     => SOCK_STREAM)
 		or die "Couldn't connect to 
 		$networkmap->{'ip'}:$networkmap->{'port'} : $@\n";
-	if ($self->{Spec}->{Filter_Param}) {
+	if ($m->{Filter_Param}) {
 		#decrypt
-		my $decrypter = Crypt::Blowfish_PP->new($self->{Spec}->{Filter_Param});
+		my $blowfish = Crypt::Blowfish_PP->new($m->{Filter_Param});
 		my $plainpass = $blowfish->decrypt($networkmap->{'password'});
 		my $plainkey = $blowfish->decrypt($networkmap->{'key'});
 		my $encryptor = Crypt::Blowfish_PP->new($plainkey);
@@ -77,25 +78,17 @@ sub Run ($) {
 			$sock->close();
 			return;
 		}
-	
-	
-		my $handler = Amin::CLI::Login->new(Handler => $writer);
+		my $handler = Amin::Protocol::Login->new();
 		my $p = XML::SAX::ParserFactory->parser(Handler => $handler);
 		my $login = $p->parse_string($line);
-
 		#decrypt password
-		
 		my $key = $self->{'key'};
 		my $blowfish = Crypt::Blowfish_PP->new($key);
 		my $crypttext =  unpack("H*", $login->{'passwd'});
 		my $passwd = $blowfish->decrypt($crypttext);
 		$login->{'passwd'} = $passwd;
-
-
 		my ($sys_name, $sys_passwd, $sys_uid) = getpwnam($login->{'username'});
-
 		#authentication of the username and password
-
 		my $auth;
 		my $auth_type = $self->{'auth_type'};
 		if ($auth_type eq "PAM") {
@@ -113,7 +106,6 @@ sub Run ($) {
 				$auth = "no";
 			}
 		}
-
 		if ($auth eq "no") {
 			#my %bad;
 			#tie %bad, 'IPC::Shareable', 'bad';
