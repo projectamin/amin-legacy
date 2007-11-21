@@ -26,13 +26,14 @@ while (1) {
 	my $req = HTTP::Request->new(GET => $uri);
 	my $res = $ua->request($req);
 	if ($res->is_success) {
-		$aout = $res->as_string;
+		$aout = $res->content;
 	}
 
 	my $digest;
 	if ($aout) {
 		my $md5 = Digest::MD5->new;
 		$md5->add($aout);
+		#$md5->add($uri);
 		$digest = $md5->hexdigest;
 	}
 	$x++;	
