@@ -1,0 +1,165 @@
+#!/usr/bin/perl
+
+use strict;
+use XML::SAX::PurePerl;
+use XML::SAX::Writer;
+use XML::Generator::PerlData;
+use Crypt::Blowfish_PP;
+
+my $x = 0;
+while (1) {
+        my $self = shift;
+	my %networkmap;
+	while (1) {
+		my $item = networkmap_menu();
+		$x++;
+		my $thing = "server-$x";
+		#add this item to our $networkmap
+		$networkmap{$thing} = \$item;
+		if (($item->{yn} eq "N") || ($item->{yn} eq "n")) {
+			last;
+		} 
+	}
+	print "these are the networkmaps you have entered\n";
+	foreach (keys %networkmap) {
+		#print "$_ -> $networkmap{$_}\n";
+		print "$_\n";
+		my $nm = $networkmap{$_};
+		#foreach my $nmp (keys %$nm) {
+		#	print "$nmp -> $nm->{$nmp}\n";
+		#}
+	}	
+
+	my $command;
+	until (($command eq "S") || ($command eq "s") || ($command eq "F") || ($command eq "f")) { 
+		print "Do you want to (S)ave or (F)orget this networkmap?\n";
+		$command = <STDIN>;
+		chomp $command;
+	}
+	if (($command eq "S") || ($command eq "s")) {
+		print "Where do you want to save this networkmap?\n";
+		my $dir = <STDIN>;
+		chomp $dir;
+		my $networkmap = generate_networkmap(\%networkmap, $dir);
+		if ($networkmap) {
+			print "Networkmap saved to $dir\n";
+		} else {
+			print "There was a problem saving to $dir";
+		}
+		last;
+	} elsif (($command eq "F") || ($command eq "f")) {
+		print "networkmap not generated\n";
+		last;
+	}
+}
+	
+sub generate_networkmap {
+        my $self = shift;
+	my $inetworkmap = shift;
+	my $save = shift;
+	my $networkmap;
+	#load up the sax process
+	my $h;
+	if ($save) {
+		$h = XML::SAX::Writer->new(Output => $save);
+	} else {
+		$h = XML::SAX::Writer->new(Output => \$networkmap);
+	}
+	
+	my $networkmap = get_networkmap($inetworkmap);
+	
+	my $d = XML::Generator::PerlData->new(
+		rootname => 'network',
+		namespacemap => {'http://projectamin.org/ns/' => 'network'},
+		namespaces =>  {'http://projectamin.org/ns/' => 'amin' },
+		keymap => { '*'    => \&networkmapper,},
+		attrmap => {'server' => 'name'},
+		Handler => $h,
+	);
+
+	$d->parse($networkmap);
+
+	return "ok";	
+}
+
+sub get_networkmap {
+        my $self = shift;
+        my @networkmap = shift;
+        my $x = 0;
+        my %map;
+        foreach my $networkmap (@networkmap) {
+                $x++;
+                my $name = "server$x";
+                $map{$name} = $networkmap;
+        }
+        return \%map;
+}
+
+sub networkmapper {
+        my $self = shift;
+        my $key = shift;
+        my $elname;
+        if ($key =~ m/server/) {
+                $elname = "server";
+                return $elname;
+        }
+        else {
+                return $key;
+        }
+}
+
+sub networkmap_menu {	
+        my $self = shift;
+	print "please enter an ip\n";
+	my $ip = <STDIN>;
+	chomp $ip;
+	
+	print "please enter a port\n";
+	my $port = <STDIN>;
+	chomp $port;
+	
+	print "please enter your local blowfish key for this networkmap.\n";
+	my $localkey = <STDIN>;
+	chomp $localkey;
+	
+	print "please enter the server's blowfish key for this <server>\n";
+	my $serverkey = <STDIN>;
+	chomp $serverkey;
+	
+	print "please enter the username for this <server>\n";
+	my $username = <STDIN>;
+	chomp $username;
+
+	print "please enter the password for this username\n";
+	my $password = <STDIN>;
+	chomp $password;
+		
+	print "please enter the a protocol name or press enter\n";
+	my $protocol = <STDIN>;
+	chomp $protocol;
+		
+	my $encryptor = Crypt::Blowfish_PP->new($localkey);
+	my $chiperpass = $encryptor->encrypt($password);
+	my $chiperserverkey = $encryptor->encrypt($serverkey);
+	
+	my %nm;
+	$nm{ip} = $ip;
+	$nm{port} = $port;
+	$nm{username} = $username;
+	$nm{password} = $chiperpass;
+	$nm{key} = $chiperserverkey;
+	if ($protocol) {
+		$nm{protocol} = $protocol;
+	}
+	print "Create another <server> entry(y/n)?\n";
+	my $yn = <STDIN>;
+	chomp $yn;
+	
+	if (($yn eq "N") || ($yn eq "n")) {
+		$nm{yn} = "n";
+	}
+	return \%nm;
+	
+}
+
+1;		
