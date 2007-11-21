@@ -155,12 +155,8 @@ sub uri {
 
 sub filter_param {
 	my $self = shift;
-	if (@_) {push @{$self->{FILTER_PARAM}}, @_; }
-	
-	if (!$self->{FILTER_PARAM}) {
-		$self->{FILTER_PARAM} = [];
-	}
-	return @{ $self->{FILTER_PARAM} };
+	if (@_) { $self->{FILTER_PARAM} = shift;}
+	return $self->{FILTER_PARAM};
 }
 
 sub adminlist {
