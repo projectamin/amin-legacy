@@ -354,7 +354,7 @@ if (defined $cli->adminlist) {
 		my $nm = $p->parse_uri($cli->networkmap);
 		foreach my $networkmap (keys %$nm) {
 			my $protocol = $nm->{$networkmap}->{protocol};
-			$lout = $protocol->parse_uri($nm->{$networkmap}, $cli->uri);
+			$lout = $protocol->parse_uri($nm->{$networkmap}, $cli->uri, $m);
 		}
 	} else {
 		$lout = $m->parse_uri($cli->uri);
