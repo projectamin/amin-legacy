@@ -308,7 +308,7 @@ touch - reader class filter for the touch command.
 
 =head1 version
 
-Linux 2.0 14 September 1997 umount 
+touch (coreutils) 5.0 March 2003
 
 =head1 DESCRIPTION
 
