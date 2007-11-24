@@ -14,6 +14,19 @@ when prompted. Amin installs many other perl
 modules. Those modules will ask their own 
 questions. 
 
+***NOTE***
+
+If you have never configured CPAN before on your 
+system, you may be asked CPAN configuration questions.
+Usually you can just hit enter(ie accept the default
+configurations). Some questions though require input,
+ie setting up cpan mirrors closest to you. 
+
+Also it is best to NOT install CPANPLUS if you have
+never done so before....
+
+***END NOTE***
+
 The make process above should install all the dependency
 modules that Amin requires. If it fails you could
 always install them manually. Here is a list of
