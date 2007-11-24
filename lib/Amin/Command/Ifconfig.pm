@@ -86,11 +86,8 @@ sub end_element {
 	        my $state = $self->{'STATE'};
 		my $xflag = $self->{'FLAG'};
 		my $xparam = $self->{'PARAM'};
-				
 		my (%acmd, @param, @flag, $flag);
-		
 		my $log = $self->{Spec}->{Log};
-	    
 		if ($dir) {
 			if (! chdir $dir) {
 				$self->{Spec}->{amin_error} = "red";
@@ -102,7 +99,6 @@ sub end_element {
 				return;
 			}
 		}
-		
 		foreach my $ip (@$xflag){
 			if (!$ip) {next;};
 			if (($ip =~ /^-/) || ($ip =~ /^--/)) {
@@ -125,23 +121,21 @@ sub end_element {
 				push @flag, $flag;
 			}
 		}
-		
 		if ($interface) {
 			push @param, "$interface";
 		}
 		if ($address) {
 			push @param, "$address";
 	        }
-		if ($address) {
+		if ($netmask) {
 			push @param, "$netmask";
 		}
-		if ($address) {
+		if ($state) {
 	        	push @param, "$state";
 		}
 		foreach my $ip (@$xparam) {
 			push @param, $ip;
 		}
-
 		$acmd{'CMD'} = "ifconfig";
 		$acmd{'FLAG'} = \@flag;
 		$acmd{'PARAM'} = \@param;
@@ -149,8 +143,7 @@ sub end_element {
 			$acmd{'ENV_VARS'} = $self->{'ENV_VARS'};
 		}
 		my $cmd = $self->amin_command(\%acmd);
-		
-		if ($cmd->{STATUS} != 1) {
+		if (($cmd->{STATUS} != 1) && ($cmd->{ERR})) {
 			$self->{Spec}->{amin_error} = "red";
 			my $text = "Could not set $address on $interface. Reason: $cmd->{ERR}";
 			$self->text($text);
@@ -163,7 +156,12 @@ sub end_element {
 			return;
 		}
 
-		my $text = "New interface created as $interface with IP of $address and netmask of $netmask.";
+		my $text;
+		if ($state eq "down") {
+			$text = "Interface $interface has been brought down";
+		} else {
+			$text = "New interface created as $interface with IP of $address and netmask of $netmask.";
+		}
 		$self->text($text);
 		$log->success_message($text); 
 		if ($cmd->{OUT}) {
