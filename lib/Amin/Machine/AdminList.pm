@@ -162,7 +162,7 @@ AdminList - reader class filter for AdminLists
 =head1 DESCRIPTION
 
   This is a reader class for an Amin AdminList. By default the 
-  results returned will be a hash that is indexed by profile# or
+  results returned will be a hash that is indexed by profile # or
   server#. # is the order this particular profile/server element
   appears in the adminlist from a read order of top/down.
    
