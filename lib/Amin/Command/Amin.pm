@@ -191,6 +191,20 @@ amin  0.5.0
         </amin:command>
  </amin:profile>
 
+
+=item Output example
+
+<amin:profile xmlns:amin="http://projectamin.org/ns/">
+   <amin:command name="amin">
+         <amin:param name="version">
+         0.5.0
+         </amin:param>
+         <amin:message type="success">
+         Starting Amin. Profile version 0.5.0
+         </amin:message>
+   </amin:command>
+</amin:profile>
+
 =item Double example
 
  <amin:profile xmlns:amin='http://projectamin.org/ns/'>
