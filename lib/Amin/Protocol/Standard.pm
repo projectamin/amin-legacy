@@ -33,7 +33,7 @@ sub parse_uri {
                                 Proto    => "tcp",
                                 Type     => SOCK_STREAM)
 	or die "Couldn't connect to $networkmap->{'ip'}:$networkmap->{'port'} : $@\n";
-	print $socket "$uri\n";
+	$socket->print("$uri\n");
 	my $output = <$socket>;
 	close($socket);	
 	return $output;
@@ -95,15 +95,7 @@ sub Run {
 		}
 		$client->print(@$aout);
 	}
-	$SIG{CHLD} = \&REAPER;
 	$server->shutdown(2);
-}
-
-# set up the socket SERVER, bind and listen ...
-
-sub REAPER {
-    1 until (-1 == waitpid(-1, WNOHANG));
-    $SIG{CHLD} = \&REAPER;
 }
 
 1;
