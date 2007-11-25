@@ -348,19 +348,26 @@ if (defined $cli->adminlist) {
     	);
 	my $aout;
 	my $lout;
+	my $nout;
 	if ($cli->networkmap) {
 		my $h = Amin::Machine::NetworkMap->new();
 		my $p = XML::SAX::PurePerl->new(Handler => $h);
 		my $nm = $p->parse_uri($cli->networkmap);
 		foreach my $networkmap (keys %$nm) {
 			my $protocol = $nm->{$networkmap}->{protocol};
-			$lout = $protocol->parse_uri($nm->{$networkmap}, $cli->uri, $m);
+			$nout = $protocol->parse_uri($nm->{$networkmap}, $cli->uri, $m);
 		}
 	} else {
 		$lout = $m->parse_uri($cli->uri);
 	}
-	foreach (@$lout) {
-		$aout = $aout . "$_";
+
+	if ($lout) {
+		foreach (@$lout) {
+			$aout = $aout . "$_";
+		}
+	} else {
+		#this is a networkmap output
+		$aout = $nout;
 	}
 	my $h = Amin::Controller::CLIOutput->new();
 	my $p = XML::SAX::PurePerl->new(Handler => $h);
