@@ -12,9 +12,9 @@ use Amin::Protocol::Datastore;
 use Amin::Machine::Filter::XInclude;
 use XML::SAX::PurePerl;
 use Digest::MD5;
-use IO::All;
 use Amin::Uri;
 use IO::Socket;
+use POSIX qw(:sys_wait_h);
 
 sub new {
 	my $class = shift;
@@ -33,7 +33,7 @@ sub parse_uri {
                                 Proto    => "tcp",
                                 Type     => SOCK_STREAM)
 	or die "Couldn't connect to $networkmap->{'ip'}:$networkmap->{'port'} : $@\n";
-	print $socket $uri;
+	print $socket "$uri\n";
 	my $output = <$socket>;
 	close($socket);	
 	return $output;
@@ -46,19 +46,20 @@ sub Run {
 					LocalAddr => $info,
 					Type => SOCK_STREAM,
 					Reuse => 1,
-					Listen => 1,
+					Listen => 10,
 					 )
 	or die "Could not bind as a server on ip $self->{Ip} port $self->{Port} : $@\n";
+	print "Server $self->{Ip} on port $self->{Port} has started\n";
 
 	while (my $client = $server->accept()) {
-		next if my $pid = fork;
-		die "fork: $!" unless defined $pid;
 		my $uri = $client->getline();
+		chomp ($uri);
 		#this is a simple amin controller.
 		#it takes the $uri supplied, grabs the
 		#resulting profile, checksums the uri/profile
 		#compares that checksum to it's internal datastore
-		#of checksums, and if matches parses as whatever
+		#of checksums, and if the checksums match then the
+		#daemon runs the profile/adminlist as whatever
 		#user this daemon runs as.
 		my $aout;
 		my $m = Amin->new ();
@@ -92,23 +93,17 @@ sub Run {
 				}
 			}
 		}
-		print $client $aout;
-		$client->shutdown(2);
-		#close($client); 
-		exit;
+		$client->print(@$aout);
 	}
 	$SIG{CHLD} = \&REAPER;
 	$server->shutdown(2);
 }
 
-
-
 # set up the socket SERVER, bind and listen ...
-use POSIX qw(:sys_wait_h);
 
 sub REAPER {
     1 until (-1 == waitpid(-1, WNOHANG));
-    $SIG{CHLD} = \&REAPER;                 # unless $] >= 5.002
+    $SIG{CHLD} = \&REAPER;
 }
 
 1;
