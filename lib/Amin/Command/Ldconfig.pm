@@ -45,7 +45,7 @@ sub characters {
 		}
 		if ($element->{LocalName} eq "flag") {
 			if ($attrs{'{}name'}->{Value} eq "") {
-				$self->flag($_);
+				$self->flag($data);
 			}
 			if (($attrs{'{}name'}->{Value} eq "format") || ($attrs{'{}name'}->{Value} eq "c")) {
 				$self->format($data);
@@ -66,7 +66,6 @@ sub characters {
 
 sub end_element {
 	my ($self, $element) = @_;
-
 	if (($element->{LocalName} eq "command") && ($self->command eq "ldconfig")) {
 		my $xflag = $self->{'FLAG'};
 		my $xparam = $self->{'PARAM'};
@@ -75,11 +74,8 @@ sub end_element {
 		my $cache = $self->{'CACHE'};
 		my $conf = $self->{'CONF'};
 		my $root = $self->{'ROOT'};
-		
 		my (@param, $flag, @flag);
-
 		my $log = $self->{Spec}->{Log};
-		
 		my $state = 0;
 		foreach my $ip (@$xflag){
 			if (!$ip) {next;};
@@ -107,9 +103,6 @@ sub end_element {
 				push @flag, $flag;
 			}
 		}
-		foreach my $ip (@$xparam){
-			push @param, $ip;
-		}
 		if ($format) {
 			$flag = "-c " . $format;
 			push @flag, $flag;
@@ -127,15 +120,15 @@ sub end_element {
 			$flag = "-r " . $root;
 			push @flag, $flag;
 		}
-	
+		foreach my $ip (@$xparam){
+			push @param, $ip;
+		}
 		my %acmd;
 		$acmd{'CMD'} = $command;
 		$acmd{'FLAG'} = \@flag;
 		$acmd{'PARAM'} = \@param;
-		
 		my $cmd = $self->amin_command(\%acmd);
-
-		if ($cmd->{STATUS} != 0) {
+		if (($cmd->{ERR}) && (!$cmd->{OUT})) {
 			$self->{Spec}->{amin_error} = "red";
 			my $text = "Unable to run the ldconfig command. Reason: $cmd->{ERR}";
 			$self->text($text);
@@ -147,7 +140,6 @@ sub end_element {
 			$self->SUPER::end_element($element);
 			return;
 		}
-
 		my $text = "Ldconfig command was successful";
 		$self->text($text);
 
@@ -156,7 +148,6 @@ sub end_element {
 			$log->OUT_message($cmd->{OUT});
 		}
 		#reset this command
-		
 		$self->{DIR} = undef;
 		$self->{FLAG} = [];
 		$self->{PARAM} = [];
