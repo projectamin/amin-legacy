@@ -2,10 +2,8 @@ package Amin::Protocol::Login;
 
 use strict;
 use vars qw(@ISA);
-use XML::SAX::Base;
-
-@ISA = qw(XML::SAX::Base);
-
+use Amin::Elt;
+@ISA = qw(Amin::Elt);
 
 my %login;
 my $state;
@@ -25,23 +23,25 @@ sub characters {
 	my ($self, $chars) = @_;
 	my $data = $chars->{Data};
 	my $element = $self->{"ELEMENT"};
+	$data = $self->fix_text($data);
 
-	if ($element->{LocalName} eq "uri") {
-		$self->uri($data);
-	}
+	if ($data ne "") {
+		if ($element->{LocalName} eq "uri") {
+			$self->uri($data);
+		}
 
-	if ($element->{LocalName} eq "username") {
-		$self->username($data);
-	}
-	if ($element->{LocalName} eq "password") {
-		$self->passwd($data);
-	}
-	if ($element->{LocalName} eq "profile") {
-		print "Login $data\n";
-		$self->profile($data);
-	}
-	if ($state eq "on") {
-		$self->SUPER::characters($chars);
+		if ($element->{LocalName} eq "username") {
+			$self->username($data);
+		}
+		if ($element->{LocalName} eq "password") {
+			$self->passwd($data);
+		}
+		if ($element->{LocalName} eq "profile") {
+			$self->profile($data);
+		}
+		if ($state eq "on") {
+			$self->SUPER::characters($chars);
+		}
 	}
 }
 
