@@ -21,12 +21,9 @@ requires        ('LWP');
 requires        ('Sort::Naturally');
 requires        ('XML::SAX::PurePerl');
 recommends	('Sys::Hostname');
-recommends	('Net::Daemon');
 recommends	('Crypt::Blowfish_PP');
-recommends	('IPC::Shareable');
-recommends	('Net::SMTP');
 recommends	('IO::Socket');
-
+recommends	('Proc::ProcessTable');
 no_index        (directory => 'xml_files');
 auto_install	();
 &WriteAll;
