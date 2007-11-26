@@ -20,6 +20,7 @@ requires        ('HTML::HeadParser');
 requires        ('LWP');
 requires        ('Sort::Naturally');
 requires        ('XML::SAX::PurePerl');
+requires	('File::Find');
 recommends	('Sys::Hostname');
 recommends	('Crypt::Blowfish_PP');
 recommends	('IO::Socket');
