@@ -90,8 +90,7 @@ sub end_element {
 		if ($cmd->{TYPE} eq "error") {
 			$self->{Spec}->{amin_error} = "red";
 			my $text = "Unable to add group. Reason: $cmd->{ERR}";
-			$self->text($text);
-
+			$default = 1;
 			$log->error_message($text);
 			if ($cmd->{ERR}) {
 				$log->ERR_message($cmd->{ERR});
@@ -103,14 +102,20 @@ sub end_element {
 			my $etext = " There was also some error text $cmd->{ERR}";
 			$etext = $otext . $etext; 
 			if ($cmd->{TYPE} eq "out") {
+				$default = 1;
 				$log->success_message($otext);
 				$log->OUT_message($cmd->{OUT});
 			} else {
+				$default = 1;
 				$log->success_message($etext);
 				$log->OUT_message($cmd->{OUT});
 				$log->ERR_message($cmd->{ERR});
 				
 			}
+		}
+		if ($default == 0) {
+			my $text = "there was no messages?";
+			$log->error_message($text);
 		}
 		#reset this command
 		$self->{DIR} = undef;
