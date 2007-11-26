@@ -169,7 +169,7 @@ sub end_element {
 		}
 		my $cmd = $self->amin_command(\%acmd);
 
-		if ($cmd->{STATUS} != 0) {
+		if ($cmd->{TYPE} eq "error") {
 			$self->{Spec}->{amin_error} = "red";
 			my $text = "Unable to set permissions for " . join (", ", @target) . "to $set. Reason: $cmd->{ERR}";
 			$self->text($text);
@@ -178,23 +178,27 @@ sub end_element {
 			if ($cmd->{ERR}) {
 				$log->ERR_message($cmd->{ERR});
 			}
-			$self->SUPER::end_element($element);
-			return;
 		}
-
-		my $text;
-		if ($dir) {
-			$text = "Changing permissions to $set in $dir for " . join (", ", @target);
-		} else {
-			$text = "Changing permissions to $set for " . join (", ", @target);
-		}
-		$self->text($text);
-		$log->success_message($text);
-		if ($cmd->{OUT}) {
-			$log->OUT_message($cmd->{OUT});
+		if (($cmd->{TYPE} eq "out") || ($cmd->{TYPE} eq "both")) {
+			my $otext;
+			if ($dir) {
+				$otext = "Changing permissions to $set in $dir for " . join (", ", @target);
+			} else {
+				$otext = "Changing permissions to $set for " . join (", ", @target);
+			}
+			my $etext = " There was also some error text $cmd->{ERR}";
+			$etext = $otext . $etext; 
+			if ($cmd->{TYPE} eq "out") {
+				$log->success_message($otext);
+				$log->OUT_message($cmd->{OUT});
+			} else {
+				$log->success_message($etext);
+				$log->OUT_message($cmd->{OUT});
+				$log->ERR_message($cmd->{ERR});
+				
+			}
 		}
 		#reset this command
-		
 		$self->{DIR} = undef;
 		$self->{FLAG} = [];
 		$self->{REFERNCE} = undef;

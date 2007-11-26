@@ -112,7 +112,7 @@ sub end_element {
 		}
 
 		my $cmd = $self->amin_command(\%acmd);
-		if ($cmd->{STATUS} != 0) {
+		if ($cmd->{TYPE} eq "error") {
 			$self->{Spec}->{amin_error} = "red";
 			my $text = "Unable to execute $command in $dir. Reason: $cmd->{ERR}";
 			$self->text($text);
@@ -121,21 +121,25 @@ sub end_element {
 			if ($cmd->{ERR}) {
 				$log->ERR_message($cmd->{ERR});
 			}
-			$self->SUPER::end_element($element);
-			return;
 		}
-
-		my $text = "Executing $command " . join (" ", @param) . " in $dir";
-		if ($self->{'ENV_NAME'}) {
-			$text = $text . " with enviroment settings of $self->{'ENV_NAME'}=$self->{'ENV_VALUE'}";
-		}
-		$self->text($text);
-		$log->success_message($text);
-		if ($cmd->{OUT}) {
-			$log->OUT_message($cmd->{OUT});
+		if (($cmd->{TYPE} eq "out") || ($cmd->{TYPE} eq "both")) {
+			my $otext = "Executing $command " . join (" ", @param) . " in $dir";
+			if ($self->{'ENV_NAME'}) {
+				$otext = $otext . " with enviroment settings of $self->{'ENV_NAME'}=$self->{'ENV_VALUE'}";
+			}
+			my $etext = " There was also some error text $cmd->{ERR}";
+			$etext = $otext . $etext; 
+			if ($cmd->{TYPE} eq "out") {
+				$log->success_message($otext);
+				$log->OUT_message($cmd->{OUT});
+			} else {
+				$log->success_message($etext);
+				$log->OUT_message($cmd->{OUT});
+				$log->ERR_message($cmd->{ERR});
+				
+			}
 		}
 		#reset this command
-		
 		$self->{DIR} = undef;
 		$self->{FLAG} = [];
 		$self->{PARAM} = [];

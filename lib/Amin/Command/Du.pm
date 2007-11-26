@@ -143,7 +143,6 @@ sub end_element {
 		foreach my $ip (@$xparam){
 			push @param, $ip;
 		}
-		
 		$acmd{'CMD'} = "du";
 		$acmd{'FLAG'} = \@flag;
 		$acmd{'PARAM'} = \@param;
@@ -153,7 +152,7 @@ sub end_element {
 
 		my $cmd = $self->amin_command(\%acmd);
 
-		if ($cmd->{STATUS} != 0) {
+		if ($cmd->{TYPE} eq "error") {
 			$self->{Spec}->{amin_error} = "red";
 			my $text = "DU Failed. Reason: $cmd->{ERR}";
 			$self->text($text);
@@ -162,18 +161,22 @@ sub end_element {
 			if ($cmd->{ERR}) {
 				$log->ERR_message($cmd->{ERR});
 			}
-			$self->SUPER::end_element($element);
-			return;
 		}
-
-		my $text = "DU was successful.";
-		$self->text($text);
-		$log->success_message($text);
-		if ($cmd->{OUT}) {
-			$log->OUT_message($cmd->{OUT});
+		if (($cmd->{TYPE} eq "out") || ($cmd->{TYPE} eq "both")) {
+			my $otext = "DU was successful.";
+			my $etext = " There was also some error text $cmd->{ERR}";
+			$etext = $otext . $etext; 
+			if ($cmd->{TYPE} eq "out") {
+				$log->success_message($otext);
+				$log->OUT_message($cmd->{OUT});
+			} else {
+				$log->success_message($etext);
+				$log->OUT_message($cmd->{OUT});
+				$log->ERR_message($cmd->{ERR});
+				
+			}
 		}
 		#reset this command
-		
 		$self->{DIR} = undef;
 		$self->{BLOCK_SIZE} = undef;
 		$self->{TYPE} = undef;

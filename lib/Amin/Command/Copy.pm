@@ -121,33 +121,34 @@ sub end_element {
 		if ($self->{'ENV_VARS'}) {
 			$acmd{'ENV_VARS'} = $self->{'ENV_VARS'};
 		}
-			my $cmd = $self->amin_command(\%acmd);
+		my $cmd = $self->amin_command(\%acmd);
 
-			#get rid of target
-			pop @source;
+		#get rid of target
+		pop @source;
 
-			if ($cmd->{STATUS} != 0) {
-				$self->{Spec}->{amin_error} = "red";
-
-				my $text = "Unable to copy " . join (", ", @source) . " to $target. Reason: $cmd->{ERR}";
-				$self->text($text);
-
-				$log->error_message($text);
-				if ($cmd->{ERR}) {
-					$log->ERR_message($cmd->{ERR});
-				}
-				$self->SUPER::end_element($element);
-				return;
+		if ($cmd->{TYPE} eq "error") {
+			$self->{Spec}->{amin_error} = "red";
+			my $text = "Unable to copy " . join (", ", @source) . " to $target. Reason: $cmd->{ERR}";
+			$log->error_message($text);
+			if ($cmd->{ERR}) {
+				$log->ERR_message($cmd->{ERR});
 			}
-
-		my $text = "Copying " . join (", ", @source) . " from $dir to $target.";
-		$self->text($text);
-		$log->success_message($text);
-		if ($cmd->{OUT}) {
-			$log->OUT_message($cmd->{OUT});
+		}
+		if (($cmd->{TYPE} eq "out") || ($cmd->{TYPE} eq "both")) {
+			my $otext = "Copying " . join (", ", @source) . " from $dir to $target.";
+			my $etext = " There was also some error text $cmd->{ERR}";
+			$etext = $otext . $etext; 
+			if ($cmd->{TYPE} eq "out") {
+				$log->success_message($otext);
+				$log->OUT_message($cmd->{OUT});
+			} else {
+				$log->success_message($etext);
+				$log->OUT_message($cmd->{OUT});
+				$log->ERR_message($cmd->{ERR});
+				
+			}
 		}
 		#reset this command
-		
 		$self->{DIR} = undef;
 		$self->{TARGET} = undef;
 		$self->{FLAG} = [];

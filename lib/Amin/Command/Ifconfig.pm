@@ -143,7 +143,7 @@ sub end_element {
 			$acmd{'ENV_VARS'} = $self->{'ENV_VARS'};
 		}
 		my $cmd = $self->amin_command(\%acmd);
-		if (($cmd->{STATUS} != 1) && ($cmd->{ERR})) {
+		if ($cmd->{TYPE} eq "error") {
 			$self->{Spec}->{amin_error} = "red";
 			my $text = "Could not set $address on $interface. Reason: $cmd->{ERR}";
 			$self->text($text);
@@ -152,21 +152,41 @@ sub end_element {
 			if ($cmd->{ERR}) {
 			    $log->ERR_message($cmd->{ERR});
 			}
-			$self->SUPER::end_element($element);
-			return;
 		}
 
-		my $text;
-		if ($state eq "down") {
-			$text = "Interface $interface has been brought down";
-		} else {
-			$text = "New interface created as $interface with IP of $address and netmask of $netmask.";
+		if (($cmd->{TYPE} eq "out") || ($cmd->{TYPE} eq "both")) {
+			my $otext;
+			if ($state eq "down") {
+				$otext = "Interface $interface has been brought down";
+			} else {
+				$otext = "New interface created as $interface with IP of $address and netmask of $netmask.";
+			}
+			my $etext = " There was also some error text $cmd->{ERR}";
+			$etext = $otext . $etext; 
+			if ($cmd->{TYPE} eq "out") {
+				$log->success_message($otext);
+				$log->OUT_message($cmd->{OUT});
+			} else {
+				$log->success_message($etext);
+				$log->OUT_message($cmd->{OUT});
+				$log->ERR_message($cmd->{ERR});
+				
+			}
 		}
-		$self->text($text);
-		$log->success_message($text); 
-		if ($cmd->{OUT}) {
-			$log->OUT_message($cmd->{OUT});
-		}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 		#reset this command
 		
 		$self->{DIR} = undef;

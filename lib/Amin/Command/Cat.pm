@@ -95,7 +95,6 @@ sub end_element {
 				}
 			}
 		}
-		
 		foreach (@$xparam) {
 			push @param, $_;
 		}
@@ -108,7 +107,6 @@ sub end_element {
 
 				$log->error_message($text);
 				$self->SUPER::end_element($element);
-				return;
 			}
 		}
 
@@ -116,14 +114,13 @@ sub end_element {
 		$acmd{'CMD'} = $command;
 		$acmd{'FLAG'} = \@flag;
 		$acmd{'PARAM'} = \@param;
-		
 		if ($self->{'ENV_VARS'}) {
 			$acmd{'ENV_VARS'} = $self->{'ENV_VARS'};
 		}
 
 		my $cmd = $self->amin_command(\%acmd);
 
-		if ($cmd->{STATUS} != 0) {
+		if ($cmd->{TYPE} eq "error") {
 			$self->{Spec}->{amin_error} = "red";
 			my $text = "Unable to run the cat command. Reason: $cmd->{ERR}";
 			$self->text($text);
@@ -132,19 +129,23 @@ sub end_element {
 			if ($cmd->{ERR}) {
 				$log->ERR_message($cmd->{ERR});
 			}
-			$self->SUPER::end_element($element);
-			return;
 		}
 
-		my $text = "Ran the cat command.";
-		$self->text($text);
-
-		$log->success_message($text);
-		if ($cmd->{OUT}) {
-			$log->OUT_message($cmd->{OUT});
+		if (($cmd->{TYPE} eq "out") || ($cmd->{TYPE} eq "both")) {
+			my $otext = "Ran the cat command.";
+			my $etext = " There was also some error: $cmd->{ERR}";
+			$etext = $otext . $etext; 
+			if ($cmd->{TYPE} eq "out") {
+				$log->success_message($otext);
+				$log->OUT_message($cmd->{OUT});
+			} else {
+				$log->success_message($etext);
+				$log->OUT_message($cmd->{OUT});
+				$log->ERR_message($cmd->{ERR});
+				
+			}
 		}
 		#reset this command
-		
 		$self->{DIR} = undef;
 		$self->{FLAG} = [];
 		$self->{PARAM} = [];
@@ -163,7 +164,6 @@ sub version {
 }
 1;
 
-
 =head1 NAME
 
 Cat - reader class filter for the cat command.
@@ -175,13 +175,13 @@ cat (coreutils) 5.0 March 2003
 =head1 DESCRIPTION
 
   A reader class for the cat command. 
-  
+
 =head1 XML
 
 =over 4
 
 =item Single example
- 
+
  <amin:profile xmlns:amin='http://projectamin.org/ns/'>
         <amin:command name="cat">
                 <amin:flag>A</amin:flag>
@@ -190,7 +190,7 @@ cat (coreutils) 5.0 March 2003
  </amin:profile>
 
 =item Double example
- 
+
  <amin:profile xmlns:amin='http://projectamin.org/ns/'>
 	<amin:command name="cat">
         	<amin:flag>A</amin:flag>
@@ -206,6 +206,3 @@ cat (coreutils) 5.0 March 2003
 =back  
 
 =cut
-
-
-
