@@ -201,8 +201,9 @@ sub end_element {
 		$self->{ATTRS} = undef;
 		$self->{ENV_VARS} = [];
 		$self->{ELEMENT} = undef;
-		}
 		$self->SUPER::end_element($element);
+
+		
 	} else {
 		$self->SUPER::end_element($element);
 	}
