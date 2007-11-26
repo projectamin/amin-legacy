@@ -48,8 +48,8 @@ sub characters {
 		if ($element->{LocalName} eq "port") {
 			$self->port($data);
 		}
-		if ($element->{LocalName} eq "user") {
-			$self->user($data);
+		if ($element->{LocalName} eq "username") {
+			$self->username($data);
 		}
 		if ($element->{LocalName} eq "key") {
 			$self->key($data);
@@ -99,7 +99,7 @@ sub end_element {
 		$server{name} = $self->name;
 		$server{ip} = $self->ip;
 		$server{protocol} = $protocol;
-		$server{'user'} = $self->user;
+		$server{'username'} = $self->username;
 		$server{'key'} = $self->key;
 		$server{'password'} = $self->password;
 		if ($self->auth) {
@@ -157,10 +157,10 @@ sub port {
 	return $self->{PORT};
 }
 
-sub user {
+sub username {
 	my $self = shift;
-	$self->{USER} = shift if @_;
-	return $self->{USER};
+	$self->{USERNAME} = shift if @_;
+	return $self->{USERNAME};
 }
 
 sub password {
@@ -215,7 +215,7 @@ $networkmap->{$_} would be jerry
 $networkmap->{$_}->{port} is 8000 
 
 and so on. Attributes are ip, auth, protocol, port,
-user, key, and password.
+username, key, and password.
   
 =head1 XML
 
