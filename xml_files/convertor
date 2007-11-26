@@ -22,6 +22,7 @@ print $replace;
 
 sub convert {
 	my $file = $_;
+	if ($file =~ /.svn/) {next;}
 	if ($file =~ /.xml/) {
 		my $xmlfile = $Bin . "/" . $file;
 		open (XML, "< $xmlfile");
