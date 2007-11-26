@@ -216,6 +216,10 @@ sub amin_command {
 	if (($err) && (!$out)) {
 		$cmdtype = "error";
 	}
+	#this is for commands like mkdir which return nothing on success
+	if ((!$err) && (!$out)) {
+		$cmdtype = "out";
+	}
 	$rcmd{TYPE} = $cmdtype;
 
 
