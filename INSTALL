@@ -53,13 +53,12 @@ XML::SAX::PurePerl
 These are recommended
 
 Sys::Hostname
-Net::Daemon => '0.37',
 Crypt::Blowfish_PP => '1.12'
-IPC::Shareable
-Net::SMTP
 IO::Socket
+Proc::ProcessTable
 
-Good Luck. ;)
+Good Luck. ;) If you need help stop by irc.projectamin.org #amin
+Someone can help you there.
 
 
 
