@@ -8,28 +8,17 @@ use Crypt::Blowfish_PP;
 
 my $x = 0;
 while (1) {
-        my $self = shift;
 	my %networkmap;
 	while (1) {
 		my $item = networkmap_menu();
 		$x++;
 		my $thing = "server-$x";
 		#add this item to our $networkmap
-		$networkmap{$thing} = \$item;
+		$networkmap{$thing} = $item;
 		if (($item->{yn} eq "N") || ($item->{yn} eq "n")) {
 			last;
 		} 
 	}
-	print "these are the networkmaps you have entered\n";
-	foreach (keys %networkmap) {
-		#print "$_ -> $networkmap{$_}\n";
-		print "$_\n";
-		my $nm = $networkmap{$_};
-		#foreach my $nmp (keys %$nm) {
-		#	print "$nmp -> $nm->{$nmp}\n";
-		#}
-	}	
-
 	my $command;
 	until (($command eq "S") || ($command eq "s") || ($command eq "F") || ($command eq "f")) { 
 		print "Do you want to (S)ave or (F)orget this networkmap?\n";
@@ -54,7 +43,6 @@ while (1) {
 }
 	
 sub generate_networkmap {
-        my $self = shift;
 	my $inetworkmap = shift;
 	my $save = shift;
 	my $networkmap;
@@ -66,8 +54,6 @@ sub generate_networkmap {
 		$h = XML::SAX::Writer->new(Output => \$networkmap);
 	}
 	
-	my $networkmap = get_networkmap($inetworkmap);
-	
 	my $d = XML::Generator::PerlData->new(
 		rootname => 'network',
 		namespacemap => {'http://projectamin.org/ns/' => 'network'},
@@ -77,26 +63,16 @@ sub generate_networkmap {
 		Handler => $h,
 	);
 
-	$d->parse($networkmap);
+	$d->parse($inetworkmap);
 
-	return "ok";	
-}
-
-sub get_networkmap {
-        my $self = shift;
-        my @networkmap = shift;
-        my $x = 0;
-        my %map;
-        foreach my $networkmap (@networkmap) {
-                $x++;
-                my $name = "server$x";
-                $map{$name} = $networkmap;
-        }
-        return \%map;
+	if ($networkmap) {
+		return $networkmap;
+	} else {
+		return "ok";	
+	}
 }
 
 sub networkmapper {
-        my $self = shift;
         my $key = shift;
         my $elname;
         if ($key =~ m/server/) {
@@ -109,7 +85,6 @@ sub networkmapper {
 }
 
 sub networkmap_menu {	
-        my $self = shift;
 	print "please enter an ip\n";
 	my $ip = <STDIN>;
 	chomp $ip;
@@ -139,15 +114,18 @@ sub networkmap_menu {
 	chomp $protocol;
 		
 	my $encryptor = Crypt::Blowfish_PP->new($localkey);
-	my $chiperpass = $encryptor->encrypt($password);
-	my $chiperserverkey = $encryptor->encrypt($serverkey);
+	my $cipherpass = $encryptor->encrypt($password);
+	my $cipherserverkey = $encryptor->encrypt($serverkey);
+
+	$cipherpass = unpack("H16", $cipherpass);
+	$cipherserverkey = unpack("H16", $cipherserverkey);
 	
 	my %nm;
 	$nm{ip} = $ip;
 	$nm{port} = $port;
 	$nm{username} = $username;
-	$nm{password} = $chiperpass;
-	$nm{key} = $chiperserverkey;
+	$nm{password} = $cipherpass;
+	$nm{key} = $cipherserverkey;
 	if ($protocol) {
 		$nm{protocol} = $protocol;
 	}
