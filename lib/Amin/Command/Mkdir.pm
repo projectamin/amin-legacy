@@ -171,7 +171,7 @@ sub end_element {
 			my $etext = " There was also some error text $cmd->{ERR}";
 			$etext = $otext . $etext; 
 			if ($cmd->{TYPE} eq "out") {
-				$log->success_message($text);
+				$log->success_message($otext);
 				$log->OUT_message($cmd->{OUT});
 			} else {
 				$log->success_message($etext);
