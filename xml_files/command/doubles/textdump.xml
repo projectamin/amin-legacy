@@ -1,11 +1,10 @@
 <amin:profile xmlns:amin='http://projectamin.org/ns/'>
         <amin:command name="textdump">
-                <amin:param name="target">pass</amin:param>
+                <amin:param name="target">/tmp/amin-tests/pass</amin:param>
                 <amin:param name="content">root</amin:param>
-                <amin:shell name="dir">/tmp/amin-tests/</amin:shell>
         </amin:command>
 	<amin:command name="textdump">
-		<amin:param name="target">hg</amin:param>
+		<amin:param name="target">/tmp/amin-tests/hg</amin:param>
 		<amin:param name="content">Hello
 				Does This
 			all
@@ -13,15 +12,13 @@
 		up
 right?
 </amin:param>
-		<amin:shell name="dir">/tmp/amin-tests/</amin:shell>
 	</amin:command>
         <amin:command name="textdump">
-                <amin:param name="target">pass</amin:param>
+                <amin:param name="target">/tmp/amin-tests2/pass</amin:param>
                 <amin:param name="content">root</amin:param>
-                <amin:shell name="dir">/tmp/amin-tests2/</amin:shell>
         </amin:command>
 	<amin:command name="textdump">
-		<amin:param name="target">hg</amin:param>
+		<amin:param name="target">/tmp/amin-tests2/hg</amin:param>
 		<amin:param name="content">Hello
 				Does This
 			all
@@ -29,6 +26,5 @@ right?
 		up
 right?
 </amin:param>
-		<amin:shell name="dir">/tmp/amin-tests2/</amin:shell>
 	</amin:command>
 </amin:profile>
