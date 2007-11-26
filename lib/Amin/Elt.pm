@@ -206,6 +206,19 @@ sub amin_command {
 	$rcmd{ERR} = $err;
 	$rcmd{STATUS} = $status;
 
+	my $cmdtype;
+	if (($err) && ($out)) {
+		$cmdtype = "both";
+	}
+	if ((!$err) && ($out)) {
+		$cmdtype = "out";
+	}
+	if (($err) && (!$out)) {
+		$cmdtype = "error";
+	}
+	$rcmd{TYPE} = $cmdtype;
+
+
 
 	return \%rcmd;
 }
