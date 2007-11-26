@@ -150,7 +150,6 @@ sub end_element {
 			if ($cmd->{ERR}) {
 				$log->ERR_message($cmd->{ERR});
 			}
-			$self->SUPER::end_element($element);
 		}
 
 		if (($cmd->{TYPE} eq "out") || ($cmd->{TYPE} eq "both")) {
