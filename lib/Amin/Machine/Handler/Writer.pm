@@ -32,7 +32,7 @@ sub characters {
 
 	#xml escape the output
 	if ($data ne "") {
-		#$data = $self->escape_it($data);
+		$data = $self->escape_it($data);
 		push @{$self->{Spec}->{Buffer}}, $data;
 	}
 }
@@ -59,9 +59,9 @@ sub comment {
 sub escape_it {
 	my ($self, $string) = @_;
 	#$string =~ s///oge;
-	#$string =~ s|\&|\&amp;|oge;
-        #$string =~ s|<|\&lt;|oge;
-	#$string =~ s|>|\&gt;|oge;
+	$string =~ s|\&|\&amp;|oge;
+        $string =~ s|<|\&lt;|oge;
+	$string =~ s|>|\&gt;|oge;
 	#$string =~ s|\"|\&quot;|oge;
 	#$string =~ s|\'|\&apos;|oge;
 	return $string;
