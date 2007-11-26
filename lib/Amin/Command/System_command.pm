@@ -133,9 +133,7 @@ sub end_element {
 			}
 			$cmd = $self->amin_command(\%acmd);
 		}
-		
-		
-		if ($cmd->{STATUS} != 0) {
+		if ($cmd->{TYPE} eq "error") {
 			$self->{Spec}->{amin_error} = "red";
 			my $text;
 			if ($dir) {
@@ -149,23 +147,27 @@ sub end_element {
 			if ($cmd->{ERR}) {
 				$log->ERR_message($cmd->{ERR});
 			}
-			$self->SUPER::end_element($element);
-			return;
 		}
-
-		my $text;
-		if ($dir) {
-			$text = "Executing $basename in $dir";
-		} else {
-			$text = "Executing $basename";
-		}
-		$self->text($text);
-		$log->success_message($text);
-		if ($cmd->{OUT}) {
-			$log->OUT_message($cmd->{OUT});
+		if (($cmd->{TYPE} eq "out") || ($cmd->{TYPE} eq "both")) {
+			my $otext;
+			if ($dir) {
+				$otext = "Executing $basename in $dir";
+			} else {
+				$otext = "Executing $basename";
+			}
+			my $etext = " There was also some error text $cmd->{ERR}";
+			$etext = $otext . $etext; 
+			if ($cmd->{TYPE} eq "out") {
+				$log->success_message($otext);
+				$log->OUT_message($cmd->{OUT});
+			} else {
+				$log->success_message($etext);
+				$log->OUT_message($cmd->{OUT});
+				$log->ERR_message($cmd->{ERR});
+				
+			}
 		}
 		#reset this command
-		
 		$self->{DIR} = undef;
 		$self->{FLAG} = [];
 		$self->{PARAM} = [];

@@ -60,14 +60,13 @@ sub end_element {
 			$self->text($text);
 			
 			$log->error_message($text);
-			$self->SUPER::end_element($element);
 		} else {
 			my $text = "Starting Amin. Profile version $version";
 			$self->text($text);
 
 			$log->success_message($text);
-			$self->SUPER::end_element($element);
 		}
+		$self->SUPER::end_element($element);
 	} else {
 		$self->SUPER::end_element($element);
 	}

@@ -173,22 +173,7 @@ sub end_element {
 				
 			}
 		}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 		#reset this command
-		
 		$self->{DIR} = undef;
 		$self->{FLAG} = [];
 		$self->{PARAM} = [];
