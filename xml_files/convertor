@@ -3,7 +3,7 @@
 #xml_files convertor
 use strict;
 use FindBin qw($Bin);
-
+use File::Find;
 
 #if you have some profiles that don't use the default $search below you 
 #must supply it as the argument to this program, for it to be converted right :)
@@ -17,8 +17,11 @@ if (!$search) {
 };
 
 my $replace = "file:/$Bin";
-opendir(DIR, $Bin) or die "can't opendir $Bin: $!";
-while (defined(my $file = readdir(DIR))) {
+find(\&convert, $Bin);
+print $replace;
+
+sub convert {
+	my $file = $_;
 	if ($file =~ /.xml/) {
 		my $xmlfile = $Bin . "/" . $file;
 		open (XML, "< $xmlfile");
@@ -32,6 +35,3 @@ while (defined(my $file = readdir(DIR))) {
 		close (XMLW);
 	}
 }
-closedir(DIR);
-
-print $replace;
