@@ -12,6 +12,7 @@ lib/Amin/Command/Df.pm
 lib/Amin/Command/Du.pm
 lib/Amin/Command/Echo.pm
 lib/Amin/Command/Fsck.pm
+lib/Amin/Command/Gmake.pm
 lib/Amin/Command/Groupadd.pm
 lib/Amin/Command/Groupdel.pm
 lib/Amin/Command/Grpconv.pm
@@ -21,6 +22,7 @@ lib/Amin/Command/Hostname.pm
 lib/Amin/Command/Ifconfig.pm
 lib/Amin/Command/Iptables.pm
 lib/Amin/Command/Kill.pm
+lib/Amin/Command/Killall.pm
 lib/Amin/Command/Ldconfig.pm
 lib/Amin/Command/Link.pm
 lib/Amin/Command/Ln.pm
@@ -64,6 +66,7 @@ lib/Amin/Machine/AdminList.pm
 lib/Amin/Machine/AdminList/Name.pm
 lib/Amin/Machine/Dispatcher.pm
 lib/Amin/Machine/Filter/Dispatcher.pm
+lib/Amin/Machine/Filter/XInclude.pm
 lib/Amin/Machine/Handler/Empty.pm
 lib/Amin/Machine/Handler/Writer.pm
 lib/Amin/Machine/Log/Standard.pm
@@ -72,6 +75,9 @@ lib/Amin/Machine/Machine_Spec/Document.pm
 lib/Amin/Machine/Machine_Spec/machine_spec.xml
 lib/Amin/Machine/NetworkMap.pm
 lib/Amin/Machine/Profile/Checker.pm
+lib/Amin/Profile/Type.pm
 lib/Amin/Protocol/Blowfish_SimpleAuth.pm
+lib/Amin/Protocol/Datastore.pm
+lib/Amin/Protocol/Login.pm
 lib/Amin/Protocol/Standard.pm
 lib/Amin/Uri.pm
