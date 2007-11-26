@@ -143,39 +143,42 @@ sub end_element {
 		
 		my $cmd = $self->amin_command(\%acmd);
 
-		
-		
-		if ($cmd->{STATUS} != 0) {
+		if ($cmd->{TYPE} eq "error") {
 			$self->{Spec}->{amin_error} = "red";
 			my $text = "Unable to create directory. Reason: $cmd->{ERR}";
-			$self->text($text);
-
 			$log->error_message($text);
 			if ($cmd->{ERR}) {
 				$log->ERR_message($cmd->{ERR});
 			}
 			$self->SUPER::end_element($element);
-			return;
 		}
 
-		my $text;
-		if ($dir) {
-			$text = "Making directories in $dir (perm: =";
-		} else {
-			$text = "Making directories (perm: =";
-		}
-		if ($mode) {
-			$text .= "$mode" 
-		} else {
-			$text .= "default";
-		}
-	        $text .= "):";
-	        $text .= join (", ", @target);
-		$self->text($text);
+		if (($cmd->{TYPE} eq "out") || ($cmd->{TYPE} eq "both")) {
+			my $otext;
+			if ($dir) {
+				$otext = "Making directories in $dir (perm: =";
+			} else {
+				$otext = "Making directories (perm: =";
+			}
+			if ($mode) {
+				$otext .= "$mode" 
+			} else {
+				$otext .= "default";
+			}
+	        	$otext .= "):";
+	        	$otext .= join (", ", @target);
 
-		$log->success_message($text);
-		if ($cmd->{OUT}) {
-			$log->OUT_message($cmd->{OUT});
+			my $etext = " There was also some error text $cmd->{ERR}";
+			$etext = $otext . $etext; 
+			if ($cmd->{TYPE} eq "out") {
+				$log->success_message($text);
+				$log->OUT_message($cmd->{OUT});
+			} else {
+				$log->success_message($etext);
+				$log->OUT_message($cmd->{OUT});
+				$log->ERR_message($cmd->{ERR});
+				
+			}
 		}
 		
 		#reset this command
