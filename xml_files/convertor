@@ -24,7 +24,7 @@ sub convert {
 	my $file = $_;
 	if ($file =~ /.svn/) {next;}
 	if ($file =~ /.xml/) {
-		my $xmlfile = $Bin . "/" . $file;
+		my $xmlfile = $File::Find::dir . "/" . $file;
 		open (XML, "< $xmlfile");
 		my @lines = <XML>;
 		close (XML);
