@@ -141,6 +141,7 @@ sub end_element {
 				push @flag, $flag;
 			}
 		}
+		my $default = "0"; #setup the default msg flag
 		if ($dir) {
 			if (! chdir $dir) {
 				$self->{Spec}->{amin_error} = "red";
@@ -174,8 +175,6 @@ sub end_element {
 		if ($cmd->{TYPE} eq "error") {
 			$self->{Spec}->{amin_error} = "red";
 			my $text = "Chgrp Failed for $group, on $target. Reason: $cmd->{ERR}";
-			$self->text($text);
-
 			$default = 1;
 			$log->error_message($text);
 			if ($cmd->{ERR}) {

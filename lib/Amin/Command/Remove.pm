@@ -96,6 +96,7 @@ sub end_element {
 			}
 		}
 
+		my $default = "0"; #setup the default msg flag
 		if ($dir) {
 			if (! chdir $dir) {
 				$self->{Spec}->{amin_error} = "red";

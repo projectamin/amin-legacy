@@ -69,6 +69,7 @@ sub end_element {
 		
 		my $log = $self->{Spec}->{Log};
 		
+		my $default = "0"; #setup the default msg flag
 		if ($dir) {
 			if (! chdir $dir) {
 				$self->{Spec}->{amin_error} = "red";
@@ -77,7 +78,6 @@ sub end_element {
 				$log->error_message($text);
 			}
 		}
-		
 		my $state = 0;
 		foreach my $ip (@$xflag){
 			if (!$ip) {next;};
@@ -116,6 +116,7 @@ sub end_element {
 			$acmd{'ENV_VARS'} = $self->{'ENV_VARS'};
 		}
 
+		my $default = "0"; #setup the default msg flag
 		my $cmd = $self->amin_command(\%acmd);
 
 		if ($cmd->{TYPE} eq "error") {

@@ -128,6 +128,7 @@ sub end_element {
 		$acmd{'FLAG'} = \@flag;
 		$acmd{'PARAM'} = \@param;
 		my $cmd = $self->amin_command(\%acmd);
+		my $default = "0"; #setup the default msg flag
 		if ($cmd->{TYPE} eq "error") {
 			$self->{Spec}->{amin_error} = "red";
 			my $text = "Unable to run the ldconfig command. Reason: $cmd->{ERR}";

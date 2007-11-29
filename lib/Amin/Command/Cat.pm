@@ -98,7 +98,7 @@ sub end_element {
 		foreach (@$xparam) {
 			push @param, $_;
 		}
-
+		my $default = "0"; #setup the default msg flag
 		if ($dir) {
 			if (! chdir $dir) {
 				$self->{Spec}->{amin_error} = "red";
@@ -107,7 +107,6 @@ sub end_element {
 				$log->error_message($text);
 			}
 		}
-
 		my %acmd;
 		$acmd{'CMD'} = $command;
 		$acmd{'FLAG'} = \@flag;

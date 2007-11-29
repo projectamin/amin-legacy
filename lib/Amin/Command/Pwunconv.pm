@@ -40,6 +40,7 @@ sub end_element {
 
 		my $cmd = $self->amin_command(\%acmd);
 
+		my $default = "0"; #setup the default msg flag
 		if ($cmd->{TYPE} eq "error") {
 			$self->{Spec}->{amin_error} = "red";
 			my $text = "Pwunconv failed. Reason: $cmd->{ERR}";

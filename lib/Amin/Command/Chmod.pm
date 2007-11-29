@@ -130,23 +130,17 @@ sub end_element {
 			}
 		}
 
+		my $default = "0"; #setup the default msg flag
 		unless ($set) {
 			$self->{Spec}->{amin_error} = "red";
 			my $text = "No permission to set for chmod";
-			$self->text($text);
-
+			$default = 1;
 			$log->error_message($text);
-			$self->SUPER::end_element($element);
-			return;
 		}
-
 		push @flag, $set;
-
-
 		foreach (@$targets) {
 			push @target, glob($_);
 		}
-
 		if ($dir) {
 			if (! chdir $dir) {
 				$self->{Spec}->{amin_error} = "red";
@@ -155,7 +149,6 @@ sub end_element {
 				$log->error_message($text);
 			}
 		}
-
 		my %acmd;
 		$acmd{'CMD'} = $command;
 		$acmd{'FLAG'} = \@flag;

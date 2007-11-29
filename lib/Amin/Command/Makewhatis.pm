@@ -101,6 +101,7 @@ sub end_element {
 		
 		my $cmd = $self->amin_command(\%acmd);
 
+		my $default = "0"; #setup the default msg flag
 		if ($cmd->{TYPE} eq "error") {
 			$self->{Spec}->{amin_error} = "red";
 			my $text = "Unable to makewhatis. Reason: $cmd->{ERR}";

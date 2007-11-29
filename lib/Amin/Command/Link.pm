@@ -93,6 +93,7 @@ sub end_element {
 			}
 		}
 
+		my $default = "0"; #setup the default msg flag
 		if ($dir) {
 			if (($debug eq "dir") || ($debug eq "all")) {
 				print ":dir = $dir:\n";
