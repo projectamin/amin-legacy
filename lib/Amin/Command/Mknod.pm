@@ -9,6 +9,7 @@ use strict;
 use warnings;
 use vars qw(@ISA);
 use Amin::Elt;
+use Data::Dumper;
 
 @ISA = qw(Amin::Elt);
 
@@ -99,6 +100,8 @@ sub end_element {
 		my $minor = $self->{'MINOR'};
 
 		my $log = $self->{Spec}->{Log};
+		warn Dumper ($mode, $dir, $target, $xflag, $command, $type, $major, $minor, $log);
+
 		my ($flag, @flag, @target);
 
 		my $state = 0;
@@ -133,22 +136,21 @@ sub end_element {
 			push @flag, $flag;
 		}
 
-		my $stuff = $type . " " . $major . " " . $minor . " ";
-		push @target, $stuff;
 		
 		foreach (@$target) {
 			push @target, $_;
 		}
 
+		my $stuff = $type . " " . $major . " " . $minor . " ";
+		push @target, $stuff;
+
+		my $default = "0"; #setup the default msg flag
 		if ($dir) {
 			if (! chdir $dir) {
 				$self->{Spec}->{amin_error} = "red";
 				my $text = "Unable to change directory to $dir. Reason: $!";
-				$self->text($text);
-
 				$log->error_message($text);
-				$self->SUPER::end_element($element);
-				return;
+				$default = 1;
 			}
 		}
 
@@ -156,35 +158,43 @@ sub end_element {
 		$acmd{'CMD'} = $command;
 		$acmd{'FLAG'} = \@flag;
 		$acmd{'PARAM'} = \@target;
-		
+	
 		if ($self->{'ENV_VARS'}) {
 			$acmd{'ENV_VARS'} = $self->{'ENV_VARS'};
 		}
-
+		warn Dumper (%acmd);
 		my $cmd = $self->amin_command(\%acmd);
-
-		if ($cmd->{STATUS} != 0) {
+		warn Dumper ("cmd", $cmd);
+		if ($cmd->{TYPE} eq "error") {
 			$self->{Spec}->{amin_error} = "red";
 			my $text = "Unable to run the mknod command. Reason: $cmd->{ERR}";
-			$self->text($text);
-
 			$log->error_message($text);
 			if ($cmd->{ERR}) {
-				$self->ERR_message($cmd->{ERR});
+				$default = 1;
+				$log->ERR_message($cmd->{ERR});
 			}
-			$self->SUPER::end_element($element);
-			return;
 		}
-
-		my $text = "Mknod was successful";
-		$self->text($text);
-
-		$log->success_message($text);
-		if ($cmd->{OUT}) {
-			$log->OUT_message($cmd->{OUT});
+		if (($cmd->{TYPE} eq "out") || ($cmd->{TYPE} eq "both")) {
+			my $otext = "Mknod was successful";
+			my $etext = " There was also some error text $cmd->{ERR}";
+			$etext = $otext . $etext; 
+			if ($cmd->{TYPE} eq "out") {
+				$default = 1;
+				$log->success_message($otext);
+				$log->OUT_message($cmd->{OUT});
+			} else {
+				$default = 1;
+				$log->success_message($etext);
+				$log->OUT_message($cmd->{OUT});
+				$log->ERR_message($cmd->{ERR});
+				
+			}
+		}
+		if ($default == 0) {
+			my $text = "there was no messages?";
+			$log->error_message($text);
 		}
 		#reset this command
-		
 		$self->{DIR} = undef;
 		$self->{FLAG} = [];
 		$self->{TARGET} = [];
