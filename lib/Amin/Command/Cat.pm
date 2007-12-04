@@ -130,12 +130,11 @@ sub end_element {
 			my $otext = "Ran the cat command.";
 			my $etext = " There was also some error: $cmd->{ERR}";
 			$etext = $otext . $etext; 
+			$default = 1;
 			if ($cmd->{TYPE} eq "out") {
-				$default = 1;
 				$log->success_message($otext);
 				$log->OUT_message($cmd->{OUT});
 			} else {
-				$default = 1;
 				$log->success_message($etext);
 				$log->OUT_message($cmd->{OUT});
 				$log->ERR_message($cmd->{ERR});
