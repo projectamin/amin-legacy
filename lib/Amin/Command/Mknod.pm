@@ -141,8 +141,9 @@ sub end_element {
 			push @target, $_;
 		}
 
-		my $stuff = $type . " " . $major . " " . $minor . " ";
-		push @target, $stuff;
+		push @target, $type;
+		push @target, $major;
+		push @target, $minor;
 
 		my $default = "0"; #setup the default msg flag
 		if ($dir) {
