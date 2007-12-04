@@ -132,7 +132,7 @@ sub end_element {
 			}
 		}
 		if ($mode) {
-			$flag = "-m " . $mode;
+			$flag = "--mode=$mode";
 			push @flag, $flag;
 		}
 
