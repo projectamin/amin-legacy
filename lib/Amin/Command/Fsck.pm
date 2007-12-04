@@ -91,16 +91,13 @@ sub end_element {
 		
 		my ($flag, @flag, @param);
 		my $log = $self->{Spec}->{Log};
-		
+		my $default = "0"; #setup the default msg flag
 		if ($dir) {
 			if (! chdir $dir) {
 				$self->{Spec}->{amin_error} = "red";
 				my $text = "Unable to change directory to $dir. Reason: $!";
-				$self->text($text);
-
+				$default = 1;
 				$log->error_message($text);
-				$self->SUPER::end_element($element);
-				return;
 			}
 		}
 		
@@ -157,29 +154,35 @@ sub end_element {
 			$acmd{'ENV_VARS'} = $self->{'ENV_VARS'};
 		}
 		my $cmd = $self->amin_command(\%acmd);
-
-		if ($cmd->{STATUS} != 0) {
+		if ($cmd->{TYPE} eq "error") {
 			$self->{Spec}->{amin_error} = "red";
 			my $text = "Unable to run the fsck command. Reason: $cmd->{ERR}";
-			$self->text($text);
-
+			$default = 1;
 			$log->error_message($text);
 			if ($cmd->{ERR}) {
 				$log->ERR_message($cmd->{ERR});
 			}
-			$self->SUPER::end_element($element);
-			return;
 		}
-
-		my $text = "Fsck command was successful";
-		$self->text($text);
-
-		$log->success_message($text);
-		if ($cmd->{OUT}) {
-			$log->OUT_message($cmd->{OUT});
+		if (($cmd->{TYPE} eq "out") || ($cmd->{TYPE} eq "both")) {
+			my $otext = "Fsck command was successful";
+			my $etext = " There was also some error text $cmd->{ERR}";
+			$etext = $otext . $etext; 
+			$default = 1;
+			if ($cmd->{TYPE} eq "out") {
+				$log->success_message($otext);
+				$log->OUT_message($cmd->{OUT});
+			} else {
+				$log->success_message($etext);
+				$log->OUT_message($cmd->{OUT});
+				$log->ERR_message($cmd->{ERR});
+				
+			}
+		}
+		if ($default == 0) {
+			my $text = "there was no messages?";
+			$log->error_message($text);
 		}
 		#reset this command
-		
 		$self->{DIR} = undef;
 		$self->{SUPERBLOCK} = undef;
 		$self->{BLOCKSIZE} = undef;
