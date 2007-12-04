@@ -9,7 +9,6 @@ use strict;
 use warnings;
 use vars qw(@ISA);
 use Amin::Elt;
-use Data::Dumper;
 
 @ISA = qw(Amin::Elt);
 
@@ -100,7 +99,6 @@ sub end_element {
 		my $minor = $self->{'MINOR'};
 
 		my $log = $self->{Spec}->{Log};
-		warn Dumper ($mode, $dir, $target, $xflag, $command, $type, $major, $minor, $log);
 
 		my ($flag, @flag, @target);
 
@@ -163,9 +161,7 @@ sub end_element {
 		if ($self->{'ENV_VARS'}) {
 			$acmd{'ENV_VARS'} = $self->{'ENV_VARS'};
 		}
-		warn Dumper (%acmd);
 		my $cmd = $self->amin_command(\%acmd);
-		warn Dumper ("cmd", $cmd);
 		if ($cmd->{TYPE} eq "error") {
 			$self->{Spec}->{amin_error} = "red";
 			my $text = "Unable to run the mknod command. Reason: $cmd->{ERR}";
