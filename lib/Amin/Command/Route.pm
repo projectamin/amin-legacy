@@ -10,7 +10,6 @@ use warnings;
 use vars qw(@ISA);
 use Amin::Elt;
 
-
 @ISA = qw(Amin::Elt);
 my %attrs;
 
@@ -109,14 +108,25 @@ sub end_element {
 				return;
 			}
 		}
-		
-	        push @param, "$state";
-		push @param, "$type";
-		push @param, "$address";
-	        push @param, "$netmask";
-	        push @param, "$interface";
-	        push @param, "$metric";
 
+		if ($state) {	
+		        push @param, "$state";
+		}
+		if ($type) {	
+			push @param, "$type";
+		}
+		if ($address) {	
+			push @param, "$address";
+		}
+		if ($netmask) {	
+		        push @param, "$netmask";
+		}
+		if ($interface) {	
+		        push @param, "$interface";
+		}
+		if ($metric) {	
+		        push @param, "$metric";
+		}
 		$acmd{'CMD'} = "route";
 		$acmd{'FLAG'} = \@flag;
 		$acmd{'PARAM'} = \@param;
