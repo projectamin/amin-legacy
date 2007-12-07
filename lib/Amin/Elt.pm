@@ -158,6 +158,9 @@ sub amin_command {
 			foreach (@$vars) {
 				my ($name, $value) = split(/=/, $_, 2);
 				#define a local %ENV setting for this command
+				if (($debug eq "ac") || ($debug eq "all")) {
+					print "Env: $name = $value\n";
+				}
 				$ENV{$name} = $value;
 			}
 		}
