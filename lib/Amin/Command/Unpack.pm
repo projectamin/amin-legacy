@@ -36,6 +36,14 @@ sub characters {
 	my $element = $self->{"ELEMENT"};
 	my $command = $self->command;
 	if (($command eq "unpack") && ($data ne "")) {
+		if ($element->{LocalName} eq "shell") {
+			if ($attrs{'{}name'}->{Value} eq "dir") {
+				$self->dir($data);
+			}
+			if ($attrs{'{}name'}->{Value} eq "env") {
+				$self->env_vars($data);
+			}
+		}
 		if ($element->{LocalName} eq "param") {
 			if ($attrs{'{}name'}->{Value} eq "archive") {
 				$self->archive($data);
@@ -97,6 +105,11 @@ sub end_element {
 		$acmd{'CMD'} = "tar";
 		$acmd{'PARAM'} = \@param;
 		$acmd{'FLAG'} = \@flag;
+
+		my ($name, $value);
+		if ($self->{'ENV_VARS'}) {
+			$acmd{'ENV_VARS'} = $self->{'ENV_VARS'};
+		}
 
 		$cmd = $self->amin_command(\%acmd);
 
