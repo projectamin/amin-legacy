@@ -71,7 +71,6 @@ sub end_element {
 	$archive{'PARAM'} = \@aparam;
 	push @aflag, "-L";
 	$archive{'FLAG'} = \@aflag;
-	my ($name, $value);
 	if ($self->{'ENV_VARS'}) {
 		$archive{'ENV_VARS'} = $self->{'ENV_VARS'};
 	}
