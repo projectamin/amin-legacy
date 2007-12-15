@@ -116,7 +116,6 @@ sub end_element {
 			$acmd{'ENV_VARS'} = $self->{'ENV_VARS'};
 		}
 
-		my $default = "0"; #setup the default msg flag
 		my $cmd = $self->amin_command(\%acmd);
 
 		if ($cmd->{TYPE} eq "error") {
