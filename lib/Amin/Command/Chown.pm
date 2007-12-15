@@ -134,6 +134,7 @@ sub end_element {
 				push @flag, $flag;
 			}
 		}
+		my $default = "0"; #setup the default msg flag
 		
 		if ($dir) {
 			if (! chdir $dir) {
