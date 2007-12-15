@@ -84,7 +84,9 @@ sub element {
 #other subs
 sub fix_text {
 	my ($self, $text) = @_;
-	$text =~ s/(^\s+|\s+$)//gm;
+	if ($text) {
+		$text =~ s/(^\s+|\s+$)//gm;
+	}
 	return $text;
 }
 
@@ -187,8 +189,12 @@ sub amin_command {
 		if (($debug eq "ac") || ($debug eq "all")) {
 			print "CMD = :@cmd:\n";
 		}
-		run $h ;
-		$status = $h->result;
+		if ($debug eq "acc") {
+			print "CMD = :@cmd:\n";
+		} else {
+			run $h ;
+			$status = $h->result;
+		}
 	}
 
 	if ($special ne "shell") {
