@@ -64,6 +64,7 @@ sub end_element {
 		my @content;
 		
 		my $log = $self->{Spec}->{Log};
+		if ($dir) {
 		if (! chdir $dir) {
 			$self->{Spec}->{amin_error} = "red";
 			my $text = "Unable to change directory to $dir. Reason: $!";
@@ -73,6 +74,7 @@ sub end_element {
 			$self->{'CONTENT'} = undef;
 			$self->SUPER::end_element($element);
 			return;
+		}
 		}
 
 		if (! open (FILE, ">> $target")) {
@@ -94,7 +96,12 @@ sub end_element {
 		}
 		close (FILE);
 
-		my $text = "Dumping text to $target in $dir";
+		my $text;
+		if ($dir) {
+			$text = "Dumping text to $target in $dir";
+		} else {
+			$text = "Dumping text to $target";
+		}
 		$self->text($text);
 		$log->success_message($text);
 		$self->{'CONTENT'} = undef;
