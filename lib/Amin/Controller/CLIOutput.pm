@@ -92,22 +92,6 @@ sub comment {
 		for ($tlevel = $level; $tlevel == 1; $tlevel--) {		
 			$tabs .= $tabs . $tabber;
 		}
-		$data = $tabs . $data . "\n";
-		$doc .= $data;
-	}
-}
-
-sub comment {
-	my ($self, $chars) = @_;
-	my $data = $chars->{Data};
-	$data = $self->fix_text($data);
-	if ($data ne "") {
-		my $tabs = "";
-		my $tlevel;
-		my $tabber = "   ";
-		for ($tlevel = $level; $tlevel == 1; $tlevel--) {		
-			$tabs .= $tabs . $tabber;
-		}
 		$data = $tabs ."<!--" . $data . "-->" . "\n";
 		$doc .= $data;
 	}
