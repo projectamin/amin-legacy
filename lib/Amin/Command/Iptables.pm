@@ -106,152 +106,200 @@ sub end_element {
 	my ($self, $element) = @_;
 
 	if (($element->{LocalName} eq "command") && ($self->command eq "iptables")) {
-		my $action = $self->{'ACTION'};
-		my $base = $self->{'BASE'};
-		my $burst = $self->{'BURST'};
-		my $source = $self->{'SOURCE'};
-		my $destination = $self->{'DESTINATION'};
-		my $append = $self->{'APPEND'};
-		my $chain = $self->{'CHAIN'};
-		my $to = $self->{'TO'};
-		my $inface = $self->{'INFACE'};
-		my $dport = $self->{'DPORT'};
-		my $sport = $self->{'SPORT'};
-		my $state = $self->{'STATE'};
-		my $string = $self->{'STRING'};
-		my $tcpflags = $self->{'TCPFLAGS'};
-		my $jump = $self->{'JUMP'};
-		my $rule = $self->{'RULE'};
-		my $level = $self->{'LEVEL'};
-		my $prefix = $self->{'PREFIX'};
-		my $protocol = $self->{'PROTOCOL'};
-		my $outface = $self->{'OUTFACE'};
-		my $log = $self->{Spec}->{Log};
+		my $action = $self->{'ACTION'} || "";
+		my $base = $self->{'BASE'} || "";
+		my $burst = $self->{'BURST'} || "";
+		my $source = $self->{'SOURCE'} || "";
+		my $destination = $self->{'DESTINATION'} || "";
+		my $append = $self->{'APPEND'} || "";
+		my $chain = $self->{'CHAIN'} || "";
+		my $to = $self->{'TO'} || "";
+		my $inface = $self->{'INFACE'} || "";
+		my $dport = $self->{'DPORT'} || "";
+		my $sport = $self->{'SPORT'} || "";
+		my $state = $self->{'STATE'} || "";
+		my $string = $self->{'STRING'} || "";
+		my $tcpflags = $self->{'TCPFLAGS'} || "";
+		my $jump = $self->{'JUMP'} || "";
+		my $rule = $self->{'RULE'} || "";
+		my $level = $self->{'LEVEL'} || "";
+		my $prefix = $self->{'PREFIX'} || "";
+		my $protocol = $self->{'PROTOCOL'} || "";
+		my $outface = $self->{'OUTFACE'} || "";
+		my $log = $self->{Spec}->{Log} || "";
 
 		my $command = "iptables";
+		my (@flag, @param);
 		if ($action ne "") {
 			if ( $action eq "add" ) {
-				$command = $command . " -A";
+				push @flag, "-A";
 			}
 			if ( $action eq "del" ) {
-				$command = $command . " -D";
+				push @flag, "-D";
 			}
 			if ( $action eq "new" ) {
-				$command = $command . " -N";
+				push @flag, "-N";
 			}
 			if ( $action eq "insert" ) {
-				$command = $command . " -I";
+				push @flag, "-I";
 			}
 			if ( $action eq "type" ) {
-				$command = $command . " -t";
+				push @flag, "-t";
 			}
 			if ( $action eq "list" ) {
-				$command = $command . " -L";
+				push @flag, "-L";
 			}
 			if ( $action eq "flush" ) {
-				$command = $command . " -F";
+				push @flag, "-F";
 			}
 			if ( $action eq "delchain" ) {
-				$command = $command . " -X";
+				push @flag, "-X";
 			}
 			if ( $action eq "zero" ) {
-				$command = $command . " -Z";
+				push @flag, "-Z";
 			}
 			if ( $action eq "replace" ) {
-				$command = $command . " -R";
+				push @flag, "-R";
 			}
+			#add the chain
+			push @flag, $chain;
 
-		}
-		if ( $chain ne "") {
-			$command = $command . " $chain";
 		}
 		if ( $append ne "") {
 			if ( $action eq "type" ) {
-				$command = $command . " -A $append";
+				push @flag, "-A";
+				push @flag, $append;
 			}
 		}
 		if ( $inface ne "") {
-			$command = $command . " -i $inface";
+			push @flag, "-i";
+			push @flag, $inface;
 		}
 		if ( $outface ne "" ) {
-			$command = $command . " -o $outface";
+			push @flag, "-o";
+			push @flag, $outface;
 		}
 		if ( $source ne "" ) {
-			$command = $command . " -s $source";
+			push @flag, "-s";
+			push @flag, $source;
 		}
 		if ( $destination ne "" ) {
-			$command = $command . " -d $destination";
+			push @flag, "-d";
+			push @flag, $destination;
 		}
 		if ( $protocol ne "" ) {
-			$command = $command . " -p $protocol";
+			push @flag, "-p";
+			push @flag, $protocol;
 			if ( $sport ne "" ) {
-				$command = $command . " --sport $sport";
+				push @flag, "--sport";
+				push @flag, $sport;
 			}
 			if ( $dport ne "" ) {
-				$command = $command . " --dport $dport";
+				push @flag, "--dport";
+				push @flag, $dport;
 			}
 			if ( $protocol eq "tcp" and $tcpflags ne "" ) {
-				$command = $command . " --tcp-flags $tcpflags";
+				push @flag, "--tcp-flags";
+				my ($one, $two) = split (/ /,$tcpflags);
+				push @flag, $one;
+				push @flag, $two;
 			}
 		}
 		if ( $state ne "") {
-			$command = $command . " -m";
+			push @flag, "-m";
 			if ( $string ne "" ) {
-				$command = $command . " string --string '$string'";
+				push @flag, "string";
+				push @flag, "--string";
+				push @flag, $string;
 			}
 			if ( $state eq "limit" ) {
-				$command = $command . " limit";
+				push @flag, "limit";
 				if ( $base ne "" ) {
-					$command = $command . " --limit $base";
+					push @flag, "--limit";
+					push @flag, $base;
 				}
 				if ( $burst ne "" ) {
-					$command = $command . " --limit-burst $burst";
+					push @flag, "--limit-burst";
+					push @flag, $burst;
 				}
 			}
 		}
 		if ( $jump ne "") {
-			$command = $command . " -j $jump";
+			push @flag, "-j";
+			push @flag, $jump;
 			if ( $jump eq "LOG" ) {
 				if ( $level ne "" ) {
-					$command = $command . " --log-level $level";
+					push @flag, "--log-level";
+					push @flag, $level;
 				}
 				if ( $prefix ne "" ) {
-					$command = $command . " --log-prefix $prefix";
+					push @flag, "--log-prefix";
+					push @flag, $prefix;
 				}
 			}
 		}
 		if ( $to ne "" ) {
 			if ( $jump eq "DNAT" or "SNAT" and $jump ne "REDIRECT" ) {
-				$command = $command . " --to $to";
+				push @flag, "--to";
+				push @flag, $to;
 			}
 			if ( $jump eq "REDIRECT" ) {
-				$command = $command . " --to-port $to"
+				push @flag, "--to-port";
+				push @flag, $to;
 			}
 		}
 
 		if ( $rule ne "" ) {
 			if ( $action eq "del" or "insert" ) {
-				$command = $command . " $rule";
+				push @param, $rule;
 			}
 		}
 
-		my %cmd = $self->amin_command($command);
+		my %acmd;
+		$acmd{'CMD'} = $command;
+		$acmd{'FLAG'} = \@flag;
+		$acmd{'PARAM'} = \@param;
+		
+		if ($self->{'ENV_VARS'}) {
+			$acmd{'ENV_VARS'} = $self->{'ENV_VARS'};
+		}
+		
+		my $cmd = $self->amin_command(\%acmd);
+		my $default = "0"; #setup the default msg flag
 
-                if (defined $cmd{ERR}) {
+		if ($cmd->{TYPE} eq "error") {
 			$self->{Spec}->{amin_error} = "red";
-                	my $text = "Unable to execute $command. Reason: $cmd{ERR}";
-                	$self->text($text);
-
+                	my $text = "Unable to execute $command. Reason: $cmd->{ERR}";
+			$default = 1;
                         $log->error_message($text);
-                        $self->SUPER::end_element($element);
-                        return;
+			if ($cmd->{ERR}) {
+				$log->ERR_message($cmd->{ERR});
+			}
                 }
 
-		my $text = "Executing $command";
-		$self->text($text);
-		$log->success_message($text);
+		if (($cmd->{TYPE} eq "out") || ($cmd->{TYPE} eq "both")) {
+			my $otext = "Executing $command";
+			my $etext;
+			if ($cmd->{ERR}) {
+				$etext = " There was also some error text $cmd->{ERR}";
+				$etext = $otext . $etext; 
+			}
+			$default = 1;
+			if ($cmd->{TYPE} eq "out") {
+				$log->success_message($otext);
+				$log->OUT_message($cmd->{OUT});
+			} else {
+				$log->success_message($etext);
+				$log->OUT_message($cmd->{OUT});
+				$log->ERR_message($cmd->{ERR});
+				
+			}
+		}
+		if ($default == 0) {
+			my $text = "there was no messages?";
+			$log->error_message($text);
+		}
 		#reset this command
-		
 		$self->{DIR} = undef;
 		$self->{FLAG} = [];
 		$self->{PARAM} = [];
