@@ -24,6 +24,7 @@ requires	('File::Find');
 recommends	('Sys::Hostname');
 recommends	('Crypt::Blowfish_PP');
 recommends	('IO::Socket');
+recommends	('IO::Select');
 recommends	('Proc::ProcessTable');
 no_index        (directory => 'xml_files');
 auto_install	();
