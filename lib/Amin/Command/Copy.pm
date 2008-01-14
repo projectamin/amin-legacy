@@ -134,7 +134,12 @@ sub end_element {
 			}
 		}
 		if (($cmd->{TYPE} eq "out") || ($cmd->{TYPE} eq "both")) {
-			my $otext = "Copying " . join (", ", @source) . " from $dir to $target.";
+			my $otext;
+			if ($dir) {
+				$otext = "Copying " . join (", ", @source) . " from $dir to $target.";
+			} else {
+				$otext = "Copying " . join (", ", @source) . " from $dir to $target.";
+			}
 			my $etext = " There was also some error text $cmd->{ERR}";
 			$etext = $otext . $etext; 
 			$default = 1;
