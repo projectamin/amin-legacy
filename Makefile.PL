@@ -14,7 +14,6 @@ requires        ('XML::NamespaceSupport');
 requires        ('XML::SAX');
 requires        ('XML::Generator::PerlData');
 requires        ('XML::SAX::ParserFactory');
-requires        ('XML::Filter::XInclude');
 requires        ('HTML::Tagset');
 requires        ('HTML::HeadParser');
 requires        ('LWP');
