@@ -537,9 +537,9 @@ sub expand_text {
 
 sub _element {
     my ($name, $end) = @_;
+    my $ns = "pod";
+    my $fn = "$ns:$name";
     return { 
-	my $ns = "pod";
-	my $fn = "$ns:$name";
         Name => $fn,
         LocalName => $name,
         $end ? () : (Attributes => {}),
