@@ -541,7 +541,7 @@ sub _element {
     my $fn = "$ns:$name";
     return { 
         Name => $fn,
-        LocalName => $name,
+        LocalName => $fn,
         $end ? () : (Attributes => {}),
         NamespaceURI => 'http://projectamin.org/ns/pod',
         Prefix => $ns,
