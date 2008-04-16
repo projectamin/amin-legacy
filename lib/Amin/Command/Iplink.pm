@@ -1,4 +1,4 @@
-package Amin::Command::Ip;
+package Amin::Command::Iplink;
 
 #LICENSE:
 
@@ -19,7 +19,7 @@ sub start_element {
 		$attrs{'{}name'}->{'Value'} = "";
 	}
 	$self->attrs(%attrs);
-	if (($element->{Prefix} eq "amin") && ($element->{LocalName} eq "command") && ($attrs{'{}name'}->{Value} eq "ifconfig")) {
+	if (($element->{Prefix} eq "amin") && ($element->{LocalName} eq "command") && ($attrs{'{}name'}->{Value} eq "iplink")) {
 		$self->command($attrs{'{}name'}->{Value});
 	}
 	$self->element($element);
