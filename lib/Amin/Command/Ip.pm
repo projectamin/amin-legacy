@@ -222,10 +222,16 @@ sub end_element {
 		$self->{ATTRS} = undef;
 		$self->{ENV_VARS} = [];
 		$self->{ELEMENT} = undef;
-		$self->{INTERFACE} = undef;
-		$self->{ADDRESS} = undef;
-		$self->{NETMASK} = undef;
+		$self->{DEVICE} = undef;
 		$self->{STATE} = undef;
+		$self->{ARP} = undef;
+		$self->{MULTICAST} = undef;
+		$self->{DYNAMIC} = undef;
+		$self->{NAME} = undef;
+		$self->{TXQLEN} = undef;
+		$self->{MTU} = undef;
+		$self->{ADDRESS} = undef;
+		$self->{BROADCAST} = undef;
 		$self->SUPER::end_element($element);
 	} else {
 		$self->SUPER::end_element($element);
