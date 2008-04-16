@@ -47,8 +47,6 @@ sub characters {
 				$self->flag(split(/\s+/, $data));
 			}
 		}
-
-# need to add in hardwaretypes and network protocol options also
  
 		if ($element->{LocalName} eq "param") {
 			if ($attrs{'{}name'}->{Value} eq "") {
