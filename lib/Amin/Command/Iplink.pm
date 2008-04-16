@@ -33,7 +33,7 @@ sub characters {
 	my $attrs = $self->{"ATTRS"};
 	my $element = $self->{"ELEMENT"};
 	my $command = $self->command;
-	if (($command eq "ifconfig") && ($data ne "")) {
+	if (($command eq "iplink") && ($data ne "")) {
 		if ($element->{LocalName} eq "shell") {
 			if ($attrs{'{}name'}->{Value} eq "env") {
 				$self->env_vars($data);
@@ -92,7 +92,7 @@ sub characters {
 sub end_element {
 	my ($self, $element) = @_;
 
-	if (($element->{LocalName} eq "command") && ($self->command eq "ip")) {
+	if (($element->{LocalName} eq "command") && ($self->command eq "ip link")) {
 
 		my $dir = $self->{'DIR'};
 		my $device = $self->{'DEVICE'};
