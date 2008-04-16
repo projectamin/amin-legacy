@@ -173,7 +173,7 @@ sub end_element {
 		foreach my $ip (@$xparam) {
 			push @param, $ip;
 		}
-		$acmd{'CMD'} = "ip";
+		$acmd{'CMD'} = "ip link";
 		$acmd{'FLAG'} = \@flag;
 		$acmd{'PARAM'} = \@param;
 		if ($self->{'ENV_VARS'}) {
@@ -272,15 +272,15 @@ sub version {
 
 =head1 NAME
 
-IFCONFIG - reader class filter for the ifconfig command.
+IPLINK - reader class filter for the ip link command.
 
 =head1 version
 
-ifconfig 1.42 (2001-04-13) 
+iproute2 
 
 =head1 DESCRIPTION
 
-  A reader class for the ifconfig command. 
+  A reader class for the ip link command. 
   
 =head1 XML
 
@@ -289,45 +289,15 @@ ifconfig 1.42 (2001-04-13)
 =item Full example
 
  <amin:profile xmlns:amin='http://projectamin.org/ns/'>
-        <amin:command name="ifconfig">
-                <amin:param name="interface">eth0:1</amin:param>
-                <amin:param name="address">192.168.0.1</amin:param>
-                <amin:param name="netmask">255.255.255.0</amin:param>
+        <amin:command name="iplink">
+                <amin:param name="interface">dummy</amin:param>
+                <amin:param name="address">000000000001</amin:param>
         </amin:command>
 
-        <amin:command name="ifconfig">
-                <amin:param name="interface">eth0:1</amin:param>
-                <amin:param name="state">down</amin:param>
+        <amin:command name="iplink">
+                <amin:param name="interface">dummy</amin:param>
+                <amin:param name="state">up</amin:param>
         </amin:command>
- </amin:profile>
-
-=item Double example
- 
- <amin:profile xmlns:amin='http://projectamin.org/ns/'>
-        <amin:command name="ifconfig">
-                <amin:param name="interface">eth0:1000</amin:param>
-                <amin:param name="address">192.168.0.1</amin:param>
-                <amin:param name="netmask">255.255.255.0</amin:param>
-        </amin:command>
-
-	<!--
-        <amin:command name="ifconfig">
-                <amin:param name="interface">eth0:1000</amin:param>
-                <amin:param name="state">down</amin:param>
-        </amin:command>
-	-->
-        <amin:command name="ifconfig">
-                <amin:param name="interface">eth0:1001</amin:param>
-                <amin:param name="address">192.168.0.1</amin:param>
-                <amin:param name="netmask">255.255.255.0</amin:param>
-        </amin:command>
-
-	<!--
-        <amin:command name="ifconfig">
-                <amin:param name="interface">eth0:1001</amin:param>
-                <amin:param name="state">down</amin:param>
-        </amin:command>
-	-->
  </amin:profile>
 
 =back  
