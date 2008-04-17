@@ -6,6 +6,7 @@ package Amin::Command::Ip;
 #or see the following website http://projectamin.org.
 
 use strict;
+use warnings;
 use vars qw(@ISA);
 use Amin::Elt;
 
@@ -19,7 +20,7 @@ sub start_element {
 		$attrs{'{}name'}->{'Value'} = "";
 	}
 	$self->attrs(%attrs);
-	if (($element->{Prefix} eq "amin") && ($element->{LocalName} eq "command") && ($attrs{'{}name'}->{Value} eq "ifconfig")) {
+	if (($element->{Prefix} eq "amin") && ($element->{LocalName} eq "command") && ($attrs{'{}name'}->{Value} eq "iptables")) {
 		$self->command($attrs{'{}name'}->{Value});
 	}
 	$self->element($element);
@@ -33,172 +34,256 @@ sub characters {
 	my $attrs = $self->{"ATTRS"};
 	my $element = $self->{"ELEMENT"};
 	my $command = $self->command;
-	if (($command eq "ifconfig") && ($data ne "")) {
-		if ($element->{LocalName} eq "shell") {
-			if ($attrs{'{}name'}->{Value} eq "env") {
-				$self->env_vars($data);
-			}
-			if ($attrs{'{}name'}->{Value} eq "dir") {
-				$self->dir($data);
+	if (($command eq "iptables") && ($data ne "")) {
+		if ($element->{LocalName} eq "param") {
+			if ($attrs{'{}name'}->{Value} eq "action") {
+		        	$self->action($data);
 			}
 		}
 		if ($element->{LocalName} eq "flag") {
-			if ($attrs{'{}name'}->{Value} eq "") {
-				$self->flag(split(/\s+/, $data));
+			if ($attrs{'{}name'}->{Value} eq "base") {
+				$self->base($data);
 			}
-		}
-
-# need to add in hardwaretypes and network protocol options also
- 
-		if ($element->{LocalName} eq "param") {
-			if ($attrs{'{}name'}->{Value} eq "") {
-			    $self->param(split(/\s+/, $data));
+			if ($attrs{'{}name'}->{Value} eq "burst") {
+			        $self->burst($data);
+    			}
+    			if ($attrs{'{}name'}->{Value} eq "source") {
+    				$self->source($data);
+    			}
+    			if ($attrs{'{}name'}->{Value} eq "destination") {
+    	        		$self->destination($data);
+  			}
+   			if ($attrs{'{}name'}->{Value} eq "append") {
+            			$self->append($data);
+    			}
+    			if ($attrs{'{}name'}->{Value} eq "chain") {
+        			$self->chain($data);
 			}
-			if ($attrs{'{}name'}->{Value} eq "device") {
-			    $self->device($data);
-			}
-			if ($attrs{'{}name'}->{Value} eq "state") {
-			    $self->state($data);
-			}
-			if ($attrs{'{}name'}->{Value} eq "arp") {
-			    $self->arp($data);
-			}
-			if ($attrs{'{}name'}->{Value} eq "multicast") {
-			    $self->multicast($data);
-			}
-			if ($attrs{'{}name'}->{Value} eq "dynamic") {
-			    $self->dynamic($data);
-			}
-			if ($attrs{'{}name'}->{Value} eq "name") {
-			    $self->name($data);
-			}
-			if ($attrs{'{}name'}->{Value} eq "txqlen") {
-			    $self->txqlen($data);
-			}
-			if ($attrs{'{}name'}->{Value} eq "mtu") {
-			    $self->mtu($data);
-			}
-			if ($attrs{'{}name'}->{Value} eq "address") {
-			    $self->address($data);
-			}
-			if ($attrs{'{}name'}->{Value} eq "broadcast") {
-			    $self->broadcast($data);
-			}
+			if ($attrs{'{}name'}->{Value} eq "to") {
+        			$self->to($data);
+    			}
+     			if ($attrs{'{}name'}->{Value} eq "inface") {
+      				$self->inface($data);
+    			}
+    			if ($attrs{'{}name'}->{Value} eq "outface") {
+            			$self->outface($data);
+    			}
+    			if ($attrs{'{}name'}->{Value} eq "protocol") {
+            			$self->protocol($data);
+    			}
+    			if ($attrs{'{}name'}->{Value} eq "dport") {
+            			$self->dport($data);
+    			}
+    			if ($attrs{'{}name'}->{Value} eq "string") {
+            			$self->string($data);
+    			}
+   			if ($attrs{'{}name'}->{Value} eq "sport") {
+            			$self->sport($data);
+    			}
+    			if ($attrs{'{}name'}->{Value} eq "tcpflags") {
+            			$self->tcpflags($data);
+    			}
+    			if ($attrs{'{}name'}->{Value} eq "jump") {
+            			$self->jump($data);
+    			}
+    			if ($attrs{'{}name'}->{Value} eq "rule") {
+            			$self->rule($data);
+    			}
+    			if ($attrs{'{}name'}->{Value} eq "state") {
+    			        $self->state($data);
+    			}
+    			if ($attrs{'{}name'}->{Value} eq "level") {
+    			        $self->level($data);
+    			}
+    			if ($attrs{'{}name'}->{Value} eq "prefix") {
+            			$self->prefix($data);
+    			}
 		}
 	}
-	$self->SUPER::characters($chars);
 }
 
 sub end_element {
 	my ($self, $element) = @_;
 
-	if (($element->{LocalName} eq "command") && ($self->command eq "ip")) {
+	if (($element->{LocalName} eq "command") && ($self->command eq "iptables")) {
+		my $action = $self->{'ACTION'} || "";
+		my $base = $self->{'BASE'} || "";
+		my $burst = $self->{'BURST'} || "";
+		my $source = $self->{'SOURCE'} || "";
+		my $destination = $self->{'DESTINATION'} || "";
+		my $append = $self->{'APPEND'} || "";
+		my $chain = $self->{'CHAIN'} || "";
+		my $to = $self->{'TO'} || "";
+		my $inface = $self->{'INFACE'} || "";
+		my $dport = $self->{'DPORT'} || "";
+		my $sport = $self->{'SPORT'} || "";
+		my $state = $self->{'STATE'} || "";
+		my $string = $self->{'STRING'} || "";
+		my $tcpflags = $self->{'TCPFLAGS'} || "";
+		my $jump = $self->{'JUMP'} || "";
+		my $rule = $self->{'RULE'} || "";
+		my $level = $self->{'LEVEL'} || "";
+		my $prefix = $self->{'PREFIX'} || "";
+		my $protocol = $self->{'PROTOCOL'} || "";
+		my $outface = $self->{'OUTFACE'} || "";
+		my $log = $self->{Spec}->{Log} || "";
 
-		my $dir = $self->{'DIR'};
-		my $device = $self->{'DEVICE'};
-		my $state = $self->{'STATE'};
-		my $arp = $self->{'ARP'};
-	        my $multicast = $self->{'MULTICAST'};
-		my $dynamic = $self->{'DYNAMIC'};
-		my $name = $self->{'NAME'};
-		my $txqlen = $self->{'TXQLEN'}
-		my $mtu = $self->{'MTU'};
-		my $address = $self->{'ADDRESS'};
-		my $broadcast = $self->{'BROADCAST'};
-		my $xflag = $self->{'FLAG'};
-		my $xparam = $self->{'PARAM'};
-		my (%acmd, @param, @flag, $flag);
-		my $log = $self->{Spec}->{Log};
-		my $default = "0"; #setup the default msg flag
-		if ($dir) {
-			if (! chdir $dir) {
-				$self->{Spec}->{amin_error} = "red";
-				my $text = "Unable to change directory to $dir. Reason: $!";
-				$default = 1;
-				$log->error_message($text);
+		my $command = "iptables";
+		my (@flag, @param);
+		if ($action ne "") {
+			if ( $action eq "add" ) {
+				push @flag, "-A";
+			}
+			if ( $action eq "del" ) {
+				push @flag, "-D";
+			}
+			if ( $action eq "new" ) {
+				push @flag, "-N";
+			}
+			if ( $action eq "insert" ) {
+				push @flag, "-I";
+			}
+			if ( $action eq "type" ) {
+				push @flag, "-t";
+			}
+			if ( $action eq "list" ) {
+				push @flag, "-L";
+			}
+			if ( $action eq "flush" ) {
+				push @flag, "-F";
+			}
+			if ( $action eq "delchain" ) {
+				push @flag, "-X";
+			}
+			if ( $action eq "zero" ) {
+				push @flag, "-Z";
+			}
+			if ( $action eq "replace" ) {
+				push @flag, "-R";
+			}
+			#add the chain
+			push @flag, $chain;
+
+		}
+		if ( $append ne "") {
+			if ( $action eq "type" ) {
+				push @flag, "-A";
+				push @flag, $append;
 			}
 		}
-		foreach my $ip (@$xflag){
-			if (!$ip) {next;};
-			if (($ip =~ /^-/) || ($ip =~ /^--/)) {
-				push @flag, $ip;
-			} else {	
-				if ($state == 0) {
-					if ($ip eq "bind") {
-						$flag = "--" . $ip;
-					} else {
-						$flag = "-" . $ip;
-					}
-					$state = 1;
-				} else {
-					if ($ip eq "bind") {
-						$flag = " --" . $ip;
-					} else {
-						$flag = " -" . $ip;
-					}
+		if ( $inface ne "") {
+			push @flag, "-i";
+			push @flag, $inface;
+		}
+		if ( $outface ne "" ) {
+			push @flag, "-o";
+			push @flag, $outface;
+		}
+		if ( $source ne "" ) {
+			push @flag, "-s";
+			push @flag, $source;
+		}
+		if ( $destination ne "" ) {
+			push @flag, "-d";
+			push @flag, $destination;
+		}
+		if ( $protocol ne "" ) {
+			push @flag, "-p";
+			push @flag, $protocol;
+			if ( $sport ne "" ) {
+				push @flag, "--sport";
+				push @flag, $sport;
+			}
+			if ( $dport ne "" ) {
+				push @flag, "--dport";
+				push @flag, $dport;
+			}
+			if ( $protocol eq "tcp" and $tcpflags ne "" ) {
+				push @flag, "--tcp-flags";
+				my ($one, $two) = split (/ /,$tcpflags);
+				push @flag, $one;
+				push @flag, $two;
+			}
+		}
+		if ( $state ne "") {
+			push @flag, "-m";
+			if ( $string ne "" ) {
+				push @flag, "string";
+				push @flag, "--string";
+				push @flag, $string;
+			}
+			if ( $state eq "limit" ) {
+				push @flag, "limit";
+				if ( $base ne "" ) {
+					push @flag, "--limit";
+					push @flag, $base;
 				}
-				push @flag, $flag;
+				if ( $burst ne "" ) {
+					push @flag, "--limit-burst";
+					push @flag, $burst;
+				}
 			}
 		}
-		if ($device) {
-			push @param, "$device";
+		if ( $jump ne "") {
+			push @flag, "-j";
+			push @flag, $jump;
+			if ( $jump eq "LOG" ) {
+				if ( $level ne "" ) {
+					push @flag, "--log-level";
+					push @flag, $level;
+				}
+				if ( $prefix ne "" ) {
+					push @flag, "--log-prefix";
+					push @flag, $prefix;
+				}
+			}
 		}
-		if ($state) {
-			push @param, "$state";
-	        }
-		if ($arp) {
-			push @param, "$arp";
+		if ( $to ne "" ) {
+			if ( $jump eq "DNAT" or "SNAT" and $jump ne "REDIRECT" ) {
+				push @flag, "--to";
+				push @flag, $to;
+			}
+			if ( $jump eq "REDIRECT" ) {
+				push @flag, "--to-port";
+				push @flag, $to;
+			}
 		}
-		if ($multicast) {
-	        	push @param, "$multicast";
+
+		if ( $rule ne "" ) {
+			if ( $action eq "del" or "insert" ) {
+				push @param, $rule;
+			}
 		}
-		if ($dynamic) {
-			push @param, "$dynamic";
-		}
-		if ($name) {
-			push @param, "$name";
-		}
-		if ($txqlen) {
-			push @param, "$txqlen";
-		}
-		if ($mtu) {
-			push @param, "$mtu";
-		}
-		if ($address) {
-			push @param, "$address";
-		}
-		if ($broadcast) {
-			push @param, "$broadcast";
-		}
-		foreach my $ip (@$xparam) {
-			push @param, $ip;
-		}
-		$acmd{'CMD'} = "ip";
+
+		my %acmd;
+		$acmd{'CMD'} = $command;
 		$acmd{'FLAG'} = \@flag;
 		$acmd{'PARAM'} = \@param;
+		
 		if ($self->{'ENV_VARS'}) {
 			$acmd{'ENV_VARS'} = $self->{'ENV_VARS'};
 		}
+		
 		my $cmd = $self->amin_command(\%acmd);
+		my $default = "0"; #setup the default msg flag
+
 		if ($cmd->{TYPE} eq "error") {
 			$self->{Spec}->{amin_error} = "red";
-			my $text = "Could not set $address on $interface. Reason: $cmd->{ERR}";
+                	my $text = "Unable to execute $command. Reason: $cmd->{ERR}";
 			$default = 1;
-			$log->error_message($text);
+                        $log->error_message($text);
 			if ($cmd->{ERR}) {
-			    $log->ERR_message($cmd->{ERR});
+				$log->ERR_message($cmd->{ERR});
 			}
-		}
+                }
 
 		if (($cmd->{TYPE} eq "out") || ($cmd->{TYPE} eq "both")) {
-			my $otext;
-			if ($state eq "down") {
-				$otext = "Interface $interface has been brought down";
-			} else {
-				$otext = "New interface created as $interface with IP of $address and netmask of $netmask.";
+			my $otext = "Executing $command";
+			my $etext;
+			if ($cmd->{ERR}) {
+				$etext = " There was also some error text $cmd->{ERR}";
+				$etext = $otext . $etext; 
 			}
-			my $etext = " There was also some error text $cmd->{ERR}";
-			$etext = $otext . $etext; 
 			$default = 1;
 			if ($cmd->{TYPE} eq "out") {
 				$log->success_message($otext);
@@ -222,65 +307,155 @@ sub end_element {
 		$self->{ATTRS} = undef;
 		$self->{ENV_VARS} = [];
 		$self->{ELEMENT} = undef;
-		$self->{DEVICE} = undef;
+		$self->{ACTION} = undef;
+		$self->{APPEND} = undef;
+		$self->{BASE} = undef;
+		$self->{BURST} = undef;
+		$self->{SOURCE} = undef;
 		$self->{STATE} = undef;
-		$self->{ARP} = undef;
-		$self->{MULTICAST} = undef;
-		$self->{DYNAMIC} = undef;
-		$self->{NAME} = undef;
-		$self->{TXQLEN} = undef;
-		$self->{MTU} = undef;
-		$self->{ADDRESS} = undef;
-		$self->{BROADCAST} = undef;
-		$self->SUPER::end_element($element);
-	} else {
-		$self->SUPER::end_element($element);
-
+		$self->{STRING} = undef;
+		$self->{DESTINATION} = undef;
+		$self->{CHAIN} = undef;
+		$self->{TO} = undef;
+		$self->{INFACE} = undef;
+		$self->{OUTFACE} = undef;
+		$self->{LEVEL} = undef;
+		$self->{PREFIX} = undef;
+		$self->{PROTOCOL} = undef;
+		$self->{SPORT} = undef;
+		$self->{TCPFLAGS} = undef;
+		$self->{DPORT} = undef;
+		$self->{JUMP} = undef;
+		$self->{RULE} = undef;
+                $self->SUPER::end_element($element);
+        } else {
+                $self->SUPER::end_element($element);
 	}
 }
 
-sub interface {
+sub action {
 	my $self = shift;
-	$self->{INTERFACE} = shift if @_;
-	return $self->{INTERFACE};
+	$self->{ACTION} = shift if @_; 
+	return $self->{ACTION};
 }
-
-sub address {
+sub append {
 	my $self = shift;
-	$self->{ADDRESS} = shift if @_;
-	return $self->{ADDRESS};
+	$self->{APPEND} = shift if @_; 
+	return $self->{APPEND};
 }
-
-sub netmask {
+sub base {
 	my $self = shift;
-	$self->{NETMASK} = shift if @_;
-	return $self->{NETMASK};
+	$self->{BASE} = shift if @_; 
+	return $self->{BASE};
 }
-
+sub burst {
+	my $self = shift;
+	$self->{BURST} = shift if @_; 
+	return $self->{BURST};
+}
+sub source {
+	my $self = shift;
+	$self->{SOURCE} = shift if @_; 
+	return $self->{SOURCE};
+}
 sub state {
-        my $self = shift;
-        $self->{STATE} = shift if @_;
-        return $self->{STATE};
+	my $self = shift;
+	$self->{STATE} = shift if @_; 
+	return $self->{STATE};
+}
+sub string {
+	my $self = shift;
+	$self->{STRING} = shift if @_; 
+	return $self->{STRING};
+}
+sub destination {
+	my $self = shift;
+	$self->{DESTINATION} = shift if @_; 
+	return $self->{DESTINATION};
+}sub chain {
+	my $self = shift;
+	$self->{CHAIN} = shift if @_; 
+	return $self->{CHAIN};
+}
+sub to {
+	my $self = shift;
+	$self->{TO} = shift if @_; 
+	return $self->{TO};
+}
+sub inface {
+	my $self = shift;
+	$self->{INFACE} = shift if @_; 
+	return $self->{INFACE};
+}
+sub outface {
+	my $self = shift;
+	$self->{OUTFACE} = shift if @_; 
+	return $self->{OUTFACE};
+}
+sub level {
+	my $self = shift;
+	$self->{LEVEL} = shift if @_; 
+	return $self->{LEVEL};
+}
+sub prefix {
+	my $self = shift;
+	$self->{PREFIX} = shift if @_; 
+	return $self->{PREFIX};
+}
+sub protocol {
+	my $self = shift;
+	$self->{PROTOCOL} = shift if @_; 
+	return $self->{PROTOCOL};
+}
+sub sport {
+	my $self = shift;
+	$self->{SPORT} = shift if @_; 
+	return $self->{SPORT};
+}
+sub tcpflags {
+	my $self = shift;
+	$self->{TCPFLAGS} = shift if @_; 
+	return $self->{TCPFLAGS};
+}
+sub dport {
+	my $self = shift;
+	$self->{DPORT} = shift if @_; 
+	return $self->{DPORT};
+}
+sub jump {
+	my $self = shift;
+	$self->{JUMP} = shift if @_; 
+	return $self->{JUMP};
+}
+sub rule {
+	my $self = shift;
+	$self->{RULE} = shift if @_; 
+	return $self->{RULE};
 }
 
 sub version {
 	return "1.0";
 }
 
-
 1;
 
 =head1 NAME
 
-IFCONFIG - reader class filter for the ifconfig command.
+Iptables - reader class filter for the iptables command.
 
 =head1 version
 
-ifconfig 1.42 (2001-04-13) 
+iptables
+
 
 =head1 DESCRIPTION
 
-  A reader class for the ifconfig command. 
+  A reader class for the iptables command. This command
+  lets you specify all your iptable parameters. Who 
+  needs a firewall script, when you have firewall profiles?
+  This command has not been used as much as it should have
+  been in the past, so we are reposting full examples, in 
+  hope people will expand/use this command....
   
 =head1 XML
 
@@ -289,47 +464,162 @@ ifconfig 1.42 (2001-04-13)
 =item Full example
 
  <amin:profile xmlns:amin='http://projectamin.org/ns/'>
-        <amin:command name="ifconfig">
-                <amin:param name="interface">eth0:1</amin:param>
-                <amin:param name="address">192.168.0.1</amin:param>
-                <amin:param name="netmask">255.255.255.0</amin:param>
-        </amin:command>
+	
+	<!-- Add a new rule to a already existing chain -->
+    <amin:command name="iptables">
+        <amin:param name="chain">INPUT</amin:param>
+        <amin:flag name="action">add</amin:flag>
+        <amin:param name="inface">ppp0</amin:param>
+        <amin:param name="protocol">tcp</amin:param>
+        <amin:param name="dport">80</amin:param>
+        <amin:param name="jump">DROP</amin:param>
+    </amin:command>
 
-        <amin:command name="ifconfig">
-                <amin:param name="interface">eth0:1</amin:param>
-                <amin:param name="state">down</amin:param>
-        </amin:command>
+	<!-- Delete a rule from an already existing chain -->
+    <amin:command name="iptables">
+        <amin:param name="chain">INPUT</amin:param>
+        <amin:flag name="action">del</amin:flag>
+        <amin:param name="rule">1</amin:param>
+    </amin:command>
+
+	<!-- Insert a rule into an already existing chain -->
+    <amin:command name="iptables">
+        <amin:param name="chain">OUTPUT</amin:param>
+        <amin:flag name="action">insert</amin:flag>
+        <amin:param name="rule">1</amin:param>
+    </amin:command>
+
+	<!-- List all the rules of a given chain, if no chain is
+     specified all chains are listed              -->
+    <amin:command name="iptables">
+        <amin:param name="chain">INPUT</amin:param>
+        <amin:flag name="action">list</amin:flag>
+    </amin:command>
+    
+	<!-- Flush all rules from a given chain, if no chain is
+     specified then all rules from all chains are deleted -->
+    <amin:command name="iptables">
+        <amin:param name="chain">userdefined</amin:param>
+        <amin:flag name="action">flush</amin:flag>
+    </amin:command>
+
+	<!-- Used for actions related to the kernel packet matching 
+     tables. Used most commonly for NAT Network Address Translation -->
+
+	<!-- Basic Masquerading -->
+    <amin:command name="iptables">
+        <amin:param name="chain">nat</amin:param>
+        <amin:flag name="action">type</amin:flag>
+        <amin:param name="append">POSTROUTING</amin:param>
+        <amin:param name="outface">ppp0</amin:param>
+        <amin:param name="jump">MASQUERADE</amin:param>
+    </amin:command>
+
+	<!-- Basic XMAS scan drop  -->
+    <amin:command name="iptables">
+        <amin:param name="chain">nat</amin:param>
+        <amin:flag name="action">type</amin:flag>
+        <amin:param name="append">PREROUTING</amin:param>
+        <amin:param name="protocol">tcp</amin:param>
+        <amin:param name="tcpflags">ALL ALL</amin:param>
+        <amin:param name="jump">DROP</amin:param>
+    </amin:command>
+
+	<!-- Basic NULL scan drop  -->
+    <amin:command name="iptables">
+        <amin:param name="chain">nat</amin:param>
+        <amin:flag name="action">type</amin:flag>
+        <amin:param name="append">PREROUTING</amin:param>
+        <amin:param name="protocol">tcp</amin:param>
+        <amin:param name="tcpflags">ALL NONE</amin:param>
+        <amin:param name="jump">DROP</amin:param>
+    </amin:command>
+
+	<!-- Destination NAT, changes the destination addy from example.com to
+     192.168.0.100 port 80.  NB the port is optional  -->
+    <amin:command name="iptables">
+        <amin:param name="chain">nat</amin:param>
+        <amin:flag name="action">type</amin:flag>
+        <amin:param name="append">POSTROUTING</amin:param>
+        <amin:param name="protocol">tcp</amin:param>
+        <amin:param name="destination">example.com</amin:param>
+        <amin:param name="dport">8080</amin:param>
+        <amin:param name="jump">DNAT</amin:param>
+        <amin:param name="to">192.168.0.100:80</amin:param>
+    </amin:command>
+
+	<!-- Port redirection, commonly used for tranparent proxy/cache -->
+    <amin:command name="iptables">
+        <amin:param name="chain">nat</amin:param>
+        <amin:flag name="action">type</amin:flag>
+        <amin:param name="append">PREROUTING</amin:param>
+        <amin:param name="inface">eth1</amin:param>
+        <amin:param name="protocol">tcp</amin:param>
+        <amin:param name="dport">80</amin:param>
+        <amin:param name="jump">REDIRECT</amin:param>
+        <amin:param name="to">3128</amin:param>
+    </amin:command>
+
+	<!-- Stateful limits, using a SYN-FLOOD example  -->
+    <amin:command name="iptables">
+        <amin:param name="chain">nat</amin:param>
+        <amin:flag name="action">type</amin:flag>
+        <amin:param name="append">syn-flood</amin:param>
+        <amin:param name="state">limit</amin:param>
+        <amin:param name="base">12/s</amin:param>
+        <amin:param name="burst">24</amin:param>
+        <amin:param name="jump">RETURN</amin:param>
+    </amin:command>
+
+	<!-- filtering based on string matching   -->
+    <amin:command name="iptables">
+        <amin:param name="chain">filter</amin:param>
+        <amin:flag name="action">type</amin:flag>
+        <amin:param name="append">INPUT</amin:param>
+        <amin:param name="inface">eth1</amin:param>
+        <amin:param name="protocol">tcp</amin:param>
+        <amin:param name="dport">80</amin:param>
+        <amin:param name="state">string</amin:param>
+        <amin:param name="string">/default.ida?</amin:param>
+        <amin:param name="jump">DROP</amin:param>
+    </amin:command>
+
+	<!-- LOGing based on string matching   -->
+    <amin:command name="iptables">
+        <amin:param name="chain">filter</amin:param>
+        <amin:flag name="action">type</amin:flag>
+        <amin:param name="append">INPUT</amin:param>
+        <amin:param name="inface">eth1</amin:param>
+        <amin:param name="protocol">tcp</amin:param>
+        <amin:param name="dport">80</amin:param>
+        <amin:param name="state">string</amin:param>
+        <amin:param name="string">/default.ida?</amin:param>
+        <amin:param name="jump">LOG</amin:param>
+        <amin:param name="level">1</amin:param>
+        <amin:param name="prefix">HACKERS</amin:param>
+    </amin:command>
+
+
+	<!-- Creates a new chain for you to add rules too -->
+    <amin:command name="iptables">
+        <amin:param name="chain">FTP</amin:param>
+        <amin:flag name="action">new</amin:flag>
+    </amin:command>
+
+	<!-- Deletes a chain you have created, there must be no references
+     to the chain anywhere in the entire table   -->
+    <amin:command name="iptables">
+        <amin:param name="chain">FTP</amin:param>
+        <amin:flag name="action">delchain</amin:flag>
+    </amin:command>
+
+	<!-- Zero's the packet and byte counters for all chains -->
+    <amin:command name="iptables">
+        <amin:param name="chain">INPUT</amin:param>
+        <amin:flag name="action">zero</amin:flag>
+    </amin:command>
  </amin:profile>
-
-=item Double example
- 
- <amin:profile xmlns:amin='http://projectamin.org/ns/'>
-        <amin:command name="ifconfig">
-                <amin:param name="interface">eth0:1000</amin:param>
-                <amin:param name="address">192.168.0.1</amin:param>
-                <amin:param name="netmask">255.255.255.0</amin:param>
-        </amin:command>
-
-	<!--
-        <amin:command name="ifconfig">
-                <amin:param name="interface">eth0:1000</amin:param>
-                <amin:param name="state">down</amin:param>
-        </amin:command>
-	-->
-        <amin:command name="ifconfig">
-                <amin:param name="interface">eth0:1001</amin:param>
-                <amin:param name="address">192.168.0.1</amin:param>
-                <amin:param name="netmask">255.255.255.0</amin:param>
-        </amin:command>
-
-	<!--
-        <amin:command name="ifconfig">
-                <amin:param name="interface">eth0:1001</amin:param>
-                <amin:param name="state">down</amin:param>
-        </amin:command>
-	-->
- </amin:profile>
-
+   
 =back  
 
 =cut
