@@ -28,6 +28,8 @@ if ($arch =~ /ppc/) {
 	$arch = "x86_64";
 } elsif ($arch =~ /ia64/) {
 	$arch = "ia64";
+} elsif ($arch =~ /sparc64/) {
+	$arch = "sparc64";
 } else {
 	$arch = "ia32";
 }
