@@ -1,0 +1,24 @@
+Howdy,
+
+You can get at the current documentation in the following ways.
+
+Open up the code modules(.pm files) and read the documentation
+at the end of any module. 
+
+or 
+
+type 'perldoc Somemodule.pm' and read the perldoc version of the
+same information
+
+or 
+
+type something like 'man Amin::Command::Mknod' and read about all 
+the mknod infos from the man files installed when you install Amin
+
+or 
+
+go here for the web version.
+
+http://docs.projectamin.org/
+
+
