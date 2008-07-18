@@ -327,7 +327,7 @@ chmod (coreutils) 5.0 March 2003
  <amin:profile xmlns:amin='http://projectamin.org/ns/'>
         <amin:command name="chmod">
                 <amin:param name="target">/tmp/amin-tests/limits</amin:param>
-                <amin:flag name="set">0750</amin:flag>
+                <amin:param name="set">0750</amin:param>
         </amin:command>
  </amin:profile>
 
