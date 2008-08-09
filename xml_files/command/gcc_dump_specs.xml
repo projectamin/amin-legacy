@@ -1,0 +1,4 @@
+<amin:profile xmlns:amin='http://projectamin.org/ns/'>
+        <amin:command name="gcc_dump_specs">
+        </amin:command>
+</amin:profile>
