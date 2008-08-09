@@ -180,6 +180,14 @@
 		<download>http://projectamin.org/filters/amin/command/fsck.xml</download>
 		<version>1.0</version>
 	</filter>
+	<filter name="Amin::Command::Gcc_dump_specs">
+		<element>command</element>
+		<namespace>amin</namespace>
+		<name>gcc_dump_specs</name>
+		<position>middle</position>
+		<download>http://projectamin.org/filters/amin/command/gcc_dump_specs.xml</download>
+		<version>1.0</version>
+	</filter>
         <filter name="Amin::Command::Gmake">
                 <element>command</element>
                 <namespace>amin</namespace>
