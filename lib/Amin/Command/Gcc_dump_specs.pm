@@ -9,6 +9,7 @@ use strict;
 use warnings;
 use vars qw(@ISA);
 use Amin::Elt;
+use Data::Dumper;
 
 @ISA = qw(Amin::Elt);
 my %attrs;
@@ -68,7 +69,10 @@ sub end_element {
 		my $dir = $self->{'DIR'};
 		my $xflag = $self->{'FLAG'};
 		my $xparam = $self->{'PARAM'};
+		my $content;
+		my @content;
 		
+		my (%speccmd, @specflag);
 		my (%acmd, @param, @flag, $flag);
 		
 		my $log = $self->{Spec}->{Log};
@@ -118,8 +122,28 @@ sub end_element {
 		foreach my $ip (@$xparam){
 			push @param, $ip;
 		}
-		
-		$acmd{'CMD'} = "gcc -dumpspecs > `dirname $(gcc -print-libgcc-file-name)`/specs";
+		push(@specflag, "-print-libgcc-file-name");
+		$speccmd{'CMD'} = "gcc";
+		$speccmd{'FLAG'} = \@specflag;
+		$speccmd{'PARAM'} = \@param;
+		if ($self->{'ENV_VARS'}) {
+			$speccmd{'ENV_VARS'} = $self->{'ENV_VARS'};
+		}
+
+		my $specsfilecmd = $self->amin_command(\%speccmd);
+		if ($specsfilecmd->{TYPE} eq "error") {
+			$self->{Spec}->{amin_error} = "red";
+			my $text = "Dumpspecs Failed. Reason: $specsfilecmd->{ERR}";
+			$default = 1;
+			$log->error_message($text);
+			if ($specsfilecmd->{ERR}) {
+				$log->ERR_message($specsfilecmd->{ERR});
+			}
+		}
+		my $specsfile = $specsfilecmd->{OUT};
+		$specsfile =~ s/libgcc.a/specs/g;
+		$acmd{'CMD'} = "gcc";
+		push(@flag, "-dumpspecs");
 		$acmd{'FLAG'} = \@flag;
 		$acmd{'PARAM'} = \@param;
 		if ($self->{'ENV_VARS'}) {
@@ -153,10 +177,29 @@ sub end_element {
 				
 			}
 		}
+		@$content = $cmd->{OUT};
 		if ($default == 0) {
-			my $text = "there was no messages?";
+			my $text = "there was no output?";
 			$log->error_message($text);
 		}
+		if (! open (FILE, "> $specsfile")) {
+			$self->{Spec}->{amin_error} = "red";
+			my $text = "Unable to open $specsfile for dumping, $!";
+			$self->text($text);
+
+			$log->error_message($text);
+			$self->{'CONTENT'} = undef;
+			$self->SUPER::end_element($element);
+			return;
+		}
+
+		foreach my $line(@$content) {
+			$line =~ s/(^\s+|\s+$)//gm;
+			if ($line) {
+				print FILE "$line\n";
+			}
+		}
+		close (FILE);
 		#reset this command
 		$self->{DIR} = undef;
 		$self->{FLAG} = [];
