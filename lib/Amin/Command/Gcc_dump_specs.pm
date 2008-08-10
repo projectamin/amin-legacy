@@ -9,7 +9,6 @@ use strict;
 use warnings;
 use vars qw(@ISA);
 use Amin::Elt;
-use Data::Dumper;
 
 @ISA = qw(Amin::Elt);
 my %attrs;
@@ -17,9 +16,7 @@ my %attrs;
 sub start_element {
 	my ($self, $element) = @_;
 	%attrs = %{$element->{Attributes}};
-	if (!$attrs{'{}name'}->{'Value'}) {
-		$attrs{'{}name'}->{'Value'} = "";
-	}
+	$attrs{'{}name'}->{'Value'} = "" unless $attrs{'{}name'}->{'Value'};	
 	$self->attrs(%attrs);
 	if (($element->{Prefix} eq "amin") && ($element->{LocalName} eq "command") && ($attrs{'{}name'}->{Value} eq "gcc_dump_specs")) {
 		$self->command($attrs{'{}name'}->{Value});
@@ -125,7 +122,6 @@ sub end_element {
 		push(@specflag, "-print-libgcc-file-name");
 		$speccmd{'CMD'} = "gcc";
 		$speccmd{'FLAG'} = \@specflag;
-		$speccmd{'PARAM'} = \@param;
 		if ($self->{'ENV_VARS'}) {
 			$speccmd{'ENV_VARS'} = $self->{'ENV_VARS'};
 		}
