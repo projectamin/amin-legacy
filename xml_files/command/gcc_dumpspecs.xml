@@ -1,0 +1,5 @@
+<amin:profile xmlns:amin='http://projectamin.org/ns/'>
+        <amin:command name="gcc_dump_specs">
+		<amin:param name='specsfile'>/adistrobc-bootstrap/lib/gcc/i686-pc-linux-gnu/4.2.2/specs</amin:param>
+        </amin:command>
+</amin:profile>
