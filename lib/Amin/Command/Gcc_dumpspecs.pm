@@ -1,4 +1,4 @@
-package Amin::Command::Gcc_dump_specs;
+package Amin::Command::Gcc_dumpspecs;
 
 #LICENSE:
 
@@ -19,7 +19,7 @@ sub start_element {
 	%attrs = %{$element->{Attributes}};
 	$attrs{'{}name'}->{'Value'} = "" unless $attrs{'{}name'}->{'Value'};	
 	$self->attrs(%attrs);
-	if (($element->{Prefix} eq "amin") && ($element->{LocalName} eq "command") && ($attrs{'{}name'}->{Value} eq "gcc_dump_specs")) {
+	if (($element->{Prefix} eq "amin") && ($element->{LocalName} eq "command") && ($attrs{'{}name'}->{Value} eq "gcc_dumpspecs")) {
 		$self->command($attrs{'{}name'}->{Value});
 	}
 	$self->element($element);
@@ -33,7 +33,7 @@ sub characters {
 	my $attrs = $self->{"ATTRS"};
 	my $element = $self->{"ELEMENT"};
 	my $command = $self->command;
-	if (($command eq "gcc_dump_specs") && ($data ne "")) {
+	if (($command eq "gcc_dumpspecs") && ($data ne "")) {
 		if ($element->{LocalName} eq "flag") {
 			if ($attrs{'{}name'}->{Value} eq "") {
 				$self->flag(split(/\s+/, $data));
@@ -62,7 +62,7 @@ sub characters {
 sub end_element {
 	my ($self, $element) = @_;
 
-	if (($element->{LocalName} eq "command") && ($self->command eq "gcc_dump_specs")) {
+	if (($element->{LocalName} eq "command") && ($self->command eq "gcc_dumpspecs")) {
 
 		my $dir = $self->{'DIR'};
 		my $specsfile = $self->{'SPECSFILE'};
@@ -213,7 +213,7 @@ gcc 2.95+
 =item Full example
 
  <amin:profile xmlns:amin='http://projectamin.org/ns/'>
-        <amin:command name="gcc_dump_specs">
+        <amin:command name="gcc_dumpspecs">
 		<amin:param name="specsfile">/usr/lib/gcc/path/to/specsfile</amin:param>
         </amin:command>
  </amin:profile>
@@ -221,10 +221,10 @@ gcc 2.95+
 =item Double example
  
  <amin:profile xmlns:amin='http://projectamin.org/ns/'>
-        <amin:command name="gcc_dump_specs">
+        <amin:command name="gcc_dumpspecs">
 		<amin:param name="specsfile">/usr/lib/gcc/path/to/specsfile</amin:param>
         </amin:command>>
-        <amin:command name="gcc_dump_specs">
+        <amin:command name="gcc_dumpspecs">
 		<amin:param name="specsfile">/usr/lib/gcc/path/to/specsfile</amin:param>
         </amin:command>
  </amin:profile>
