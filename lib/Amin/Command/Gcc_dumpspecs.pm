@@ -94,6 +94,7 @@ sub end_element {
 		}
 
 		my $cmd = $self->amin_command(\%acmd);
+		warn Dumper ("cmd!!!!!!!", $cmd);
 
 		if ($cmd->{TYPE} eq "error") {
 			$self->{Spec}->{amin_error} = "red";
@@ -137,7 +138,6 @@ sub end_element {
 		}
 
 		foreach my $line(@$content) {
-			$line =~ s/(^\s+|\s+$)//gm;
 			if ($line) {
 				print FILE "$line\n";
 			}
