@@ -9,7 +9,6 @@ use strict;
 use warnings;
 use vars qw(@ISA);
 use Amin::Elt;
-use Data::Dumper;
 
 @ISA = qw(Amin::Elt);
 my %attrs;
@@ -68,7 +67,7 @@ sub end_element {
 		my $specsfile = $self->{'SPECSFILE'};
 		my $content;
 		my @content;
-		
+
 		my (%acmd, @param, @flag);
 		
 		my $log = $self->{Spec}->{Log};
@@ -94,8 +93,7 @@ sub end_element {
 		}
 
 		my $cmd = $self->amin_command(\%acmd);
-		warn Dumper ("cmd!!!!!!!", $cmd);
-
+		
 		if ($cmd->{TYPE} eq "error") {
 			$self->{Spec}->{amin_error} = "red";
 			my $text = "Dumpspecs Failed. Reason: $cmd->{ERR}";
@@ -121,7 +119,7 @@ sub end_element {
 				
 			}
 		}
-		@$content = $cmd->{OUT};
+		$content = $cmd->{OUT};
 		if ($default == 0) {
 			my $text = "there was no output?";
 			$log->error_message($text);
@@ -137,11 +135,7 @@ sub end_element {
 			return;
 		}
 
-		foreach my $line(@$content) {
-			if ($line) {
-				print FILE "$line\n";
-			}
-		}
+		print FILE $content;
 		close (FILE);
 		#reset this command
 		$self->{DIR} = undef;
