@@ -175,7 +175,7 @@ amin  0.5.0
   Will return a profile version. 
   
   Useful for your own profile versioning in your profiles, 
-  so your xml log outputs provides you useful profile version info....
+  so your xml log outputs provides your useful profile version info....
   
   
 =head1 XML
