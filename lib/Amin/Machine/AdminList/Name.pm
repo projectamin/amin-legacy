@@ -50,7 +50,7 @@ Amin::Machine::Adminlist::Name - returns name="" names for an adminlist map
 
 =head1 DESCRIPTION
 
-  Returns name="" names for an adminlist map. This module read an adminlist
+  Returns name="" names for an adminlist map. This module reads an adminlist
   map and returns all the name entires in a hash reference.
   
   Use this hash map with your adminlist controller processing to control
