@@ -15,7 +15,7 @@ my $DefaultLog	||= 'Amin::Machine::Log::Standard';
 my $DefaultMachine ||= 'Amin::Machine::Dispatcher';
 
 use vars qw($VERSION);
-$VERSION = '0.5.5';
+$VERSION = '0.5.7';
 
 sub new {
 	my $class = shift;
@@ -68,18 +68,13 @@ sub new {
 
 sub parse_uri {
 	my ($self, $profile) = @_;
-	my $spec;
-	if ($self->{Machine_Spec}) {
-		$spec = $self->machine_spec($profile, $self->{Machine_Spec})
-	} else {
-		$spec = $self->machine_spec($profile)
-	}
+	my $spec = $self->machine_spec($profile, $self->{Machine_Spec});
 	#load modules from the new $spec
 	$spec = $self->load_spec($spec);
 	#build the machine and run it
 	eval "require $self->{Machine_Name}";
 	my $m = $self->{Machine_Name}->new($spec);
-	$m->parse_uri( $profile );
+	$m->parse_uri($profile);
 	#get rid of the filter list...
 	my $fl = $spec->{Filter_List};
 	foreach (keys %$fl) {
@@ -94,12 +89,7 @@ sub parse_uri {
 sub parse_string {
 	my ($self, $profile) = @_;
 	#parse and add the machine spec
-	my $spec;
-	if ($self->{Machine_Spec}) {
-		$spec = $self->machine_spec($profile, $self->{Machine_Spec})
-	} else {
-		$spec = $self->machine_spec($profile)
-	}
+	my $spec = $self->machine_spec($profile, $self->{Machine_Spec});
 	#load modules from the new $spec
 	$spec = $self->load_spec($spec);
 	#build the machine and run it
