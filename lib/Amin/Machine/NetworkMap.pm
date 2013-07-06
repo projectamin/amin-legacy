@@ -217,6 +217,17 @@ $networkmap->{$_}->{port} is 8000
 and so on. Attributes are ip, auth, protocol, port,
 username, key, and password.
   
+auth and protocol are module types you can load. 
+
+ex. <amin:protocol>Blowfish_SimpleAuth</amin:protocol>
+
+would load the Amin::Protocol::Blowfish_SimpleAuth protocol module for 
+this particular <server> in this <networkmap>.
+
+ex. <amin:protocol>Standard</amin:protocol>
+
+would load the Amin::Protocol::Standard protocol, etc. 
+
 =head1 XML
 
 =over 4
@@ -230,7 +241,6 @@ username, key, and password.
    </amin:server>
      <!--and so on -->
  </amin:networkmap>
-
 
 =back  
 
