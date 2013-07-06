@@ -16,6 +16,92 @@ sub new {
 	return $self;
 }
 
+sub get_profile {
+    my $cli = shift;
+        my ($help, $uri, $profile, $adminlist, $networkmap, 
+        $machine_spec, $machine_type, $machine_name, $generator, $handler, $log, $filter_param, $version, $type, $adminlist_map, $packagelist, $packagelist_map $debug);
+    my $opts_ok = &GetOptions( "h|help"    => \$help,
+                   "u|uri=s"     => \$uri,
+                   "p|profile=s" => \$profile,
+                   "a|adminlist=s" => \$adminlist,
+                   "b|adminlist_map=s" => \$adminlist_map,
+                   "n|networkmap=s" => \$networkmap,
+                   "m|machine_spec=s" => \$machine_spec,
+                   "o|machine_name=s" => \$machine_name,
+                   "d|debug=s" => \$debug,
+                   "g|generator=s" => \$generator,
+                   "h|handler=s" => \$handler,
+                   "l|log=s" => \$log,
+                   "x|filter_param=s" => \$filter_param,
+                   "t|machine_type=s" => \$type,
+                   "v|version" => \$version,
+                   "pa|packagelist=s" => \$packagelist,
+                   "pal|packagelist_map=s" => \$packagelist_map,
+    );
+        if ( $help ) {
+                $cli->print_help();
+                exit 1;
+        }
+    if ($uri) {
+        $cli->uri($uri);
+    } 
+    if ($profile) {
+        $cli->profile($profile);
+    } 
+    if ($adminlist) {
+        $cli->adminlist($adminlist);
+    } 
+    if ($adminlist_map) {
+        $cli->adminlist_map($adminlist_map);
+    } 
+    if ($networkmap) {
+        $cli->networkmap($networkmap);
+    }
+    if ($machine_spec) {
+        $cli->machine_spec($machine_spec);
+    } 
+    if ($debug) {
+        $cli->debug($debug);
+    } 
+    if ($filter_param) {
+        $cli->filter_param($filter_param);
+    } 
+    if ($machine_type) {
+        $cli->machine_type($machine_type);
+    } 
+    if ($machine_name) {
+        $cli->machine_name($machine_name);
+    } 
+    if ($generator) {
+        $cli->generator($generator);
+    } 
+    if ($handler) {
+        $cli->handler($handler);
+    } 
+    if ($log) {
+        $cli->log($log);
+    } 
+    if ($packagelist) {
+        $cli->packagelist($packagelist);
+    } 
+    if ($packagelist_map) {
+        $cli->packagelist_map($packagelist_map);
+    }
+    if ($version) {
+        $cli->print_version();
+                exit 1;
+    } 
+        if (!$opts_ok) {
+                $cli->print_usage();
+                exit 1;
+        };
+    if ((!$uri) && (!$profile) && (!$adminlist) && 
+        (!$networkmap) && (!$version) && (!$help)) {    
+        $cli->print_usage();
+        exit  1;
+    }
+}
+
 sub load_profile {
 	my ($self, $uri) = @_;
 	my $ua = LWP::UserAgent->new();
@@ -169,6 +255,18 @@ sub adminlist_map {
 	my $self = shift;
 	if (@_) { $self->{ADMINLIST_MAP} = shift;}
 	return $self->{ADMINLIST_MAP};
+}
+
+sub packagelist {
+    my $self = shift;
+    if (@_) { $self->{PACKAGELIST} = shift;}
+    return $self->{PACKAGELIST};
+}
+
+sub packagelist_map {
+    my $self = shift;
+    if (@_) { $self->{PACKAGELIST_MAP} = shift;}
+    return $self->{PACKAGELIST_MAP};
 }
 
 1;
