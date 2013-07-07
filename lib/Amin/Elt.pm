@@ -115,49 +115,45 @@ sub text {
 }
 
 sub parse_adminlist {
-    my $self, $cli = @_;
+    my ($self, $cli) = @_;
     my $h = Amin::Machine::AdminList->new;
     my $p = XML::SAX::PurePerl->new(Handler => $h);
     return $p->parse_uri($cli->adminlist);
 }
 
 sub parse_networkmap {
-    my $self, $networkmap = @_;
+    my ($self, $networkmap) = @_;
     my $n = Amin::Machine::NetworkMap->new();
     my $np = XML::SAX::PurePerl->new(Handler => $n);
     return $np->parse_uri($networkmap);
 }
 
 sub parse_CLIOutput {
-    my $self, $clioutput = @_;
+    my ($self, $clioutput) = @_;
     my $h = Amin::Controller::CLIOutput->new();
     my $p = XML::SAX::PurePerl->new(Handler => $h);
     return $p->parse_string($clioutput);
 }
 
 sub parse_adminlistmap {
-    my $self, $adminlist_map = @_;
+    my ($self, $adminlist_map) = @_;
     my $h = Amin::Machine::AdminList::Name->new();
     my $p = XML::SAX::PurePerl->new(Handler => $h);
-    return $p->parse_uri($cli->adminlist_map);
+    return $p->parse_uri($adminlist_map);
 }
 
 sub get_machine {
-    my $self, $cli = @_;
+    my ($self, $cli) = @_;
     return Amin->new (
                 Machine_Name => $cli->machine_name, 
                 Machine_Spec => $cli->machine_spec,
                 Generator => $cli->generator,
                 Handler => $cli->handler,
-                Filter_Param => $filter_param,
+                Filter_Param => $cli->filter_param,
                 Log => $cli->log,
                 Debug => $cli->debug
         );
 }
-
-
-
-
 
 sub amin_command {
 
