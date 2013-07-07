@@ -1,4 +1,4 @@
-package Amin::Machine::AdminList;
+package Amin::Machine::Adminlist;
 
 #LICENSE:
 
@@ -8,116 +8,64 @@ package Amin::Machine::AdminList;
 use strict;
 use vars qw(@ISA);
 use Amin::Elt;
-
 @ISA = qw(Amin::Elt);
-
-my %attrs;
-my (%adminlist, $x, $y, $z);
 
 sub start_document {
 	my $self = shift;
-	$x = 0;
-	$y = 0;
-	$z = 0;
-	foreach (keys %adminlist) {
-		delete $adminlist{$_};
+    my $adminlist = $self->adminlist;
+	foreach (keys %$adminlist) {
+		delete $adminlist->{$_};
 	}
+    #load up our names
+    my @names = qw(uri name);
+    $self->doc_name(\@names);
+    #load up our types
+    my @types = qw(server profile adminlist);
+    $self->doc_type(\@types);
 }
 
 sub start_element {
 	my ($self, $element) = @_;
 	$self->element($element);
-	%attrs = %{$element->{Attributes}};
-	if ($attrs{'{}name'}->{Value}) {
-		$self->name($attrs{'{}name'}->{Value});
-	}
-	$self->attrs(%attrs);
-}
-
-sub characters {
-	my ($self, $chars) = @_;
-	my $data = $chars->{Data};
-	my $element = $self->{"ELEMENT"};
-	$data = $self->fix_text($data);
-	
-	if ($element->{LocalName} eq "uri") {
-		if ($data ne "") {
-			$self->uri($data);
-		}
-	}
+    $self->attrs(%{$element->{Attributes}});
+    my $names = $self->element_name;    
+    foreach my $name (@$names) {
+        my $value = "{}" . $name;
+        if ($attrs{$value}->{Value}) {
+            $self->$name($attrs{$value}->{Value});
+        }
+    }
 }
 
 sub end_element {
 	my ($self, $element) = @_;
-	if ($element->{LocalName} eq "server") {
-		#don't add empty/bad uris
-		if ($self->uri) {
-			$x++;
-			my $name;
-			if ($self->name) {
-				$name = $self->name;
-			} else {
-				$name = "server$x";
-			}
-			my %hash;
-			$hash{uri} = $self->uri;
-			$hash{name} = $name;
-			$hash{type} = "map";
-			$adminlist{$name} = \%hash;
-			#reset stuff
-			$self->{URI} = "";
-			$self->{NAME} = "";
-			$self->{TYPE} = "";
-		}
-	}
-	if ($element->{LocalName} eq "profile") {
-		#don't add empty/bad uris
-		if ($self->uri) {
-			$y++;
-			my $name;
-			if ($self->name) {
-				$name = $self->name;
-			} else {
-				$name = "profile$y";
-			}
-			my %hash;
-			$hash{uri} = $self->uri;
-			$hash{name} = $name;
-			$hash{type} = "profile";
-			$adminlist{$name} = \%hash;
-			#reset stuff
-			$self->{URI} = "";
-			$self->{NAME} = "";
-			$self->{TYPE} = "";
-		}
-	}
-	if ($element->{LocalName} eq "adminlist") {
-		#catch the root adminlist or some empty
-		#adminlist
-		if ($self->uri) {
-			$z++;
-			my $name;
-			if ($self->name) {
-				$name = $self->name;
-			} else {
-				$name = "adminlist$z";
-			}
-			my %hash;
-			$hash{uri} = $self->uri;
-			$hash{name} = $name;
-			$hash{type} = "adminlist";
-			$adminlist{$name} = \%hash;
-			#reset stuff
-			$self->{URI} = "";
-			$self->{NAME} = "";
-			$self->{TYPE} = "";
-		}
+    my $vars = $self->doc_var;
+    my $types = $self->doc_type;
+    foreach my $type (@$types) {
+        if ($element->{LocalName} eq $type) {
+            $x++;
+            my $name;
+            if ($self->name) {
+                $name = $self->name;
+            } else {
+                $name = $type . $x;
+            }
+            my %hash;
+            $hash{uri} = $self->uri;
+            $hash{name} = $name;
+            $hash{type} = $type;
+            $adminlist{$name} = \%hash;
+            #reset stuff
+            $self->{URI} = undef;
+            $self->{NAME} = undef;
+            $self->{TYPE} = undef;
+        }
 	}
 }
 
 sub end_document {
 	my $self = shift;
-	return \%adminlist;
+	return $self->adminlist;
 }
 
 sub uri {
@@ -132,9 +80,87 @@ sub name {
 	return $self->{NAME};
 }
 
+sub adminlist {
+    my $self = shift;
+    if (@_) {
+        $self->{ADMINLIST} = shift;
+    } elsif (!$self->{ADMINLIST} {
+        $self->{ADMINLIST} = {};
+    }
+    return $self->{ADMINLIST};
+}
+
+sub get_adminlists {
+    my $self, $profiles, $adminlists, $networkmap, $map = @_;
+    foreach (@$adminlists) {
+        my $iadminlist = $self->parse_adminlist($_);
+        foreach my $key (nsort keys %$adminlist) {
+            if (defined $map) {
+                if ($iadminlist->{$key}->{name} eq $key) {
+                    if ($iadminlist->{$key}->{type} eq "map") {
+                        $networkmap = $self->parse_networkmap($iadminlist->{$key}->{uri});
+                    } elsif ($iadminlist->{$key}->{type} eq "profile") {
+                        push @$profiles, $iadminlist->{$key}->{uri};
+                    } elsif ($iadminlist->{$key}->{type} eq "adminlist") {
+                        push @$adminlists, $iadminlist->{$key}->{uri};
+                    }
+                }
+            } else {
+                if ($iadminlist->{$key}->{name} eq $key) {
+                    if ($iadminlist->{$key}->{type} eq "map") {
+                        $networkmap = $self->parse_networkmap($iadminlist->{$key}->{uri});
+                    } elsif ($iadminlist->{$key}->{type} eq "profile") {
+                        push @$profiles, $iadminlist->{$key}->{uri};
+                    } elsif ($iadminlist->{$key}->{type} eq "adminlist") {
+                        push @$adminlists, $iadminlist->{$key}->{uri};
+                    }
+                }
+            }
+        }
+    }
+    return $profiles, $adminlist, $networkmap;
+}
+
+sub get_types {
+    my $self, $types, $adminlist, $key = @_;
+    my $networkmap, @profiles, @adminlists;
+    foreach my $key (nsort keys %$adminlist) {
+        #this is a mapping
+        if (defined $adminlist->{$key}->{name} eq $key) {
+            if ($adminlist->{$key}->{name} eq $key) {
+                foreach my $type (@$types) {
+                    if ($adminlist->{$key}->{type} eq $type) {
+                        if ($type eq "map") {
+                            $networkmap = $self->parse_networkmap($adminlist->{$key}->{uri});
+                        } elsif ($type eq "profile") {
+                            push @profiles, $adminlist->{$key}->{uri};
+                        } elsif ($type eq "adminlist") {
+                            push @adminlists, $adminlist->{$key}->{uri};
+                        }
+                    }
+                }
+            }
+        } else {
+            foreach my $type (@$types) {
+                if ($adminlist->{$key}->{type} eq $type) {
+                    if ($type eq "map") {
+                        $networkmap = $self->parse_networkmap($adminlist->{$key}->{uri});
+                    } elsif ($type eq "profile") {
+                        push @profiles, $adminlist->{$key}->{uri};
+                    } elsif ($type eq "adminlist") {
+                        push @adminlists, $adminlist->{$key}->{uri};
+                    }
+                }
+            }
+        }
+    }
+    return \@profiles, \@adminlists, $networkmap;
+}
+
 =head1 NAME
 
-AdminList - reader class filter for AdminLists
+AdminList - reader class filter for adminlists with additional 
+            adminlist processing methods
 
 =head1 Example
 
@@ -179,31 +205,23 @@ AdminList - reader class filter for AdminLists
 =item Full example
 
  <amin:adminlist xmlns:amin="http://projectamin.org/ns/">
-   <amin:profile name="myskuid3">
-     <amin:uri>http://projectamin.org/apan/adminlist/fake.xml</amin:uri>
-   </amin:profile>
-   <amin:server name="my_box">
-     <amin:uri>http://projectamin.org/apan/networkmap/local.xml</amin:uri>
-   </amin:server>
+   <amin:profile name="myskuid3" uri="http://projectamin.org/apan/adminlist/fake.xml" />
+   <amin:server name="my_box" uri="http://projectamin.org/apan/networkmap/local.xml" />
  </amin:adminlist>
 
 =item Profile
 
-  <amin:profile name="myskuid3">
-    <amin:uri>http://projectamin.org/apan/adminlist/fake.xml</amin:uri>
-  </amin:profile>
+  <amin:profile name="myskuid3" uri="http://projectamin.org/apan/adminlist/fake.xml" />
 
-  <amin:uri> is mandatory
+  uri="uri://" is mandatory
   
   name="myskuid3" is optional. 
 
 =item Server
 
-  <amin:server name="my_box">
-    <amin:uri>http://projectamin.org/apan/networkmap/local.xml</amin:uri>
-  </amin:server>
+  <amin:server name="my_box" uri="http://projectamin.org/apan/networkmap/local.xml" />
   
-  <amin:uri> is mandatory
+  uri="uri://" is mandatory
   
   name="my_box" is optional
 
