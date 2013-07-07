@@ -16,7 +16,7 @@ sub new {
 	return $self;
 }
 
-sub get_profile {
+sub get_opts {
     my $cli = shift;
         my ($help, $uri, $profile, $adminlist, $networkmap, 
         $machine_spec, $machine_type, $machine_name, $generator, $handler, $log, $filter_param, $version, $type, $adminlist_map, $packagelist, $packagelist_map $debug);
