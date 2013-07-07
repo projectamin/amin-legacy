@@ -8,6 +8,7 @@ package Amin::Machine::Adminlist;
 use strict;
 use vars qw(@ISA);
 use Amin::Elt;
+use Sort::Naturally;
 @ISA = qw(Amin::Elt);
 
 sub start_document {
@@ -27,7 +28,8 @@ sub start_document {
 sub start_element {
 	my ($self, $element) = @_;
 	$self->element($element);
-    $self->attrs(%{$element->{Attributes}});
+    my %attrs = %{$element->{Attributes}};
+    $self->attrs(\%attrs);
     my $names = $self->element_name;    
     foreach my $name (@$names) {
         my $value = "{}" . $name;
@@ -41,20 +43,24 @@ sub end_element {
 	my ($self, $element) = @_;
     my $vars = $self->doc_var;
     my $types = $self->doc_type;
+    my $x = $self->get_x;
     foreach my $type (@$types) {
         if ($element->{LocalName} eq $type) {
             $x++;
+            my $adminlist = $self->adminlist;
             my $name;
             if ($self->name) {
                 $name = $self->name;
             } else {
                 $name = $type . $x;
             }
+            $self->get_x($x);
             my %hash;
             $hash{uri} = $self->uri;
             $hash{name} = $name;
             $hash{type} = $type;
-            $adminlist{$name} = \%hash;
+            $adminlist->{$name} = \%hash;
+            $self->adminlist($adminlist);
             #reset stuff
             $self->{URI} = undef;
             $self->{NAME} = undef;
@@ -66,6 +72,18 @@ sub end_element {
 sub end_document {
 	my $self = shift;
 	return $self->adminlist;
+}
+
+sub get_x {
+    my $self = shift;
+    $self->{X} = shift if @_;
+    if ($self->{X}) {
+        return $self->{X};
+    } else {
+        #initial x
+        my $x = 0;
+        return $x;
+    }
 }
 
 sub uri {
@@ -84,46 +102,47 @@ sub adminlist {
     my $self = shift;
     if (@_) {
         $self->{ADMINLIST} = shift;
-    } elsif (!$self->{ADMINLIST} {
+    } elsif (! $self->{ADMINLIST}) {
         $self->{ADMINLIST} = {};
     }
     return $self->{ADMINLIST};
 }
 
 sub get_adminlists {
-    my $self, $profiles, $adminlists, $networkmap, $map = @_;
+    my ($self, $profiles, $adminlists, $networkmap, $map) = @_;
     foreach (@$adminlists) {
-        my $iadminlist = $self->parse_adminlist($_);
+        my $adminlist = $self->parse_adminlist($_);
         foreach my $key (nsort keys %$adminlist) {
             if (defined $map) {
-                if ($iadminlist->{$key}->{name} eq $key) {
-                    if ($iadminlist->{$key}->{type} eq "map") {
-                        $networkmap = $self->parse_networkmap($iadminlist->{$key}->{uri});
-                    } elsif ($iadminlist->{$key}->{type} eq "profile") {
-                        push @$profiles, $iadminlist->{$key}->{uri};
-                    } elsif ($iadminlist->{$key}->{type} eq "adminlist") {
-                        push @$adminlists, $iadminlist->{$key}->{uri};
+                if ($adminlist->{$key}->{'name'} eq $key) {
+                    if ($adminlist->{$key}->{'type'} eq "map") {
+                        $networkmap = $self->parse_networkmap($adminlist->{$key}->{uri});
+                    } elsif ($adminlist->{$key}->{'type'} eq "profile") {
+                        push @$profiles, $adminlist->{$key}->{uri};
+                    } elsif ($adminlist->{$key}->{'type'} eq "adminlist") {
+                        push @$adminlists, $adminlist->{$key}->{uri};
                     }
                 }
             } else {
-                if ($iadminlist->{$key}->{name} eq $key) {
-                    if ($iadminlist->{$key}->{type} eq "map") {
-                        $networkmap = $self->parse_networkmap($iadminlist->{$key}->{uri});
-                    } elsif ($iadminlist->{$key}->{type} eq "profile") {
-                        push @$profiles, $iadminlist->{$key}->{uri};
-                    } elsif ($iadminlist->{$key}->{type} eq "adminlist") {
-                        push @$adminlists, $iadminlist->{$key}->{uri};
+                if ($adminlist->{$key}->{'name'} eq $key) {
+                    if ($adminlist->{$key}->{type} eq "map") {
+                        $networkmap = $self->parse_networkmap($adminlist->{$key}->{uri});
+                    } elsif ($adminlist->{$key}->{type} eq "profile") {
+                        push @$profiles, $adminlist->{$key}->{uri};
+                    } elsif ($adminlist->{$key}->{type} eq "adminlist") {
+                        push @$adminlists, $adminlist->{$key}->{uri};
                     }
                 }
             }
+
         }
     }
     return $profiles, $networkmap;
 }
 
 sub get_types {
-    my $self, $types, $adminlist, $key = @_;
-    my $networkmap, @profiles, @adminlists;
+    my ($self, $types, $adminlist, $key) = @_;
+    my ($networkmap, @profiles, @adminlists);
     foreach my $key (nsort keys %$adminlist) {
         #this is a mapping
         if (defined $adminlist->{$key}->{name} eq $key) {
