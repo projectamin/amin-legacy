@@ -7,7 +7,7 @@ package Amin::Controller::CLI;
 
 use strict;
 use LWP::UserAgent;
-
+use Getopt::Long;
 sub new {
 	my $class = shift;
 	my %args = @_;
@@ -18,8 +18,10 @@ sub new {
 
 sub get_opts {
     my $cli = shift;
-        my ($help, $uri, $profile, $adminlist, $networkmap, 
-        $machine_spec, $machine_type, $machine_name, $generator, $handler, $log, $filter_param, $version, $type, $adminlist_map, $packagelist, $packagelist_map $debug);
+    my ($help, $uri, $profile, $adminlist, $networkmap, $machine_spec, 
+        $machine_type, $machine_name, $generator, $handler, $log, 
+        $filter_param, $version, $type, $adminlist_map, $packagelist, 
+        $packagelist_map, $debug);
     my $opts_ok = &GetOptions( "h|help"    => \$help,
                    "u|uri=s"     => \$uri,
                    "p|profile=s" => \$profile,
@@ -38,10 +40,11 @@ sub get_opts {
                    "pa|packagelist=s" => \$packagelist,
                    "pal|packagelist_map=s" => \$packagelist_map,
     );
-        if ( $help ) {
-                $cli->print_help();
-                exit 1;
-        }
+
+    if ( $help ) {
+            $cli->print_help();
+            exit 1;
+    }
     if ($uri) {
         $cli->uri($uri);
     } 
@@ -91,10 +94,10 @@ sub get_opts {
         $cli->print_version();
                 exit 1;
     } 
-        if (!$opts_ok) {
-                $cli->print_usage();
-                exit 1;
-        };
+    if (!$opts_ok) {
+            $cli->print_usage();
+            exit 1;
+    };
     if ((!$uri) && (!$profile) && (!$adminlist) && 
         (!$networkmap) && (!$version) && (!$help)) {    
         $cli->print_usage();
