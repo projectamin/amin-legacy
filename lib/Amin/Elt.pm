@@ -5,6 +5,12 @@ use IPC::Run qw( run harness);
 use XML::SAX::Base;
 use vars qw(@ISA);
 use warnings;
+use Amin;
+use Amin::Machine::AdminList;
+use Amin::Machine::NetworkMap;
+use Amin::Controller::CLIOutput;
+use Amin::Machine::AdminList::Name;
+use XML::SAX::PurePerl;
 
 #LICENSE:
 
@@ -90,12 +96,66 @@ sub fix_text {
 	return $text;
 }
 
+sub doc_type {
+    my $self = shift;
+    $self->{DOC_TYPE} = shift if @_;
+    return $self->{DOC_TYPE};
+}
+
+sub doc_name {
+    my $self = shift;
+    $self->{DOC_NAME} = shift if @_;
+    return $self->{DOC_NAME};
+}
 
 sub text {
 	my $self = shift;
 	$self->{TEXT} = shift if @_;
 	return $self->{TEXT};
 }
+
+sub parse_adminlist {
+    my $self, $cli = @_;
+    my $h = Amin::Machine::AdminList->new;
+    my $p = XML::SAX::PurePerl->new(Handler => $h);
+    return $p->parse_uri($cli->adminlist);
+}
+
+sub parse_networkmap {
+    my $self, $networkmap = @_;
+    my $n = Amin::Machine::NetworkMap->new();
+    my $np = XML::SAX::PurePerl->new(Handler => $n);
+    return $np->parse_uri($networkmap);
+}
+
+sub parse_CLIOutput {
+    my $self, $clioutput = @_;
+    my $h = Amin::Controller::CLIOutput->new();
+    my $p = XML::SAX::PurePerl->new(Handler => $h);
+    return $p->parse_string($clioutput);
+}
+
+sub parse_adminlistmap {
+    my $self, $adminlist_map = @_;
+    my $h = Amin::Machine::AdminList::Name->new();
+    my $p = XML::SAX::PurePerl->new(Handler => $h);
+    return $p->parse_uri($cli->adminlist_map);
+}
+
+sub get_machine {
+    my $self, $cli = @_;
+    return Amin->new (
+                Machine_Name => $cli->machine_name, 
+                Machine_Spec => $cli->machine_spec,
+                Generator => $cli->generator,
+                Handler => $cli->handler,
+                Filter_Param => $filter_param,
+                Log => $cli->log,
+                Debug => $cli->debug
+        );
+}
+
+
 
 
 
