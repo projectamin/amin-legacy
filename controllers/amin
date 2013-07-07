@@ -72,7 +72,6 @@ END
 #define help
 $cli->help($help);
 
-
 my $usage = (<<END);
 [-h|-help]
 [-u|-uri] uri:// 
@@ -114,10 +113,7 @@ my $machine = Amin::Machine;
 if (defined $cli->adminlist) {
     my $text = $machine->process_adminlist($cli);
     print $text;
-} elsif (defined $cli->uri) {
-    my $text = $machine->process_uri($cli);
-	print $text;
-} elsif (defined $cli->profile) {
+} elsif ((defined $cli->uri) || (defined $cli->profile)) {
     my $text = $machine->process_profile($cli);
 	print $text;
 } else {
@@ -125,4 +121,3 @@ if (defined $cli->adminlist) {
 }
 
 1;
-
