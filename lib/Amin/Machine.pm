@@ -17,20 +17,21 @@ sub process_adminlist {
         $adminlist_map = $self->parse_adminlistmap($cli->adminlist_map);
     }
     my @types = qw(map profile adminlist);
-    my $profiles, $adminlists,$networkmap;
+    my ($profiles, $adminlists,$networkmap);
     if (defined $adminlist_map) {
-        $profiles, $adminlists, $networkmap = $self->get_types(\@types, $adminlist_map, $key);
-        $profiles, $networkmap = $self->get_adminlists($profiles, $adminlists, $networkmap, $adminlist_map);
+        ($profiles, $adminlists, $networkmap) = $self->get_types(\@types, $adminlist_map);
+        ($profiles, $networkmap) = $self->get_adminlists($profiles, $adminlists, $networkmap, $adminlist_map);
     } else {
         #no mapping
-        $profiles, $adminlists, $networkmap = $self->get_types(\@types, $adminlist, $key);
-        $profiles, $networkmap = $self->get_adminlists($profiles, $adminlists, $networkmap);
+        ($profiles, $adminlists, $networkmap) = $self->get_types(\@types, $adminlist);
+        ($profiles, $networkmap) = $self->get_adminlists($profiles, $adminlists, $networkmap);
     }
 
+    my $text;
     foreach my $profile (@$profiles) {
-        $otext .= $self->process_profile($cli, $profile, $networkmap);
+        $text .= $self->process_profile($cli, $profile, $networkmap);
     }
-    return $otext;
+    return $text;
 }
 
 sub process_profile {
@@ -39,11 +40,11 @@ sub process_profile {
     my $out;
     my $networkmap = $cli->networkmap || $networkmap_in;
     my $profile = $cli->profile || $profile_in;
-    my $profile = $cli->uri || $uri_in;
+    my $uri = $cli->uri || $uri_in;
 
     if ($uri) {
         if ($networkmap) {
-            my $nm = $p->parse_networkmap($networkmap);
+            my $nm = $self->parse_networkmap($networkmap);
             foreach my $networkmap (keys %$nm) {
                 my $protocol = $nm->{$networkmap}->{protocol};
                 $out .= $protocol->parse_uri($nm->{$networkmap}, $uri);
