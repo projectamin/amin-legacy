@@ -118,7 +118,7 @@ sub get_adminlists {
             }
         }
     }
-    return $profiles, $adminlist, $networkmap;
+    return $profiles, $networkmap;
 }
 
 sub get_types {
