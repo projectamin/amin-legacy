@@ -32,7 +32,7 @@ sub get_opts {
                    "o|machine_name=s" => \$machine_name,
                    "d|debug=s" => \$debug,
                    "g|generator=s" => \$generator,
-                   "h|handler=s" => \$handler,
+                   "ha|handler=s" => \$handler,
                    "l|log=s" => \$log,
                    "x|filter_param=s" => \$filter_param,
                    "t|machine_type=s" => \$type,
