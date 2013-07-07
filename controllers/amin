@@ -109,7 +109,7 @@ $cli->get_opts($cli);
 
 #my $filter_param = $cli->filter_param;
 
-my $machine = Amin::Machine;
+my $machine = Amin::Machine->new;
 if (defined $cli->adminlist) {
     my $text = $machine->process_adminlist($cli);
     print $text;
