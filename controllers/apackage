@@ -1,0 +1,61 @@
+#!/usr/bin/perl
+
+use strict;
+use warnings;
+
+use Amin::Controller::CLI;
+use Amin::Machine;
+
+#apackage for you and me
+
+my $cli = Amin::Controller::CLI->new();
+my $help = (<<END);
+
+apackage is a package management controller.
+
+Have fun.
+
+END
+#define help
+$cli->help($help);
+
+my $usage = (<<END);
+[-h|-help]
+[-u|-uri] uri:// 
+[-pa|-packagelist] uri://
+[-pal|-packagelist_map] mapping parameter
+[-a|-adminlist] uri://
+[-n|-networkmap] uri://
+[-m|-machine_spec] uri://
+[-x|-filter_param] parameters
+[-d|-debug] parameters
+[-v|-version] 
+
+exs. 
+
+END
+$cli->usage($usage);
+
+my $version = "2.0";
+$cli->version($version);
+
+#populate #cli with cli options set and command line options
+$cli->get_profile($cli);
+
+my $machine = Amin::Machine;
+if (defined $cli->adminlist) {
+    my $text = $machine->process_adminlist($cli);
+    print $text;
+} elsif (defined $cli->uri) {
+    my $text = $machine->process_uri($cli);
+    print $text;
+} elsif (defined $cli->profile) {
+    my $text = $machine->process_profile($cli);
+    print $text;
+} else {
+    print "nothing to parse\n";
+}
+
+exit;
+
+1;
