@@ -21,7 +21,7 @@ sub start_document {
     my @names = qw(uri name);
     $self->doc_name(\@names);
     #load up our types
-    my @types = qw(server profile adminlist);
+    my @types = qw(networkmap profile adminlist);
     $self->doc_type(\@types);
 }
 
@@ -225,7 +225,7 @@ AdminList - reader class filter for adminlists with additional
 
  <amin:adminlist xmlns:amin="http://projectamin.org/ns/">
    <amin:profile name="myskuid3" uri="http://projectamin.org/apan/adminlist/fake.xml" />
-   <amin:server name="my_box" uri="http://projectamin.org/apan/networkmap/local.xml" />
+   <amin:networkmap name="my_box" uri="http://projectamin.org/apan/networkmap/local.xml" />
  </amin:adminlist>
 
 =item Profile
@@ -236,9 +236,9 @@ AdminList - reader class filter for adminlists with additional
   
   name="myskuid3" is optional. 
 
-=item Server
+=item networkmap
 
-  <amin:server name="my_box" uri="http://projectamin.org/apan/networkmap/local.xml" />
+  <amin:networkmap name="my_box" uri="http://projectamin.org/apan/networkmap/local.xml" />
   
   uri="uri://" is mandatory
   
