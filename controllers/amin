@@ -90,7 +90,7 @@ END
 
 $cli->usage($usage);
 
-my $version = "2.0";
+my $version = "0.6.0";
 $cli->version($version);
 
 #pass the $cli object to the $cli's get_profile
