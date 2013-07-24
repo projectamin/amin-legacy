@@ -1,3 +1,8 @@
 add fix errors/returns from controller's and adminlist processing
 chown broken
 <amin:download> not working in chroot 
+
+Illuzions TODO list
+- Read through the code and get an idea how amin interacts
+- Work with bdumm to get a better idea how the code works
+- Setup a bugzilla product for amin, to handle bugs, feature requests, etc...
