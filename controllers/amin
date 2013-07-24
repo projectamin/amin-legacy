@@ -6,6 +6,8 @@
 #or see the following website http://projectamin.org.
 
 use strict;
+use FindBin qw($Bin);
+use lib ("$Bin/../lib");
 use Amin;
 use Amin::Controller::CLI;
 use Amin::Machine;
