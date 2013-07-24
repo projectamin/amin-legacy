@@ -9,57 +9,39 @@ use strict;
 use Amin::Machine::Machine_Spec;
 use Amin::Machine::Filter::XInclude;
 
-my $DefaultSAXHandler ||= 'Amin::Machine::Handler::Writer';
-my $DefaultSAXGenerator	||= 'XML::SAX::PurePerl';
-my $DefaultLog	||= 'Amin::Machine::Log::Standard';
-my $DefaultMachine ||= 'Amin::Machine::Dispatcher';
 
 use vars qw($VERSION);
-$VERSION = '0.5.7';
+$VERSION = '0.6.0';
 
 sub new {
 	my $class = shift;
 	my %args = @_;
 	my $self;
-	
-	if ( defined $args{Handler} ) {
-		if ( ! ref( $args{Handler} ) ) {
-			my $handler_class =  $args{Handler};
-			eval "require $handler_class";
-			$args{Handler} = $handler_class->new();
-		}
-	} else {
-		eval "require $DefaultSAXHandler";
-        	$args{Handler} = $DefaultSAXHandler->new();
-	}
-	
-	if ( defined $args{Generator} ) {
-		if ( ! ref( $args{Generator} ) ) {
-			my $generator_class =  $args{Generator};
-			eval "use $generator_class";
-			$args{Generator} = $generator_class->new();
-		}
-	} else {
-	       	eval "use $DefaultSAXGenerator";
-		$args{Generator} = $DefaultSAXGenerator->new();
-	}
-	
-	if (!defined $args{Machine_Name} ) {
-		$args{Machine_Name} = $DefaultMachine;
-	}	
-	
-	
-	if ( defined $args{Log} ) {
-		if ( ! ref( $args{Log} ) ) {
-			my $log_class =  $args{Log};
-			eval "use $log_class";
-			$args{Log} = $log_class->new(Handler => $args{Handler}); 
-		}
-	} else {
-	       	eval "use $DefaultLog";
-		$args{Log} = $DefaultLog->new(Handler => $args{Handler});
-	}
-	
+
+    my %defaults = (
+        'Handler' => 'Amin::Machine::Handler::Writer',
+        'Generator' => 'XML::SAX::PurePerl',
+        'Log'  => 'Amin::Machine::Log::Standard',
+        'Machine_Name' => 'Amin::Machine::Dispatcher'
+    );
+
+    my @types = qw(Handler Generator Machine_Name Log);
+    foreach my $type (@types) {
+        if (($type eq "Machine_Name") && (!defined $args{Machine_Name})) {
+            $args{Machine_Name} = $defaults{$type};
+        } else {
+            if ( defined $args{$type} ) {
+                if ( ! ref( $args{$type} ) ) {
+                    eval "require $args{$type}";
+                    $args{$type} = $args{$type}->new();
+                }
+            } else {
+                eval "require $defaults{$type}";
+                $args{$type} = $defaults{$type}->new();
+            }
+        }
+    }
+
 	$args{FILTERLIST} ||= [];
 	$self = bless \%args, $class;
 	return $self;
@@ -72,6 +54,7 @@ sub parse_uri {
 	#load modules from the new $spec
 	$spec = $self->load_spec($spec);
 	#build the machine and run it
+
 	eval "require $self->{Machine_Name}";
 	my $m = $self->{Machine_Name}->new($spec);
 	$m->parse_uri($profile);
@@ -81,9 +64,12 @@ sub parse_uri {
 		delete $fl->{$_};
 	}
 	$spec->{Filter_List} = $fl;
-	my $buffer = $spec->{Handler}->{Spec}->{Buffer};
-	$spec->{Handler}->{Spec}->{Buffer} = undef;	
-	return $buffer;
+    my $lout = $spec->{Handler}->{Spec}->{Buffer};
+    my $out;
+    foreach (@$lout) {
+        $out = $out . "$_";
+    }
+	return $out;
 }
 
 sub parse_string {
@@ -97,14 +83,12 @@ sub parse_string {
 	my $m = $spec->{Machine_Name}->new($spec);
 	$m->parse_string( $profile );
 	#get rid of the filter list...
-	my $fl = $spec->{Filter_List};
+    my $fl = $spec->{Filter_List};
 	foreach (keys %$fl) {
 		delete $fl->{$_};
 	}
 	$spec->{Filter_List} = $fl;
-	my $buffer = $spec->{Handler}->{Spec}->{Buffer};
-	$spec->{Handler}->{Spec}->{Buffer} = undef;	
-	return $buffer;
+	return $spec->{Handler}->{Spec}->{Buffer};
 }
 
 sub machine_spec {
@@ -198,8 +182,6 @@ sub load_spec {
 	
 	return $spec;
 }
-
-
 
 
 sub set_handler {
