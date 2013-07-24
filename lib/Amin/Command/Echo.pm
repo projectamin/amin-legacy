@@ -117,7 +117,6 @@ sub end_element {
 		}
 
 		my $cmd = $self->amin_command(\%acmd);
-
 		if ($cmd->{TYPE} eq "error") {
 			$self->{Spec}->{amin_error} = "red";
 			my $text = "Echo failed. Reason: $cmd->{ERR}";
@@ -129,7 +128,7 @@ sub end_element {
 		}
 
 		if (($cmd->{TYPE} eq "out") || ($cmd->{TYPE} eq "both")) {
-			my $otext = "Echo @param.";
+			my $otext = "Echo: @param.";
 			my $etext = " There was also some error text $cmd->{ERR}";
 			$etext = $otext . $etext; 
 			$default = 1;
