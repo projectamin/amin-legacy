@@ -8,7 +8,7 @@ package Amin;
 use strict;
 use Amin::Machine::Machine_Spec;
 use Amin::Machine::Filter::XInclude;
-
+use Amin::URI qw(is_uri);
 
 use vars qw($VERSION);
 $VERSION = '0.6.0';
@@ -48,69 +48,35 @@ sub new {
 }
 
 
-sub parse_uri {
+sub parse {
 	my ($self, $profile) = @_;
-	my $spec = $self->machine_spec($profile, $self->{Machine_Spec});
-	#load modules from the new $spec
-	$spec = $self->load_spec($spec);
+    my $type;
+    my $uri = is_uri($profile);
+    my $spec;
+    if ($uri) {
+        my $h = Amin::Machine::Machine_Spec->new('URI' => $uri);
+        my $ix = Amin::Machine::Filter::XInclude->new(Handler => $h);
+        my $p = XML::SAX::PurePerl->new(Handler => $ix);
+        $spec = $p->parse_uri($profile);
+    } else {
+        my $h = Amin::Machine::Machine_Spec->new();
+        my $ix = Amin::Machine::Filter::XInclude->new(Handler => $h);
+        my $p = XML::SAX::PurePerl->new(Handler => $ix);
+        $spec = $p->parse_string($profile);
+    }
+    unless ($spec) {
+        $spec = {};
+    }
+    #load modules from the new $spec
+    $spec = $self->load_spec($spec);
+	my $spec = $self->get_spec($type, $profile, $self->{Machine_Spec});
 	#build the machine and run it
-
 	eval "require $self->{Machine_Name}";
 	my $m = $self->{Machine_Name}->new($spec);
 	$m->parse_uri($profile);
-	#get rid of the filter list...
-	my $fl = $spec->{Filter_List};
-	foreach (keys %$fl) {
-		delete $fl->{$_};
-	}
-	$spec->{Filter_List} = $fl;
-    my $lout = $spec->{Handler}->{Spec}->{Buffer};
-    my $out;
-    foreach (@$lout) {
-        $out = $out . "$_";
-    }
-	return $out;
-}
-
-sub parse_string {
-	my ($self, $profile) = @_;
-	#parse and add the machine spec
-	my $spec = $self->machine_spec($profile, $self->{Machine_Spec});
-	#load modules from the new $spec
-	$spec = $self->load_spec($spec);
-	#build the machine and run it
-	eval "require $spec->{Machine_Name}";
-	my $m = $spec->{Machine_Name}->new($spec);
-	$m->parse_string( $profile );
-	#get rid of the filter list...
-    my $fl = $spec->{Filter_List};
-	foreach (keys %$fl) {
-		delete $fl->{$_};
-	}
-	$spec->{Filter_List} = $fl;
-	return $spec->{Handler}->{Spec}->{Buffer};
-}
-
-sub machine_spec {
-	my ($self, $profile, $uri) = @_;
-	my $h;
-	if (defined $uri) {	
-		$h = Amin::Machine::Machine_Spec->new('URI' => $uri);
-	} else {
-		$h = Amin::Machine::Machine_Spec->new();
-	}
-	my $ix = Amin::Machine::Filter::XInclude->new(Handler => $h);
-	my $p = XML::SAX::PurePerl->new(Handler => $ix);
-	my $spec;
-	if ($profile =~ /^</) {
-		$spec = $p->parse_string($profile);
-	} else {
-		$spec = $p->parse_uri($profile);
-	}
-	unless ($spec) {
-		$spec = {};
-	}
-	return $spec;
+	#cleanup this machine
+    $m->finish();
+	return $spec->{Buffer};
 }
 
 sub load_spec {
