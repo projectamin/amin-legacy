@@ -50,31 +50,31 @@ sub new {
 
 sub parse {
 	my ($self, $profile) = @_;
-    my $type;
+    #load the spec parts that are involved in this machine parse
     my $uri = is_uri($profile);
-    my $spec;
+    my $h;
     if ($uri) {
-        my $h = Amin::Machine::Machine_Spec->new('URI' => $uri);
-        my $ix = Amin::Machine::Filter::XInclude->new(Handler => $h);
-        my $p = XML::SAX::PurePerl->new(Handler => $ix);
-        $spec = $p->parse_uri($profile);
+        $h = Amin::Machine::Machine_Spec->new('URI' => $uri);
     } else {
-        my $h = Amin::Machine::Machine_Spec->new();
-        my $ix = Amin::Machine::Filter::XInclude->new(Handler => $h);
-        my $p = XML::SAX::PurePerl->new(Handler => $ix);
+        $h = Amin::Machine::Machine_Spec->new();
+    }
+    my $ix = Amin::Machine::Filter::XInclude->new(Handler => $h);
+    my $p = XML::SAX::PurePerl->new(Handler => $ix);
+    my $spec = {};
+    if ($uri) {
+        $spec = $p->parse_uri($uri);
+    } else {
         $spec = $p->parse_string($profile);
     }
-    unless ($spec) {
-        $spec = {};
-    }
-    #load modules from the new $spec
-    $spec = $self->load_spec($spec);
-    if ($spec->{Machine_Name}) {
-        #there was a machine name in the spec use it
-        $self->{Machine_Name} = $spec->{Machine_Name};
-    } else {
-        #there was no machine name in the spec use default
-        $spec->{Machine_Name} = $self->{Machine_Name};
+    my @names = qw(Machine_Name Filter_Param Debug);
+    foreach my $name (@names) {
+        if ($spec->{$name}) {
+            #there was a name in the spec use it
+            $self->{$name} = $spec->{$name};
+        } else {
+            #there was no name in the spec use default
+            $spec->{$name} = $self->{$name};
+        }
     }
     #stick in our filter params
     $spec->{Filter_Param} = $self->{Filter_Param}; 
