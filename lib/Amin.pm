@@ -183,111 +183,64 @@ sub load_spec {
 	return $spec;
 }
 
-
-sub set_handler {
-	my $self = shift;
-	my $handler = shift;
-	$self->{Handler} = $handler;
+sub handler {
+    my $self = shift;
+    $self->{Handler} = shift if @_;
+    return $self->{Handler};
 }
 
-sub get_handler {
-	my $self = shift;
-	return $self->{Handler};
+sub generator {
+    my $self = shift;
+    $self->{Generator} = shift if @_;
+    return $self->{Generator};
 }
 
-sub set_generator {
-	my $self = shift;
-	my $generator = shift;
-	$self->{Generator} = $generator;
+sub log {
+    my $self = shift;
+    $self->{Log} = shift if @_;
+    return $self->{Log};
 }
 
-sub get_generator {
-	my $self = shift;
-	return $self->{Generator};
+sub network_map {
+    my $self = shift;
+    $self->{Network_Map} = shift if @_;
+    return $self->{Network_Map};
 }
 
-sub set_log {
-	my $self = shift;
-	my $log = shift;
-	$self->{Log} = $log;
+sub machine_spec {
+    my $self = shift;
+    $self->{Machine_Spec} = shift if @_;
+    return $self->{Machine_Spec};
 }
 
-sub get_log {
-	my $self = shift;
-	return $self->{Log};
+sub machine_type {
+    my $self = shift;
+    $self->{Machine_Type} = shift if @_;
+    return $self->{Machine_Type};
 }
 
-sub set_networkmap {
-	my $self = shift;
-	my $networkmap = shift;
-	$self->{NetworkMap} = $networkmap;
-}
-
-sub get_networkmap {
-	my $self = shift;
-	return $self->{NetworkMap};
-}
-
-sub set_machine_spec {
-	my $self = shift;
-	my $machine_spec = shift;
-	$self->{Machine_Spec} = $machine_spec;
-}
-
-sub get_machine_spec {
-	my $self = shift;
-	return $self->{Machine_Spec};
-}
-
-sub set_machine_type {
-	my $self = shift;
-	my $machine_type = shift;
-	$self->{Machine_Type} = $machine_type;
-}
-
-sub get_machine_type {
-	my $self = shift;
-	return $self->{Machine_Type};
-}
-
-sub set_filter_param {
-	my $self = shift;
-	my $filter_param = shift;
-	$self->{Filter_Param} = $filter_param;
-}
-
-sub get_filter_param {
-	my $self = shift;
-	return $self->{Filter_Param};
+sub filter_param {
+    my $self = shift;
+    $self->{Filter_Param} = shift if @_;
+    return $self->{Filter_Param};
 }
 
 sub results {
 	my $self = shift;
 	if (@_) {push @{$self->{RESULTS}}, @_; }
-	return \@{ $self->{RESULTS} };
+	return @{ $self->{RESULTS} };
 }
 
-sub set_debug {
-	my $self = shift;
-	my $debug = shift;
-	$self->{Debug} = $debug;
+sub debug {
+    my $self = shift;
+    $self->{Debug} = shift if @_;
+    return $self->{Debug};
 }
 
-sub get_debug {
-	my $self = shift;
-	return $self->{Debug};
-}
-
-
-sub set_adminlist_map {
-	my $self = shift;
-	my $adminlist_map = shift;
-	$self->{AdminList_Map} = $adminlist_map;
-}
-
-sub get_adminlist_map {
-	my $self = shift;
-	return $self->{AdminList_Map};
+sub adminlist_map {
+    my $self = shift;
+    $self->{Adminlist_Map} = shift if @_;
+    return $self->{Adminlist_Map};
 }
 
 1;
@@ -419,19 +372,13 @@ processing. See adminlist_map or Amin::Machine::AdminList::Map
 for more information.
 
 
-=item *set_adminlist_map/get_adminlist_map
+=item *adminlist_map
 
 This method will get or set the adminlist_map 
 uri reference. See Amin::Machine::AdminList::Map
 for more information.
 
-=item *set_filter/get_filter
-
-The set_filter and get_filter methods will set or get
-the list of filters for the machine. There are no default 
-filters.
-
-=item *set_handler/get_handler
+=item *handler
 
 The set_handler and get_handler methods will set or get
 the handler for the machine. The default Amin machine handler is 
@@ -450,19 +397,19 @@ The set_generator and get_generator methods will set or
 get the generator for the machine. The default Amin machine 
 handler is XML::SAX::PurePerl.   
 
-=item *set_log/get_log
+=item *log
 
 The set_log and get_log methods will set or get the log mechanism
 for the machine. The default Amin machine log is Amin::Log::Standard.   
 
-=item *set_machine_spec/get_machine_spec
+=item *machine_spec
 
 The set_machine_spec and get_machine_spec methods will set or get 
 the default machine spec. The default Amin machine spec is the
 core Amin filter set, with the other defaults mentioned here. For
 more information look at Amin::Machine::Machine_Spec.
 
-=item *set_machine_type/get_machine_type
+=item *machine_type
 
 The set_machine and get_machine methods will set or get the 
 default machine type.The default Amin machine type is 
