@@ -69,7 +69,42 @@ sub parse {
     }
     #load modules from the new $spec
     $spec = $self->load_spec($spec);
-	my $spec = $self->get_spec($type, $profile, $self->{Machine_Spec});
+    if ($spec->{Machine_Name}) {
+        #there was a machine name in the spec use it
+        $self->{Machine_Name} = $spec->{Machine_Name};
+    } else {
+        #there was no machine name in the spec use default
+        $spec->{Machine_Name} = $self->{Machine_Name};
+    }
+    #stick in our filter params
+    $spec->{Filter_Param} = $self->{Filter_Param}; 
+    #add debug info to the $spec
+    if ($self->{Debug}) {
+        $spec->{Debug} = $self->{Debug};
+    }
+    #add in the rest of the parts
+    my @parts = qw(Generator Handler Log);
+    foreach my $part (@parts) {
+        if ($spec->{$part}->{name}) {
+            if (! ref($spec->{$part})) {
+                #there was a part in the spec use it
+                no strict 'refs';
+                eval "require $spec->{$part}";
+                if ($spec->{$part}->{out}) {
+                    $spec->{$part} = $spec->{$part}->{name}->new(Output => $spec->{$part}->{out});
+                } else {
+                    $spec->{$part} = $spec->{$part}->{name}->new();
+                }
+                if ($@) {
+                    my $text = "Could not load a $part named $spec->{$part}. Reason $@";
+                    die $text;
+                }
+            }
+        } else { 
+            #there was no part in the spec use the default
+            $spec->{$part} = $self->{$part}; 
+        }
+    }
 	#build the machine and run it
 	eval "require $self->{Machine_Name}";
 	my $m = $self->{Machine_Name}->new($spec);
@@ -77,76 +112,6 @@ sub parse {
 	#cleanup this machine
     $m->finish();
 	return $spec->{Buffer};
-}
-
-sub load_spec {
-	my ($self, $spec) = @_;
-	#stick in our filter params
-	$spec->{Filter_Param} = $self->{Filter_Param}; 
-	#load up the generator, handler and the log mechanisms if not already loaded
-	#ie they came from the spec. 
-	if ($spec->{Generator}->{name}) {
-		#there was a generator in the spec use it
-		no strict 'refs';
-		eval "require $spec->{Generator}";
-		$spec->{Generator} = $spec->{Generator}->new();
-		if ($@) {
-			my $text = "Machines failed. Could not load a generator named $spec->{Generator}. Reason $@";
-			die $text;
-		}
-		
-	} else { 
-		#there was no generator in the spec use the default loaded
-		$spec->{Generator} = $self->{Generator}; 
-	}
-	if ($spec->{FHandler}->{name}) {
-		#there was a Handler in the spec use it
-		no strict 'refs';
-		eval "require $spec->{FHandler}->{name}";
-		
-		if ($spec->{FHandler}->{out}) {
-			$spec->{Handler} = $spec->{FHandler}->{name}->new(Output => $spec->{FHandler}->{out});
-		} else {		
-			$spec->{Handler} = $spec->{FHandler}->{name}->new();
-		}
-		
-		if ($@) {
-			my $text = "Machines failed. Could not load a handler named $spec->{FHandler}. Reason $@";
-			die $text;
-		}
-		
-	} else { 
-		#there was no Handler in the spec use the default loaded
-		$spec->{Handler} = $self->{Handler};
-	}
-	if ($spec->{Log}) {
-		#there was a log in the spec use it
-		if (! ref($spec->{Log})) {
-		no strict 'refs';
-		eval "require $spec->{Log}";
-		$spec->{Log} = $spec->{Log}->new(Handler => $spec->{Handler} );
-		if ($@) {
-			my $text = "Machines failed. Could not load a log named $spec->{Log}. Reason $@";
-			die $text;
-		}
-		}
-	} else { 
-		#there was no log in the spec use the default loaded
-		$spec->{Log} = $self->{Log};
-	}
-	if ($spec->{Machine_Name}) {
-		#there was a machine name in the spec use it
-		$self->{Machine_Name} = $spec->{Machine_Name};
-	} elsif (!$spec->{Machine_Name}) {
-		#there was no machine name in the spec use default
-		$spec->{Machine_Name} = $self->{Machine_Name};
-	}
-	#add debug info to the $spec
-	if ($self->{Debug}) {
-		$spec->{Debug} = $self->{Debug};
-	}
-	
-	return $spec;
 }
 
 sub handler {
