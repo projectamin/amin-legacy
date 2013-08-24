@@ -8,16 +8,11 @@ package Amin::Uri;
 #or see the following website http://projectamin.org.
 
 use strict;
-
-sub new {
-	my $class = shift;
-	my $self = {};
-	bless($self, $class);	
-	return $self;
-}
+require Exporter;
+@ISA = qw(Exporter);
+@EXPORT = qw(is_uri);
 
 sub is_uri{
-	my $self = shift; 
 	my $value = shift;
 	
 	return unless defined($value);
