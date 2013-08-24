@@ -142,18 +142,6 @@ sub parse_adminlistmap {
     return $p->parse_uri($adminlist_map);
 }
 
-sub get_machine {
-    my ($self, $cli) = @_;
-    return Amin->new (
-                Machine_Name => $cli->machine_name, 
-                Machine_Spec => $cli->machine_spec,
-                Generator => $cli->generator,
-                Handler => $cli->handler,
-                Filter_Param => $cli->filter_param,
-                Log => $cli->log,
-                Debug => $cli->debug
-        );
-}
 
 sub amin_command {
 
