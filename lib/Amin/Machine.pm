@@ -81,4 +81,14 @@ sub process_profile {
     return $text;
 }
 
+sub finish {
+    my $self = shift;
+    #get rid of the filter list...
+    my $fl = $self->{Spec}->{Filter_List};
+    foreach (keys %$fl) {
+        delete $fl->{$_};
+    }
+    $self->{Spec}->{Filter_List} = $fl;
+}
+
 1;
