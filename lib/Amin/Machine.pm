@@ -7,6 +7,20 @@ use vars qw(@ISA);
 use Amin::Elt;
 @ISA = qw(Amin::Elt);
 
+
+sub get_machine {
+    my ($self, $cli) = @_;
+    return Amin->new (
+                Machine_Name => $cli->machine_name, 
+                Machine_Spec => $cli->machine_spec,
+                Generator => $cli->generator,
+                Handler => $cli->handler,
+                Filter_Param => $cli->filter_param,
+                Log => $cli->log,
+                Debug => $cli->debug
+        );
+}
+
 sub process_adminlist {
     my ($self, $cli) = @_;
 
