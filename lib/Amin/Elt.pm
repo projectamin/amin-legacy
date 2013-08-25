@@ -114,35 +114,6 @@ sub text {
 	return $self->{TEXT};
 }
 
-sub parse_adminlist {
-    my ($self, $cli) = @_;
-    my $h = Amin::Machine::AdminList->new;
-    my $p = XML::SAX::PurePerl->new(Handler => $h);
-    return $p->parse_uri($cli->adminlist);
-}
-
-sub parse_networkmap {
-    my ($self, $networkmap) = @_;
-    my $n = Amin::Machine::NetworkMap->new();
-    my $np = XML::SAX::PurePerl->new(Handler => $n);
-    return $np->parse_uri($networkmap);
-}
-
-sub parse_CLIOutput {
-    my ($self, $clioutput) = @_;
-    my $h = Amin::Controller::CLIOutput->new();
-    my $p = XML::SAX::PurePerl->new(Handler => $h);
-    return $p->parse_string($clioutput);
-}
-
-sub parse_adminlistmap {
-    my ($self, $adminlist_map) = @_;
-    my $h = Amin::Machine::AdminList::Name->new();
-    my $p = XML::SAX::PurePerl->new(Handler => $h);
-    return $p->parse_uri($adminlist_map);
-}
-
-
 sub amin_command {
 
 	my $self = shift;
