@@ -2,7 +2,7 @@ package Amin::Uri;
 
 #code lifted and modified from Richard Sonnen Data-Validate-URI-0.01
 
-#LICENSE:
+#LICENSE for modified bits:
 
 #Please see the LICENSE file included with this distribution 
 #or see the following website http://projectamin.org.
