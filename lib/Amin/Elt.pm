@@ -114,13 +114,131 @@ sub text {
 	return $self->{TEXT};
 }
 
+sub white_wash {
+    my $self = shift;
+    my $command = shift;
+    #passed white wash command examples
+    #my $command = "mkdir /tmp/test_dir";
+    #my $command = "mkdir -p";
+    #my $command = "mkdir -p /tmp/test_dir";
+    #my $command = "mkdir -m=0755 /tmp/test_dir";
+    #my $command = "ENV=some mkdir -m /tmp/test_dir";
+    #my $command = "mkdir /tmp/test_dir /other/dir";
+    #my $command = "mkdir -p -m";
+    #my $command = "mkdir -p -p";
+    #my $command = "ENV=some OTHER=soe mkdir -v -p /tmp/test_dir /other/dir";
+    #my $command = "ENV=some OTHER=soe mkdir -i -p /tmp/test_dir /other/param one more \'and another\'";
+    
+    my $command_name;
+    my $flag;
+    my $param;
+    my %command;
+    my @flags;
+    my @params;
+    my @shells;
+    my @things = split(/([\*\+\.\w=\/-]+|'[^']+')\s*/, $command);
+
+    foreach (@things) {
+    #check for real stuff
+    if ($_) {
+        #check for flag
+        if (($_ =~ /^-.*$/) || ($_ =~ /^--.*$/)) {
+            #it is a flag
+            my %flag;
+            my $char;
+            $_ =~ s/-//;
+            $_ =~ s/--//;
+            if ($_ =~ /^.*=.*$/) {
+                #check for stuff like -m=0755 crap
+                ($_, $char) = split (/=/, $_);
+            } else  {
+                #its just a flag
+                $char = $_;
+                $_ = undef;
+            }
+            
+            if ($_) {
+                $flag{"name"} = $_;
+            }
+            $flag{"char"} = $char;
+            push @flags, \%flag;
+        } elsif ($_ =~ /^.*=.*$/) {
+            my %shell;
+            #it is an env variable 
+            $shell{"name"} = 'env';
+            $shell{"char"} = $_;
+            push @shells, \%shell;
+        } else {
+            #it is either a param, command name
+            if (!$command{name}) {
+                $command{name} = $_;
+            } else {
+                my %param;
+                $param{"char"} = $_;
+                push @params, \%param;
+            }
+        }
+    }
+    }
+    
+    if (@shells) {
+        $command{shell} = \@shells;
+    }
+    if (@flags) {
+        $command{flag} = \@flags;
+    }
+    if (@params) {
+        $command{param} = \@params;
+    }
+    
+    my %fcommand;
+    $fcommand{command} = \%command;
+    return \%fcommand;
+}
+
 sub amin_command {
 
 	my $self = shift;
-	my $cmd = shift;
-	my $special = shift || "";
-	my $cmd2 = shift || ();
-	my $debug = $self->{Spec}->{Debug} || "";
+    my @cmds = @_;
+    my $debug = $self->{Spec}->{Debug} || "";
+
+
+    my $h = "\u$ns" . "\:\:" . "\u$action" . "\:\:" . "\u$cn";
+    
+    eval "require $h; 1";
+    if ($@) {
+        #there is no module, so this 
+        #needs to become a system_command
+        #and white_wash needs to handle it
+    }       
+    if ( $h->can( "filter_map" ) ) {
+        #we can map the command
+        my $hash = $h->filter_map($command);
+        $amin_profile = $lib->generate_profile($hash);
+    } else {
+        #white_wash the command
+        my $hash = $lib->white_wash($command);
+        $amin_profile = $lib->generate_profile($hash);  
+    }
+
+
+
+
+        $command{shell} = \@shells;
+    }
+    if (@flags) {
+        $command{flag} = \@flags;
+    }
+    if (@params) {
+        $command{param} = \@params;
+    }
+    
+    my %fcommand;
+    $fcommand{command} = \%command;
+
+#	my $cmd = shift;
+#	my $special = shift || "";
+#	my $cmd2 = shift || ();
 	
 	my ($in, $out, $err, $status, $command, $flag, $param, @cmd2, $flag2, $param2, @cmd);
 	if ($special ne "shell") {
@@ -132,6 +250,10 @@ sub amin_command {
 		$param2 = $cmd2->{'PARAM'} || "";
 
 		push @cmd, $command;
+
+        my @parts = qw(flag param cm
+
+
 		if ($flag ne "") {
 			foreach (@$flag) {
 				if (!defined $_) {
@@ -183,19 +305,7 @@ sub amin_command {
 		}
 	}
 
-	if ($special eq "|") {
-		my $h = harness \@cmd, $special, \@cmd2, \$in, \$out, \$err;
-		run $h ;
-		$status = $h->result;
-	} elsif ($special eq ">") {
-		#this should be changed cause its not right for
-		#@cmd > @cmd2
-		my $file = shift @cmd2;
-		my $h = harness \@cmd, $special, $file, \$in, \$out, \$err;
-		run $h ;
-		$status = $h->result;
-
-	} elsif ($special eq "shell") {
+    if ($special eq "shell") {
 		my $h = harness [ "sh", "-c", $cmd ], \$in, \$out, \$err;
 		run $h ;
 		$status = $h->result;
@@ -203,8 +313,7 @@ sub amin_command {
 		my $h = harness \@cmd, \$in, \$out, \$err;
 		if (($debug eq "ac") || ($debug eq "all")) {
 			print "CMD = :@cmd:\n";
-		}
-		if ($debug eq "acc") {
+		} elsif ($debug eq "acc") {
 			print "CMD = :@cmd:\n";
 		} else {
 			run $h ;
@@ -223,8 +332,6 @@ sub amin_command {
 		}
 	}
 
-
-
 	my %rcmd;
 	$rcmd{OUT} = $out;
 	$rcmd{ERR} = $err;
@@ -233,20 +340,15 @@ sub amin_command {
 	my $cmdtype;
 	if (($err) && ($out)) {
 		$cmdtype = "both";
-	}
-	if ((!$err) && ($out)) {
+	} elsif ((!$err) && ($out)) {
 		$cmdtype = "out";
-	}
-	if (($err) && (!$out)) {
+	} elsif (($err) && (!$out)) {
 		$cmdtype = "error";
-	}
-	#this is for commands like mkdir which return nothing on success
-	if ((!$err) && (!$out)) {
+	} elsif ((!$err) && (!$out)) {
+        #this is for commands like mkdir which return nothing on success
 		$cmdtype = "out";
 	}
 	$rcmd{TYPE} = $cmdtype;
-
-
 
 	return \%rcmd;
 }
